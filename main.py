@@ -12,26 +12,11 @@ import numpy as np
 from OpenGL.GLU import *
 import ctypes
 
-at = np.array([0., 0., 0.])
-w = np.array([3., 4., 5.])
-perspective = True
-click = False
-left = True
-
-oldx = 0
-oldy = 0
-A = np.radians(30)
-E = np.radians(36)
-
-# modes
-animation = False
-
 joint_list = []
 num_of_frames = 0
 frame_list = []
-curFrame = []
-f = -1
 cubeVarr = None
+curFrame = []
 
 class MyWindow(QOpenGLWidget):
 	def __init__(self, parent = None):
@@ -44,6 +29,24 @@ class MyWindow(QOpenGLWidget):
 		self.timer.setInterval(200)
 		self.timer.timeout.connect(self.update_frame)
 		self.timer.start(0)
+		
+		#initalize value
+		self.at = np.array([0., 0., 0.])
+		self.w = np.array([3., 4., 5.])
+		self.perspective = True
+		self.click = False
+		self.left = True
+
+		self.oldx = 0
+		self.oldy = 0
+		self.A = np.radians(30)
+		self.E = np.radians(36)
+
+		# modes
+		self.animation = False
+		
+		self.frame_num = -1
+		
 
 	def initializeGL(self):
 		glEnable(GL_DEPTH_TEST)
@@ -59,7 +62,7 @@ class MyWindow(QOpenGLWidget):
 	def paintGL(self):
 		glMatrixMode(GL_PROJECTION)
 		glLoadIdentity()
-		if perspective:
+		if self.perspective:
 			gluPerspective(45, 1, .1, 40)
 
 		else:
@@ -67,11 +70,11 @@ class MyWindow(QOpenGLWidget):
 
 		glMatrixMode(GL_MODELVIEW)
 		glLoadIdentity()
-		cam = at + w
-		if np.cos(E) > 0:
-			gluLookAt(cam[0], cam[1], cam[2], at[0], at[1], at[2], 0, 1, 0)
+		cam = self.at + self.w
+		if np.cos(self.E) > 0:
+			gluLookAt(cam[0], cam[1], cam[2], self.at[0], self.at[1], self.at[2], 0, 1, 0)
 		else:
-			gluLookAt(cam[0], cam[1], cam[2], at[0], at[1], at[2], 0, -1, 0)
+			gluLookAt(cam[0], cam[1], cam[2], self.at[0], self.at[1], self.at[2], 0, -1, 0)
 
 		self.drawGrid()
 		self.drawFrame()
@@ -132,36 +135,32 @@ class MyWindow(QOpenGLWidget):
 	
 	#===event handler===
 	def keyPressEvent(self, e):
-		global perspective, animation
 		
 		if e.key()==Qt.Key_Escape:
 			self.close()
 		elif e.key() == Qt.Key_V:
-			perspective = not perspective
+			self.perspective = not self.perspective
 		elif e.key() == Qt.Key_Space:
-			animation = not animation
+			self.animation = not self.animation
 		self.update()
 	
 	def mousePressEvent(self, e):
-		global click, left
-		global oldx, oldy
-		
-		oldx = e.x()
-		oldy = e.y()
-		if e.buttons() and Qt.LeftButton:
-			click = True
-			left = True
 
-		elif e.buttons() and Qt.RightButton:
-			click = True
-			left = False
+		self.oldx = e.x()
+		self.oldy = e.y()
+		if e.buttons() == Qt.LeftButton:
+			self.click = True
+			self.left = True
+
+		elif e.buttons() == Qt.RightButton:
+			self.click = True
+			self.left = False
 		self.update()
 	   
 	def mouseReleaseEvent(self, e):
-		global click
-		
+
 		#if e.buttons() and (Qt.RightButton or Qt.LeftButton):
-		click = False
+		self.click = False
 		self.update()
 		
 	def wheelEvent(self, e):
@@ -169,21 +168,21 @@ class MyWindow(QOpenGLWidget):
 		self.update()
 		
 	def mouseMoveEvent(self, e):
-		global oldx, oldy
-		if click:
-			newx = e.x()
-			newy = e.y()
 
-			dx = newx - oldx
-			dy = newy - oldy
+		if self.click:
+			self.newx = e.x()
+			self.newy = e.y()
+
+			dx = self.newx - self.oldx
+			dy = self.newy - self.oldy
 
 			if left:
 				self.orbit(dx, dy)
 			else:
 				self.panning(dx, dy)
 
-			oldx = newx
-			oldy = newy
+			self.oldx = self.newx
+			self.oldy = self.newy
 			self.update()
 	
 	def dragEnterEvent(self, e):
@@ -193,7 +192,7 @@ class MyWindow(QOpenGLWidget):
 			e.ignore()
 
 	def dropEvent(self, e):
-		global animation, curFrame, frame_list, joint_list, f, box
+		global curFrame, frame_list, joint_list
 		frame_list = []
 		joint_list = []
 		curFrame = []
@@ -210,10 +209,9 @@ class MyWindow(QOpenGLWidget):
 
 			with open(paths[0], 'r') as file:
 
-				animation = False
+				self.animation = False
 				FPS = parsing_bvh(file)
 				file_name = (paths[0].split('\\'))[-1].strip(".bvh")
-				box = True
 
 				print("1. File name : " + file_name)
 				print("2. Number of frames : " + str(num_of_frames))
@@ -224,51 +222,45 @@ class MyWindow(QOpenGLWidget):
 					print(j.get_joint_name(), end=' ')
 				print('\n')
 
-				f = -1
-				curFrame = frame_list[f]
+				self.frame_num= -1
+				curFrame = frame_list[self.frame_num]
 
 		else:
 			e.ignore()
 	
 	def orbit(self, dx, dy):
-		global w, A, E
 
-		A -= np.radians(dx) / 5
-		E += np.radians(dy) / 5
+		self.A -= np.radians(dx) / 5
+		self.E += np.radians(dy) / 5
 
-		distance = np.sqrt(w[0] ** 2 + w[1] ** 2 + w[2] ** 2)
-		w = distance * np.array([np.cos(E) * np.sin(A), np.sin(E), np.cos(E) * np.cos(A)])
+		distance = np.sqrt(self.w[0] ** 2 + self.w[1] ** 2 + self.w[2] ** 2)
+		self.w = distance * np.array([np.cos(self.E) * np.sin(self.A), np.sin(self.E), np.cos(self.E) * np.cos(self.A)])
 
 	def panning(self, dx, dy):
-		global at
 
 		up = np.array([0, 1, 0])
-		w_ = w / np.sqrt(w[0] ** 2 + w[1] ** 2 + w[2] ** 2)
+		w_ = self.w / np.sqrt(w[0] ** 2 + w[1] ** 2 + w[2] ** 2)
 		u = np.cross(up, w_)
 		u = u / np.sqrt(u[0] ** 2 + u[1] ** 2 + u[2] ** 2)
 		v = np.cross(w_, u)
 
-		at += (-1 * dx * u + dy * v) / 30
+		self.at += (-1 * dx * u + dy * v) / 30
 	
 	def zoom(self, yoffset):
-		global w
-		w -= w * yoffset / 5
+		self.w -= self.w * yoffset / 5
 		
 			
 	#===update frame===	
 	def update_frame(self):
-		global animation, num_of_frames, curFrame, frame_list, f
-		if animation:
-			f += 1
-			f %= num_of_frames
+		global num_of_frames, curFrame, frame_list
+		if self.animation:
+			self.frame_num += 1
+			self.frame_num %= num_of_frames
 
 		if len(frame_list) > 0:
-			curFrame = frame_list[f]
+			curFrame = frame_list[self.frame_num]
 		self.update()
 	
-		
-		
-
 
 class Joint:
 	resize = 1
@@ -683,7 +675,7 @@ def exp(rv):
 
 
 def main():
-	global f, cubeVarr
+	global cubeVarr
 
 	cubeVarr = createVertexArraySeparate()
 
