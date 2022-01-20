@@ -169,19 +169,19 @@ class MyWindow(QOpenGLWidget):
     def mouseMoveEvent(self, e):
 
         if self.click:
-            self.newx = e.x()
-            self.newy = e.y()
+            newx = e.x()
+            newy = e.y()
 
-            dx = self.newx - self.oldx
-            dy = self.newy - self.oldy
+            dx = newx - self.oldx
+            dy = newy - self.oldy
 
             if self.left:
                 self.orbit(dx, dy)
             else:
                 self.panning(dx, dy)
 
-            self.oldx = self.newx
-            self.oldy = self.newy
+            self.oldx = newx
+            self.oldy = newy
             self.update()
 
     def dragEnterEvent(self, e):
