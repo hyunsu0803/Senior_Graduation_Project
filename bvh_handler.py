@@ -11,7 +11,7 @@ frame_list = []
 
 
 def parsing_bvh(bvh):
-    global num_of_frames, frame_list
+    global num_of_frames, frame_list, joint_list
     frameTime = 0
     frame_list = []
 
@@ -20,6 +20,7 @@ def parsing_bvh(bvh):
     if line[0] == 'HIERARCHY':
         line = bvh.readline().split()
         if line[0] == 'ROOT':
+            joint_list = []
             buildJoint(bvh, line[1])  # build ROOT and other joints
 
     line = bvh.readline().split()
@@ -45,7 +46,7 @@ def parsing_bvh(bvh):
 
 def buildJoint(bvh, joint_name):
     global joint_list
-    joint_list = []
+    # joint_list = []
 
     line = bvh.readline().split()  # remove '{'
     newJoint = Joint(joint_name)
