@@ -6,7 +6,7 @@ from OpenGL.GLU import *
 import numpy as np
 
 from Joint import Joint
-from bvh_handler import drawJoint, parsing_bvh, joint_list, num_of_frames, frame_list
+from bvh_handler import drawJoint, parsing_bvh
 
 curFrame = []
 
@@ -95,6 +95,7 @@ class MyWindow(QOpenGLWidget):
         glMaterialfv(GL_FRONT, GL_SPECULAR, specularObjectColor)
         glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, specularObjectColor)
 
+        from bvh_handler import joint_list
         if len(joint_list) > 0:
             drawJoint(np.identity(4), joint_list[0])
 
@@ -185,7 +186,6 @@ class MyWindow(QOpenGLWidget):
 
     def dropEvent(self, e):
         global curFrame
-
         curFrame = []
         Joint.resize = 1
         if e.mimeData().hasUrls:
@@ -199,11 +199,11 @@ class MyWindow(QOpenGLWidget):
                 return
 
             with open(paths[0], 'r') as file:
-
                 self.animation = False
                 FPS = parsing_bvh(file)
-                file_name = (paths[0].split('\\'))[-1].strip(".bvh")
+                file_name = (paths[0].split('/'))[-1].strip(".bvh")
 
+                from bvh_handler import num_of_frames, joint_list, frame_list
                 print("1. File name : " + file_name)
                 print("2. Number of frames : " + str(num_of_frames))
                 print("3. FPS : " + str(FPS))
@@ -243,6 +243,8 @@ class MyWindow(QOpenGLWidget):
     # ===update frame===
     def update_frame(self):
         global curFrame
+        from bvh_handler import num_of_frames, frame_list
+
         if self.animation:
             self.frame_num += 1
             self.frame_num %= num_of_frames
@@ -250,5 +252,3 @@ class MyWindow(QOpenGLWidget):
         if len(frame_list) > 0:
             curFrame = frame_list[self.frame_num]
         self.update()
-
-
