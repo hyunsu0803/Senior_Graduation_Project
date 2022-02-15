@@ -9,6 +9,7 @@ from Joint import Joint
 from bvh_handler import drawJoint, parsing_bvh
 
 curFrame = []
+timeStep = 0.2
 
 
 class MyWindow(QOpenGLWidget):
@@ -20,7 +21,7 @@ class MyWindow(QOpenGLWidget):
 
         # timer
         self.timer = QTimer(self)
-        self.timer.setInterval(200)
+        self.timer.setInterval(1000 * timeStep)
         self.timer.timeout.connect(self.update_frame)
         self.timer.start(0)
 
