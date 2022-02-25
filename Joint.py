@@ -15,11 +15,11 @@ class Joint:
 		self.matrix = np.identity(4)
 		
 		self.global_position = np.array([0., 0., 0., 1.], dtype = 'float32') # global position
+		
 		self.root_local_position = np.array([0., 0., 0., 1.], dtype = 'float32')	# local to root joint
-
-		#==elements of feature vector==
-		self.velocity = np.array([0., 0., 0.], dtype = 'float32')	# local to character
-		self.root_position = np.array([0., 0., 0., 1.], dtype = 'float32')	# global coordinate
+		self.root_local_velocity = np.array([0., 0., 0.], dtype = 'float32')	# local to root joint
+		self.root_local_rotation = np.array([1., 0., 0., 0.], dtype = 'float32')# local to root joint, quaternion
+		self.root_local_rotvel = np.array([0., 0., 0.], dtype = 'float32')	# rotational velocity local to root joint
 		
 
 	def set_channel(self, channel):
@@ -38,7 +38,7 @@ class Joint:
 		self.matrix = matrix
 
 	def set_global_position(self, position):
-		self.position = position
+		self.global_position = position
 
 	def set_index(self, index):
 		self.index = index
@@ -48,12 +48,18 @@ class Joint:
 	def set_root_local_position(self, vector):
 		self.root_local_position = vector
 		
-	def set_velocity(self, vector):
-		self.velocity = vector
+	def set_root_local_velocity(self, vector):
+		self.root_local_velocity = vector
 		
 	def set_is_root(self, value):
 		self.is_root = value
 
+	def set_root_local_rotation(self, vector):
+		self.root_local_rotation = vector
+  
+	def set_root_local_rotvel(self, vector):
+		self.root_local_rotvel = vector
+		
 	def get_joint_name(self):
 		return self.joint_name
 
@@ -81,8 +87,15 @@ class Joint:
 	def get_root_local_position(self):
 		return self.root_local_position
 
-	def get_velocity(self):
-		return self.velocity
+	def get_root_local_velocity(self):
+		return self.root_local_velocity
 	
 	def get_is_root(self):
 		return self.is_root
+  
+	def get_root_local_rotation(self):
+		return self.root_local_rotation
+
+	def get_root_local_rotvel(self):
+		return root_local_rotvel
+	
