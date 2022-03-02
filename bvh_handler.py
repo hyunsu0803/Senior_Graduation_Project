@@ -1,5 +1,6 @@
 import numpy as np
 from Joint import Joint
+from Feature import Feature
 from utils import l2norm, normalized, exp
 
 from OpenGL.GL import *
@@ -9,7 +10,7 @@ from scipy.spatial.transform import Rotation as R
 joint_list = []
 num_of_frames = 0
 frame_list = []
-
+feature_vector = Feature()
 
 def parsing_bvh(bvh):
 	global num_of_frames, frame_list, joint_list
@@ -51,6 +52,13 @@ def buildJoint(bvh, joint_name):
 
 	line = bvh.readline().split()  # remove '{'
 	newJoint = Joint(joint_name)
+
+	# check if it's foot joint
+	# 이건 사용하는 data set에 따라 달라질 수 있음
+	if "Foot" in joint_name:
+		newJoint.set_is_foot(True)
+		print("foot이다!")
+
 	newJoint.set_index(len(joint_list))
 
 	joint_list.append(newJoint)
@@ -192,9 +200,9 @@ def drawJoint(parentMatrix, joint, rootMatrix = None):
 		
 	else:
 		# get root local position and root local velocity
-		new_root_local_position = (rootMatrix.T @ global_position)	  #local to root joint
+		new_root_local_position = (rootMatrix.T @ global_position)[:3]	  #local to root joint
 		past_root_local_position = joint.get_root_local_position()	#local to root joint
-		root_local_velocity = ((new_root_local_position - past_root_local_position)/timeStep)[:3]
+		root_local_velocity = ((new_root_local_position - past_root_local_position)/timeStep)
 		
 		# get root local rotation and root local angular velocity
 		new_root_local_rotation_matrix = (rootMatrix.T @ transform_matrix)[:3,:3]
@@ -204,12 +212,13 @@ def drawJoint(parentMatrix, joint, rootMatrix = None):
 		# 이건 어떻게 구하는지 모르겠네 root_local_rotvel =
 		
 		# set joint class's value
-		joint.set_global_position(global_position)
+		joint.set_global_position(global_position[:3])
 		joint.set_root_local_velocity(root_local_velocity)
-		joint.set_root_local_position(new_root_local_position)
+		joint.set_root_local_position(new_root_local_position[:3])
 		joint.set_root_local_rotation(new_root_local_rotation)
 	
 	#==잘되는지 임시 확인용==
+	'''
 	print(joint.joint_name)
 	if(joint.get_is_root() is not None):
 		print("is root!!!")
@@ -223,7 +232,7 @@ def drawJoint(parentMatrix, joint, rootMatrix = None):
 	print(joint.get_root_local_rotation())
 	print()
 	print()
-	
+	'''
 	
 	v = cur_position - parent_position
 	box_length = l2norm(v)
@@ -296,3 +305,29 @@ def drawJoint(parentMatrix, joint, rootMatrix = None):
 			drawJoint(joint.get_transform_matrix(), j, rootMatrix)
 
 	glPopMatrix()
+
+def set_feature_vector():
+	global joint_list, feature_vector
+
+	two_foot_position = []
+	two_foot_velocity = []
+	hip_velocity = []
+
+	for joint in joint_list:
+		if joint.get_is_root() is not None:
+			hip_velocity.append(joint.get_root_local_velocity())
+		elif joint.get_is_foot() is not None:
+			two_foot_position.append(joint.get_root_local_position())
+			two_foot_velocity.append(joint.get_root_local_velocity())
+
+	feature_vector.set_foot_position(np.array(two_foot_position).reshape(1, 6))
+	feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(1, 6))
+	feature_vector.set_hip_velocity(np.array(hip_velocity))
+
+	print("two_foot_position")
+	print(feature_vector.get_foot_position())
+	print("two_foot_velocity")
+	print(feature_vector.get_foot_velocity())
+	print("hip_velocity")
+	print(feature_vector.get_hip_velocity())
+

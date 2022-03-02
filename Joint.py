@@ -11,12 +11,13 @@ class Joint:
 		self.offset = np.array([0., 0., 0.], dtype = 'float32')
 		self.end_site = None	# Indicates whether it's end site
 		self.is_root = None		# Indictes whether it's root joint
+		self.is_foot = None		# Indicates whether it's foot joint
 		self.child_joint = []
 		self.matrix = np.identity(4)
 		
-		self.global_position = np.array([0., 0., 0., 1.], dtype = 'float32') # global position
+		self.global_position = np.array([0., 0., 0.], dtype = 'float32') # global position
 		
-		self.root_local_position = np.array([0., 0., 0., 1.], dtype = 'float32')	# local to root joint
+		self.root_local_position = np.array([0., 0., 0.], dtype = 'float32')	# local to root joint
 		self.root_local_velocity = np.array([0., 0., 0.], dtype = 'float32')	# local to root joint
 		self.root_local_rotation = np.array([1., 0., 0., 0.], dtype = 'float32')# local to root joint, quaternion
 		self.root_local_rotvel = np.array([0., 0., 0.], dtype = 'float32')	# rotational velocity local to root joint
@@ -44,6 +45,8 @@ class Joint:
 		self.index = index
 		if self.index == 0:
 			self.is_root = True
+			print("이렇게 세팅되었습니다~~")
+			print(self.joint_name)
   
 	def set_root_local_position(self, vector):
 		self.root_local_position = vector
@@ -53,6 +56,9 @@ class Joint:
 		
 	def set_is_root(self, value):
 		self.is_root = value
+	
+	def set_is_foot(self, value):
+		self.is_foot = value
 
 	def set_root_local_rotation(self, vector):
 		self.root_local_rotation = vector
@@ -92,6 +98,9 @@ class Joint:
 	
 	def get_is_root(self):
 		return self.is_root
+
+	def get_is_foot(self):
+		return self.is_foot
   
 	def get_root_local_rotation(self):
 		return self.root_local_rotation
