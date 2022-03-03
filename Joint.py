@@ -45,7 +45,6 @@ class Joint:
 		self.index = index
 		if self.index == 0:
 			self.is_root = True
-			print("이렇게 세팅되었습니다~~")
 			print(self.joint_name)
   
 	def set_root_local_position(self, vector):
