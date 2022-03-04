@@ -38,3 +38,16 @@ class Feature:
 	
 	def get_hip_velocity(self):
 		return self.hip_velocity
+
+	def get_feature_string(self):
+		data = ""
+		for i in range (0, 6):
+			data += str(self.foot_position[0][i])+" "
+		
+		for i in range(0, 6):
+			data += str(self.foot_velocity[0][i])+" "
+
+		for i in range(0, 3):
+			data += str(self.hip_velocity[0][i])+" "
+
+		return data

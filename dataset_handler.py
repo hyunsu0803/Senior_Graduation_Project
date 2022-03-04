@@ -1,7 +1,7 @@
 import numpy as np
 from Joint import Joint
 from Feature import Feature
-from utils import 12norm, normalized, exp
+from utils import l2norm, normalized, exp
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -10,8 +10,8 @@ from scipy.spatial.transform import Rotation as R
 joint_list = []
 num_of_frames = 0
 frame_list = []
-features = []
-feature_vector = Feature()
+feature_list = []
+timeStep = 0.2
 
 
 def parsing_bvh(bvh):
@@ -93,15 +93,15 @@ def buildJoint(bvh, joint_name):
 		elif line[0] == '}':
 			return newJoint
 
-def createFeatures(joint, parentMatrix, rootMatrix = None, feature):
-	
+def set_joint_feature(joint, parentMatrix, rootMatrix = None):
+	global curFrame, timeStep
 	newMatrix = np.identity(4)
 	cur_position = [0, 0, 0, 1]
 
 	# get current joint's offset from parent joint
 	curoffset = joint.get_offset()/Joint.resize
 
-	# temp = np.identity(4)
+	temp = np.identity(4)
 	temp[:3, 3] = curoffset
 	newMatrix = newMatrix @ temp
 
@@ -209,8 +209,26 @@ def createFeatures(joint, parentMatrix, rootMatrix = None, feature):
 		joint.set_root_local_position(new_root_local_position[:3])
 		joint.set_root_local_rotation(new_root_local_rotation)
 
-def set_feature_vector():
-	global joint_list, feature_vector
+	print(joint.joint_name)
+	if(joint.get_is_root() is not None):
+		print("is root!!!")
+	print("global poistion: ")
+	print(joint.get_global_position())
+	print("root local position")
+	print(joint.get_root_local_position())
+	print("root local velocity")
+	print(joint.get_root_local_velocity())
+	print("root local rotation")
+	print(joint.get_root_local_rotation())
+	print()
+	print()
+
+	if joint.get_end_site() is None:
+		for j in joint.get_child():
+			set_joint_feature(j, joint.get_transform_matrix(), rootMatrix)
+
+def set_feature_vector(feature_vector):
+	global joint_list
 
 	two_foot_position = []
 	two_foot_velocity = []
@@ -229,9 +247,33 @@ def set_feature_vector():
 
 
 def main():
-	global curFrame
+	global curFrame, joint_list, feature_list
 	curFrame = []
 	Joint.resize = 1
+
+	paths = []
+	paths.append('sample-walk.bvh')
+
+	with open(paths[0], 'r') as file:
+		FPS = parsing_bvh(file)
+		file_name = (paths[0].split('/'))[-1].strip(".bvh")
+
+	f = open("features.txt", 'w')
+
+	for i in range (0, len(frame_list)):
+		curFrame = frame_list[i]
+		set_joint_feature(joint_list[0], np.identity(4), None)
+		feature_vector = Feature()
+		set_feature_vector(feature_vector)
+		feature_list.append(feature_vector)
+		
+		data = feature_vector.get_feature_string()
+		print(data)
+		data += "\n"
+		f.write(data)
+	
+	f.close()
+
 
 if __name__ == "__main__":
 	main()
