@@ -242,15 +242,16 @@ class MyWindow(QOpenGLWidget):
 		self.w -= self.w * yoffset / 5
 
 	# ===update frame===
+	'''
 	def update_frame(self):
 		global curFrame
 		from bvh_handler import num_of_frames, frame_list, set_feature_vector
 
 		if self.animation:
-			set_feature_vector()
 			self.frame_num += 1
 			self.frame_num %= num_of_frames
 
 		if len(frame_list) > 0:
 			curFrame = frame_list[self.frame_num]
 		self.update()
+	'''

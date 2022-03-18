@@ -12,28 +12,36 @@ num_of_frames = 0
 frame_list = []
 feature_list = []
 timeStep = 0.2
+line_index = 0
 
 
 def parsing_bvh(bvh):
-	global num_of_frames, frame_list, joint_list
+	global num_of_frames, frame_list, joint_list, line_index
 	frameTime = 0
 	frame_list = []
-
+	line_index = 0
+ 
 	line = bvh.readline().split()
+	line_index += 1
 
 	if line[0] == 'HIERARCHY':
 		line = bvh.readline().split()
+		line_index += 1
 		if line[0] == 'ROOT':
 			joint_list = []
 			buildJoint(bvh, line[1])  # build ROOT and other joints
 
 	line = bvh.readline().split()
+	line_index += 1
 
 	if line[0] == 'MOTION':
 		line = bvh.readline().split()
+		line_index += 1
 		if line[0] == 'Frames:':
 			num_of_frames = int(line[1])
 		line = bvh.readline().split()
+		line_index += 1
+		
 		if line[0] == 'Frame' and line[1] == 'Time:':
 			frameTime = float(line[2])
 
@@ -49,10 +57,11 @@ def parsing_bvh(bvh):
 
 
 def buildJoint(bvh, joint_name):
-	global joint_list
+	global joint_list, line_index
 	# joint_list = []
 
-	line = bvh.readline().split()  # remove '{'
+	line = bvh.readline().split()# remove '{'
+	line_index += 1
 	newJoint = Joint(joint_name)
 
 	# check if it's foot joint
@@ -65,6 +74,7 @@ def buildJoint(bvh, joint_name):
 	joint_list.append(newJoint)
 
 	line = bvh.readline().split()
+	line_index += 1
 	if line[0] == 'OFFSET':
 		offset = np.array(list(map(float, line[1:])), dtype='float32')
 		if np.sqrt(np.dot(offset, offset)) > Joint.resize:
@@ -72,23 +82,28 @@ def buildJoint(bvh, joint_name):
 		newJoint.set_offset(offset)
 
 	line = bvh.readline().split()
+	line_index += 1
 	if line[0] == 'CHANNELS':
 		newJoint.set_channel(line[2:])
 
 	while True:
 		line = bvh.readline().split()
+		line_index += 1
 		if line[0] == 'JOINT':
 			newJoint.append_child_joint(buildJoint(bvh, line[1]))
 
 		elif line[0] == 'End' and line[1] == 'Site':
-			line = bvh.readline().split()  # remove '{'
+			line = bvh.readline().split()# remove '{'
+			line_index += 1
 			line = bvh.readline().split()
+			line_index += 1
 			if line[0] == 'OFFSET':
 				offset = np.array(list(map(float, line[1:])), dtype='float32')
 				if np.sqrt(np.dot(offset, offset)) > Joint.resize:
 					Joint.resize = np.sqrt(np.dot(offset, offset))
 				newJoint.set_end_site(offset)
 			line = bvh.readline().split()  # remove '}'
+			line_index += 1
 
 		elif line[0] == '}':
 			return newJoint
@@ -266,8 +281,8 @@ def main():
 		feature_vector = Feature()
 		set_feature_vector(feature_vector)
 		feature_list.append(feature_vector)
-		
-		data = feature_vector.get_feature_string()
+		data = str(line_index + i)+" "
+		data += feature_vector.get_feature_string()
 		print(data)
 		data += "\n"
 		f.write(data)
