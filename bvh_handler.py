@@ -330,3 +330,4 @@ def set_feature_vector():
 	print("hip_velocity")
 	print(feature_vector.get_hip_velocity())
 
+	return feature_vector
