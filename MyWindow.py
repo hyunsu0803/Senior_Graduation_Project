@@ -7,9 +7,11 @@ import numpy as np
 
 from Joint import Joint
 from bvh_handler import drawJoint, parsing_bvh
+from motion_matching_test import motion_matching
 
 curFrame = []
 timeStep = 0.2
+curFrame_index = 0
 
 
 class MyWindow(QOpenGLWidget):
@@ -25,7 +27,7 @@ class MyWindow(QOpenGLWidget):
 		self.timer.timeout.connect(self.update_frame)
 		self.timer.start(0)
 
-		# initalize value
+		# initialize value
 		self.at = np.array([0., 0., 0.])
 		self.w = np.array([3., 4., 5.])
 		self.perspective = True
@@ -38,7 +40,7 @@ class MyWindow(QOpenGLWidget):
 		self.E = np.radians(36)
 
 		# modes
-		self.animation = False
+		self.animation = True
 
 		self.frame_num = -1
 
@@ -98,6 +100,8 @@ class MyWindow(QOpenGLWidget):
 
 		from bvh_handler import joint_list
 		if len(joint_list) > 0:
+			print("그리기 전 curFrame")
+			print(curFrame)
 			drawJoint(np.identity(4), joint_list[0])
 
 		glDisable(GL_LIGHTING)
@@ -133,8 +137,8 @@ class MyWindow(QOpenGLWidget):
 			self.close()
 		elif e.key() == Qt.Key_V:
 			self.perspective = not self.perspective
-		elif e.key() == Qt.Key_Space:
-			self.animation = not self.animation
+		# elif e.key() == Qt.Key_Space:
+		# 	self.animation = not self.animation
 		self.update()
 
 	def mousePressEvent(self, e):
@@ -187,7 +191,10 @@ class MyWindow(QOpenGLWidget):
 
 	def dropEvent(self, e):
 		global curFrame
-		curFrame = []
+		# curFrame = []
+		print("dropEvent")
+		print(curFrame)
+
 		Joint.resize = 1
 		if e.mimeData().hasUrls:
 			e.setDropAction(Qt.CopyAction)
@@ -215,7 +222,7 @@ class MyWindow(QOpenGLWidget):
 				print('\n')
 
 				self.frame_num = -1
-				curFrame = frame_list[self.frame_num]
+				# curFrame = frame_list[self.frame_num]
 
 		else:
 			e.ignore()
@@ -242,16 +249,19 @@ class MyWindow(QOpenGLWidget):
 		self.w -= self.w * yoffset / 5
 
 	# ===update frame===
-	'''
+
 	def update_frame(self):
-		global curFrame
+		global curFrame, curFrame_index
 		from bvh_handler import num_of_frames, frame_list, set_feature_vector
 
-		if self.animation:
-			self.frame_num += 1
-			self.frame_num %= num_of_frames
+		coming_soon_10frames = motion_matching()
+		# for frame in coming_soon_10frames:
+		# 	curFrame = frame
+		# 	self.update()
+		# 	print("self.update 후 curFrame:")
+		# 	print(curFrame)
 
-		if len(frame_list) > 0:
-			curFrame = frame_list[self.frame_num]
+		curFrame = coming_soon_10frames[curFrame_index]
+		curFrame_index += 1
+		curFrame_index %= len(coming_soon_10frames)
 		self.update()
-	'''
