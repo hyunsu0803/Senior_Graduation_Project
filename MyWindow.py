@@ -3,6 +3,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QOpenGLWidget
 from OpenGL.GL import *
 from OpenGL.GLU import *
+from PyQt5. QtWidgets import QApplication
 import numpy as np
 
 from Joint import Joint
@@ -23,7 +24,7 @@ class MyWindow(QOpenGLWidget):
 
 		# timer
 		self.timer = QTimer(self)
-		self.timer.setInterval(1000 * timeStep)
+		self.timer.setInterval(1000 * 50* timeStep)
 		self.timer.timeout.connect(self.update_frame)
 		self.timer.start(0)
 
@@ -255,13 +256,14 @@ class MyWindow(QOpenGLWidget):
 		from bvh_handler import num_of_frames, frame_list, set_feature_vector
 
 		coming_soon_10frames = motion_matching()
-		# for frame in coming_soon_10frames:
-		# 	curFrame = frame
-		# 	self.update()
-		# 	print("self.update 후 curFrame:")
-		# 	print(curFrame)
+		for frame in coming_soon_10frames:
+			curFrame = frame
+			self.update()
+			print("self.update 후 curFrame:")
+			print(curFrame)
+			QApplication.processEvents()
 
-		curFrame = coming_soon_10frames[curFrame_index]
-		curFrame_index += 1
-		curFrame_index %= len(coming_soon_10frames)
-		self.update()
+		# curFrame = coming_soon_10frames[curFrame_index]
+		# curFrame_index += 1
+		# curFrame_index %= len(coming_soon_10frames)
+		# self.update()
