@@ -24,7 +24,7 @@ class MyWindow(QOpenGLWidget):
 
 		# timer
 		self.timer = QTimer(self)
-		self.timer.setInterval(1000 * 50* timeStep)
+		self.timer.setInterval(1000 * timeStep)
 		self.timer.timeout.connect(self.update_frame)
 		self.timer.start(0)
 
@@ -192,9 +192,6 @@ class MyWindow(QOpenGLWidget):
 
 	def dropEvent(self, e):
 		global curFrame
-		# curFrame = []
-		print("dropEvent")
-		print(curFrame)
 
 		Joint.resize = 1
 		if e.mimeData().hasUrls:
@@ -259,11 +256,4 @@ class MyWindow(QOpenGLWidget):
 		for frame in coming_soon_10frames:
 			curFrame = frame
 			self.update()
-			print("self.update 후 curFrame:")
-			print(curFrame)
 			QApplication.processEvents()
-
-		# curFrame = coming_soon_10frames[curFrame_index]
-		# curFrame_index += 1
-		# curFrame_index %= len(coming_soon_10frames)
-		# self.update()
