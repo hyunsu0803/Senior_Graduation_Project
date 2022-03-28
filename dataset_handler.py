@@ -13,6 +13,10 @@ frame_list = []
 feature_list = []
 timeStep = 0.2
 line_index = 0
+curFrame = []
+futureFrames = [None, None, None]
+futurePosition = [[None], [None], [None]]
+futureOrientation = [[None], [None], [None]]
 
 
 def parsing_bvh(bvh):
@@ -110,7 +114,7 @@ def buildJoint(bvh, joint_name):
 
 
 def set_joint_feature(joint, parentMatrix, rootMatrix=None):
-    global curFrame, timeStep
+    global curFrame, timeStep, futurePosition, futureOrientation
     newMatrix = np.identity(4)
     cur_position = [0, 0, 0, 1]
 
@@ -196,6 +200,23 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     # set parent's global position (if it is root joint, parent_position is current_position)
     if joint.get_is_root() is not None:
         parent_position = global_position
+        futurePosition = [None, None, None]
+        futureOrientation = [None, None, None]
+
+        for i in range(0, 3):
+            temp = np.array([0, 0, 0, 1])
+            temp[:3] = futureFrames[i][:3]
+            futurePosition[i] = np.linalg.inv(transform_matrix) @ temp
+            # 나중에 zxy 아닐 수도 있으니 바꾸쇼~!
+            '''
+            rotation_current = R.from_euler('zxy', curFrame[3:6], degrees=True)
+            rotation_future = R.from_euler('zxy', futureFrames[i][3:6], degrees=True)
+            rotation_current = np.array(R.inv().as_matrix())
+            rotation_future = np.array(R.as_matrix())
+            '''
+
+
+
     else:
         parent_position = parentMatrix @ np.array([0., 0., 0., 1.])
 
@@ -264,7 +285,7 @@ def set_feature_vector(feature_vector):
 
 
 def main():
-    global curFrame, joint_list, feature_list
+    global curFrame, joint_list, feature_list, futureFrames
     curFrame = []
     Joint.resize = 1
 
@@ -281,6 +302,10 @@ def main():
 
     for i in range(0, len(frame_list)):
         curFrame = frame_list[i]
+        futureFrames = [None, None, None]
+        for j in [20, 40, 60]:
+            if j < len(frame_list):
+                futureFrames[j / 20] = frame_list[i + j]
         set_joint_feature(joint_list[0], np.identity(4), None)
         feature_vector = Feature()
         set_feature_vector(feature_vector)
