@@ -16,7 +16,7 @@ line_index = 0
 curFrame = []
 futureFrames = [None, None, None]
 futurePosition = [[None], [None], [None]]
-futureOrientation = [[None], [None], [None]]
+futureDirection = [[None], [None], [None]]
 
 
 def parsing_bvh(bvh):
@@ -114,7 +114,7 @@ def buildJoint(bvh, joint_name):
 
 
 def set_joint_feature(joint, parentMatrix, rootMatrix=None):
-    global curFrame, timeStep, futurePosition, futureOrientation
+    global curFrame, timeStep, futurePosition, futureDirection
     newMatrix = np.identity(4)
     cur_position = [0, 0, 0, 1]
 
@@ -201,21 +201,24 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     if joint.get_is_root() is not None:
         parent_position = global_position
         futurePosition = [None, None, None]
-        futureOrientation = [None, None, None]
+        futureDirection = [None, None, None]
 
         for i in range(0, 3):
             temp = np.array([0, 0, 0, 1])
             temp[:3] = futureFrames[i][:3]
             futurePosition[i] = np.linalg.inv(transform_matrix) @ temp
+
+            futurePosition[i] = futurePosition[i][0::2]
             # 나중에 zxy 아닐 수도 있으니 바꾸쇼~!
-            '''
+
+            # 만약 나중에 안된다면 이거때문일수도 있음! 자신이 없어~~~~
+            default_facing_direction = np.array([1., 0., 0.])
             rotation_current = R.from_euler('zxy', curFrame[3:6], degrees=True)
             rotation_future = R.from_euler('zxy', futureFrames[i][3:6], degrees=True)
-            rotation_current = np.array(R.inv().as_matrix())
-            rotation_future = np.array(R.as_matrix())
-            '''
-
-
+            rotation_current = np.array(rotation_current.as_matrix())
+            rotation_future = np.array(rotation_future.as_matrix())
+            futureDirection[i] = R.from_matrix(rotation_current.T @ rotation_future).as_matrix() @ default_facing_direction
+            futureDirection[i] = futureDirection[i][0::2]
 
     else:
         parent_position = parentMatrix @ np.array([0., 0., 0., 1.])
@@ -279,9 +282,11 @@ def set_feature_vector(feature_vector):
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
 
-    feature_vector.set_foot_position(np.array(two_foot_position).reshape(1, 6))
-    feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(1, 6))
-    feature_vector.set_hip_velocity(np.array(hip_velocity))
+    feature_vector.set_future_position(np.array(futurePosition).reshape(6, ))
+    feature_vector.set_future_direction(np.array(futureDirection).reshape(6, ))
+    feature_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
+    feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
+    feature_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
 
 
 def main():
@@ -300,12 +305,12 @@ def main():
     f.write(paths[0] + '\n')
     print(paths[0] + '\n')
 
-    for i in range(0, len(frame_list)):
+    for i in range(0, len(frame_list) - 61):
         curFrame = frame_list[i]
-        futureFrames = [None, None, None]
+        futureFrames = []
         for j in [20, 40, 60]:
             if j < len(frame_list):
-                futureFrames[j / 20] = frame_list[i + j]
+                futureFrames.append(frame_list[i + j])
         set_joint_feature(joint_list[0], np.identity(4), None)
         feature_vector = Feature()
         set_feature_vector(feature_vector)
