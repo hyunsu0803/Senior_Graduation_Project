@@ -1,14 +1,16 @@
 import numpy as np
 from Joint import Joint
 from Feature import Feature
-from utils import l2norm, normalized, exp
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from scipy.spatial.transform import Rotation as R
+import os
+from scipy.spatial import KDTree
+import pickle
 
 joint_list = []
-num_of_frames = 0
+# num_of_frames = 0
 frame_list = []
 feature_list = []
 timeStep = 0.2
@@ -20,10 +22,12 @@ futureDirection = [[None], [None], [None]]
 
 
 def parsing_bvh(bvh):
-    global num_of_frames, frame_list, joint_list, line_index
+    global frame_list, joint_list, line_index #,num_of_frames
     frameTime = 0
     frame_list = []
     line_index = 0
+
+    num_of_frames = 0
 
     line = bvh.readline().split()
     line_index += 1
@@ -56,8 +60,9 @@ def parsing_bvh(bvh):
         last = [0] * len(frame_list[0])
         frame_list.append(last)
 
-    FPS = int(1 / frameTime)
-    return FPS
+    # FPS = int(1 / frameTime)
+
+    return num_of_frames
 
 
 def buildJoint(bvh, joint_name):
@@ -116,7 +121,7 @@ def buildJoint(bvh, joint_name):
 def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     global curFrame, timeStep, futurePosition, futureDirection
     newMatrix = np.identity(4)
-    cur_position = [0, 0, 0, 1]
+    # cur_position = [0, 0, 0, 1]
 
     # get current joint's offset from parent joint
     curoffset = joint.get_offset() / Joint.resize
@@ -249,19 +254,19 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
         joint.set_root_local_position(new_root_local_position[:3])
         joint.set_root_local_rotation(new_root_local_rotation)
 
-    print(joint.joint_name)
-    if joint.get_is_root():
-        print("is root!!!")
-    print("global position: ")
-    print(joint.get_global_position())
-    print("root local position")
-    print(joint.get_root_local_position())
-    print("root local velocity")
-    print(joint.get_root_local_velocity())
-    print("root local rotation")
-    print(joint.get_root_local_rotation())
-    print()
-    print()
+    # print(joint.joint_name)
+    # if joint.get_is_root():
+    #     print("is root!!!")
+    # print("global position: ")
+    # print(joint.get_global_position())
+    # print("root local position")
+    # print(joint.get_root_local_position())
+    # print("root local velocity")
+    # print(joint.get_root_local_velocity())
+    # print("root local rotation")
+    # print(joint.get_root_local_rotation())
+    # print()
+    # print()
 
     if joint.end_site:
         for j in joint.get_child():
@@ -290,39 +295,55 @@ def set_feature_vector(feature_vector):
 
 
 def main():
-    global curFrame, joint_list, feature_list, futureFrames
+    global curFrame, feature_list, futureFrames #joint_list
     curFrame = []
     Joint.resize = 1
 
-    paths = []
-    paths.append('sample-walk.bvh')
+    bvh_dir = './bvh_folder'
+    bvh_names = os.listdir(bvh_dir)
+    bvh_names.sort()
 
-    with open(paths[0], 'r') as file:
-        FPS = parsing_bvh(file)
-        file_name = (paths[0].split('/'))[-1].strip(".bvh")
+    with open('db_index_info.txt', 'w') as db_index_info:
 
-    f = open("features.txt", 'w')
-    f.write(paths[0] + '\n')
-    print(paths[0] + '\n')
+        db_index = 0
+        data = []
+        for bvh_name in bvh_names:
+            bvh_path = os.path.join(bvh_dir, bvh_name)
+            bvh = open(bvh_path, 'r')
 
-    for i in range(0, len(frame_list) - 61):
-        curFrame = frame_list[i]
-        futureFrames = []
-        for j in [20, 40, 60]:
-            if j < len(frame_list):
-                futureFrames.append(frame_list[i + j])
-        set_joint_feature(joint_list[0], np.identity(4), None)
-        feature_vector = Feature()
-        set_feature_vector(feature_vector)
-        feature_list.append(feature_vector)
-        data = str(line_index + i) + " "
-        data += feature_vector.get_feature_string()
-        print(data)
-        data += "\n"
-        f.write(data)
+            # db_index_info.txt 만들기
+            num_of_frames = parsing_bvh(bvh)
+            info = ' '.join([str(db_index), bvh_name, str(line_index)+'\n'])
+            db_index_info.write(info)   # line_index + 1 해야 하는지 확실하지 않음 근데 머리 쓰고 싶지 않음
+            db_index += num_of_frames
 
-    f.close()
+            # tree에 들어갈 data 쌓기 
+            for i in range(0, len(frame_list) - 61):
+                curFrame = frame_list[i]
+                futureFrames = []
+                for j in [20, 40, 60]:
+                    if j < len(frame_list):
+                        futureFrames.append(frame_list[i + j])
+                set_joint_feature(joint_list[0], np.identity(4), None)
+                feature_vector = Feature()
+                set_feature_vector(feature_vector)
+                feature_list.append(feature_vector)
 
+                data.append(feature_vector.get_feature_list())
+
+    # tree를 한 번 만들고 pickle.dump 해서 파일에 저장해 두는 것이 최종 목표!
+    # 다음 부터는 필요할 때 pickle.load로 바로 불러올거임
+    DB = KDTree(np.array(data))
+    with open('tree_dump.bin', 'wb') as dump_file:
+        pickle.dump(DB, dump_file)
+
+    with open('tree_dump.bin', 'rb') as dump_file:
+        ddbb = pickle.load(dump_file)
+        temp_query = np.array([0 for i in range(27)])
+        result = ddbb.query(temp_query)
+        print(result)
+
+    
 
 if __name__ == "__main__":
     main()

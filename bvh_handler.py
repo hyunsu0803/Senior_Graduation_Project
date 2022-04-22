@@ -1,22 +1,24 @@
 import numpy as np
 from Joint import Joint
 from Feature import Feature
-from utils import l2norm, normalized, exp
+import utils
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from scipy.spatial.transform import Rotation as R
 
 joint_list = []
-num_of_frames = 0
+# num_of_frames = 0
 frame_list = []
 feature_vector = Feature()
 
 
 def parsing_bvh(bvh):
-    global num_of_frames, frame_list, joint_list
+    global frame_list, joint_list #, num_of_frames
     frameTime = 0
     frame_list = []
+
+    num_of_frames = 0
 
     line = bvh.readline().split()
 
@@ -236,28 +238,28 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
 	'''
 
     v = cur_position - parent_position
-    box_length = l2norm(v)
-    v = normalized(v)
+    box_length = utils.l2norm(v)
+    v = utils.normalized(v)
     rotation_vector = np.cross(np.array([0, 1, 0]), v[:3])
     check = np.dot(np.array([0, 1, 0]), v[:3])
     # under 90
     if check >= 0:
-        rotate_angle = np.arcsin(l2norm(rotation_vector))
-        rotation_vector = normalized(rotation_vector) * rotate_angle
+        rotate_angle = np.arcsin(utils.l2norm(rotation_vector))
+        rotation_vector = utils.normalized(rotation_vector) * rotate_angle
     # over 90
     else:
-        rotate_angle = np.arcsin(l2norm(rotation_vector)) + np.pi
+        rotate_angle = np.arcsin(utils.l2norm(rotation_vector)) + np.pi
         rotate_angle *= -1
 
         # not 180
-        if l2norm(rotation_vector) != 0:
-            rotation_vector = normalized(rotation_vector) * rotate_angle
+        if utils.l2norm(rotation_vector) != 0:
+            rotation_vector = utils.normalized(rotation_vector) * rotate_angle
         # if 180, rotate_vector becomes (0, 0, 0)
         else:
             rotation_vector = np.array([0., 0., 1.]) * rotate_angle
 
     rotation_matrix = np.identity(4)
-    rotation_matrix[:3, :3] = exp(rotation_vector[:3])
+    rotation_matrix[:3, :3] = utils.exp(rotation_vector[:3])
 
     glPushMatrix()
     glTranslatef(parent_position[0], parent_position[1], parent_position[2])
@@ -277,18 +279,18 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
         end_position = parentMatrix @ newMatrix @ endMatrix @ np.array([0., 0., 0., 1.])
 
         v = end_position - cur_position
-        box_length = l2norm(v)
-        v = normalized(v)
+        box_length = utils.l2norm(v)
+        v = utils.normalized(v)
         rotation_vector = np.cross(np.array([0, 1, 0]), v[:3])
         check = np.dot(np.array([0, 1, 0]), v[:3])
         if check >= 0:
-            rotate_angle = np.arcsin(l2norm(rotation_vector))
+            rotate_angle = np.arcsin(utils.l2norm(rotation_vector))
         else:
-            rotate_angle = np.arcsin(l2norm(rotation_vector)) + np.pi
+            rotate_angle = np.arcsin(utils.l2norm(rotation_vector)) + np.pi
             rotate_angle *= -1
-        rotation_vector = normalized(rotation_vector) * rotate_angle
+        rotation_vector = utils.normalized(rotation_vector) * rotate_angle
         rotation_matrix = np.identity(4)
-        rotation_matrix[:3, :3] = exp(rotation_vector[:3])
+        rotation_matrix[:3, :3] = utils.exp(rotation_vector[:3])
 
         glPushMatrix()
         glTranslatef(cur_position[0], cur_position[1], cur_position[2])
