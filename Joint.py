@@ -10,8 +10,8 @@ class Joint:
         self.channel = []
         self.offset = np.array([0., 0., 0.], dtype='float32')
         self.end_site = None  # Indicates whether it's end site
-        self.is_root = None  # Indictes whether it's root joint
-        self.is_foot = None  # Indicates whether it's foot joint
+        self.is_root = False  # Indictes whether it's root joint
+        self.is_foot = False  # Indicates whether it's foot joint
         self.child_joint = []
         self.matrix = np.identity(4)
 
