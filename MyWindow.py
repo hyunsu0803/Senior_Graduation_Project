@@ -209,15 +209,15 @@ class MyWindow(QOpenGLWidget):
 				FPS = parsing_bvh(file)
 				file_name = (paths[0].split('/'))[-1].strip(".bvh")
 
-				from bvh_handler import num_of_frames, joint_list, frame_list
-				print("1. File name : " + file_name)
-				print("2. Number of frames : " + str(num_of_frames))
-				print("3. FPS : " + str(FPS))
-				print("4. Number of joints : " + str(len(joint_list)))
-				print("5. List of all joint names : ")
-				for j in joint_list:
-					print(j.get_joint_name(), end=' ')
-				print('\n')
+				# from bvh_handler import num_of_frames, joint_list, frame_list
+				# print("1. File name : " + file_name)
+				# print("2. Number of frames : " + str(num_of_frames))
+				# print("3. FPS : " + str(FPS))
+				# print("4. Number of joints : " + str(len(joint_list)))
+				# print("5. List of all joint names : ")
+				# for j in joint_list:
+				# 	print(j.get_joint_name(), end=' ')
+				# print('\n')
 
 				self.frame_num = -1
 				# curFrame = frame_list[self.frame_num]
@@ -249,8 +249,8 @@ class MyWindow(QOpenGLWidget):
 	# ===update frame===
 
 	def update_frame(self):
-		global curFrame, curFrame_index
-		from bvh_handler import num_of_frames, frame_list, set_feature_vector
+		global curFrame #, curFrame_index
+		#from bvh_handler import num_of_frames, frame_list, set_feature_vector
 
 		coming_soon_10frames = motion_matching()
 		for frame in coming_soon_10frames:
