@@ -198,7 +198,7 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     global_position = transform_matrix @ np.array([0., 0., 0., 1.])
 
     # set parent's global position (if it is root joint, parent_position is current_position)
-    if joint.get_is_root() is not None:
+    if joint.get_is_root():
         parent_position = global_position
         futurePosition = [None, None, None]
         futureDirection = [None, None, None]
@@ -228,7 +228,7 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     # Check if it's Root joint, otherwise update Joint class's data
     # velocity, rotation velocity update 시키기
 
-    if joint.get_is_root() is not None:
+    if joint.get_is_root():
         rootMatrix = joint.get_transform_matrix()
 
     else:
@@ -250,7 +250,7 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
         joint.set_root_local_rotation(new_root_local_rotation)
 
     print(joint.joint_name)
-    if joint.get_is_root() is not None:
+    if joint.get_is_root():
         print("is root!!!")
     print("global position: ")
     print(joint.get_global_position())
@@ -263,7 +263,7 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     print()
     print()
 
-    if joint.get_end_site() is None:
+    if joint.end_site:
         for j in joint.get_child():
             set_joint_feature(j, joint.get_transform_matrix(), rootMatrix)
 
@@ -276,9 +276,9 @@ def set_feature_vector(feature_vector):
     hip_velocity = []
 
     for joint in joint_list:
-        if joint.get_is_root() is not None:
+        if joint.get_is_root():
             hip_velocity.append(joint.get_root_local_velocity())
-        elif joint.get_is_foot() is not None:
+        elif joint.get_is_foot():
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
 
