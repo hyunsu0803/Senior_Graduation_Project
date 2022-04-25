@@ -268,7 +268,7 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     # print()
     # print()
 
-    if joint.end_site:
+    if joint.end_site is not None:
         for j in joint.get_child():
             set_joint_feature(j, joint.get_transform_matrix(), rootMatrix)
 
@@ -341,9 +341,8 @@ def main():
         ddbb = pickle.load(dump_file)
         temp_query = np.array([0 for i in range(27)])
         result = ddbb.query(temp_query)
-        print(result)
+        print(result)  
 
-    
 
 if __name__ == "__main__":
     main()

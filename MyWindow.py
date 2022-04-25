@@ -8,7 +8,7 @@ import numpy as np
 
 from Joint import Joint
 from bvh_handler import drawJoint, parsing_bvh
-from motion_matching_test import motion_matching
+from motion_matching_test import motion_matching, QnA
 
 curFrame = []
 timeStep = 0.2
@@ -101,8 +101,8 @@ class MyWindow(QOpenGLWidget):
 
 		from bvh_handler import joint_list
 		if len(joint_list) > 0:
-			print("그리기 전 curFrame")
-			print(curFrame)
+			# print("그리기 전 curFrame")
+			# print(curFrame)
 			drawJoint(np.identity(4), joint_list[0])
 
 		glDisable(GL_LIGHTING)
@@ -190,6 +190,7 @@ class MyWindow(QOpenGLWidget):
 		else:
 			e.ignore()
 
+
 	def dropEvent(self, e):
 		global curFrame
 
@@ -225,6 +226,7 @@ class MyWindow(QOpenGLWidget):
 		else:
 			e.ignore()
 
+
 	def orbit(self, dx, dy):
 
 		self.A -= np.radians(dx) / 5
@@ -252,8 +254,9 @@ class MyWindow(QOpenGLWidget):
 		global curFrame #, curFrame_index
 		#from bvh_handler import num_of_frames, frame_list, set_feature_vector
 
-		coming_soon_10frames = motion_matching()
-		for frame in coming_soon_10frames:
+		# coming_soon_50frames = motion_matching()
+		coming_soon_50frames = QnA()
+		for frame in coming_soon_50frames:
 			curFrame = frame
 			self.update()
 			QApplication.processEvents()

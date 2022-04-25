@@ -272,7 +272,7 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     glPopMatrix()
 
     # draw end effector
-    if joint.get_end_site():
+    if joint.get_end_site() is not None:
         end_offset = joint.get_end_site() / joint.resize
         endMatrix = np.identity(4)
         endMatrix[:3, 3] = end_offset
