@@ -57,6 +57,7 @@ def motion_matching():
 def QnA():
     tree_file = open('tree_dump.bin', 'rb')
     DB = pickle.load(tree_file)
+
     temp_query = np.zeros((27,))
     ans = DB.query(temp_query)
     print(ans)
@@ -80,10 +81,10 @@ def QnA():
         for j in range(len(coming_soon_50frames[i])):
             coming_soon_50frames[i][j] = float(coming_soon_50frames[i][j])
 
-    # print(nearest_index)
-    # print()
-    # print("curFrame")
     print(coming_soon_50frames)
     exit()
 
     return coming_soon_50frames
+
+
+QnA()

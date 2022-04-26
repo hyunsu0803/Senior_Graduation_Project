@@ -1,3 +1,3 @@
 0 jumpTwist.bvh 275
-811 sample-spin.bvh 99
-1025 sample-walk.bvh 99
+691 sample-spin.bvh 99
+875 sample-walk.bvh 99
