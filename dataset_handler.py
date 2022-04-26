@@ -6,7 +6,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from scipy.spatial.transform import Rotation as R
 import os
-from scipy.spatial import KDTree
+from scipy.spatial import cKDTree
 import pickle
 
 joint_list = []
@@ -334,7 +334,7 @@ def main():
 
     # tree를 한 번 만들고 pickle.dump 해서 파일에 저장해 두는 것이 최종 목표!
     # 다음 부터는 필요할 때 pickle.load로 바로 불러올거임
-    DB = KDTree(np.array(data))
+    DB = cKDTree(np.array(data))
     with open('tree_dump.bin', 'wb') as dump_file:
         pickle.dump(DB, dump_file)
 
