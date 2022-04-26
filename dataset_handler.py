@@ -57,12 +57,12 @@ def parsing_bvh(bvh):
             line = bvh.readline().split()
             line = list(map(float, line))
             frame_list.append(line)
-        last = [0] * len(frame_list[0])
+        last = [0] * len(frame_list[0])     # 이건 뭐야 대체????
         frame_list.append(last)
 
-    # FPS = int(1 / frameTime)
+    FPS = int(1 / frameTime)
 
-    return num_of_frames
+    return num_of_frames, FPS
 
 
 def buildJoint(bvh, joint_name):
@@ -312,17 +312,18 @@ def main():
             bvh = open(bvh_path, 'r')
 
             # db_index_info.txt 만들기
-            num_of_frames = parsing_bvh(bvh)
+            num_of_frames, FPS = parsing_bvh(bvh)
             info = ' '.join([str(db_index), bvh_name, str(line_index)+'\n'])
-            db_index_info.write(info)   # line_index + 1 해야 하는지 확실하지 않음 근데 머리 쓰고 싶지 않음
-            db_index += num_of_frames
+            db_index_info.write(info)
+            # frame rate == 1초 future frame 개수 == FPS
+            db_index += num_of_frames - FPS 
 
             # tree에 들어갈 data 쌓기 
-            for i in range(0, len(frame_list) - 61):
+            for i in range(0, len(frame_list) - FPS -1):
                 curFrame = frame_list[i]
-                futureFrames = []
-                for j in [20, 40, 60]:
-                    if j < len(frame_list):
+                futureFrames = []   # 전역변수 채워놓기. set_joint_feature에서 쓴다.
+                for j in [int(FPS/3), int(FPS/3*2), int(FPS)]:      # 원래 20, 40, 60으로 되어있었음.
+                    if i + j < len(frame_list):
                         futureFrames.append(frame_list[i + j])
                 set_joint_feature(joint_list[0], np.identity(4), None)
                 feature_vector = Feature()
@@ -339,9 +340,10 @@ def main():
 
     with open('tree_dump.bin', 'rb') as dump_file:
         ddbb = pickle.load(dump_file)
-        temp_query = np.array([0 for i in range(27)])
-        result = ddbb.query(temp_query)
-        print(result)  
+        # temp_query = np.zeros((27,))
+        # result = ddbb.query(temp_query)
+        # print(result)
+        print(ddbb.data.shape)  
 
 
 if __name__ == "__main__":
