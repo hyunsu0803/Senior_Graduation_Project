@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QOpenGLWidget
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from PyQt5. QtWidgets import QApplication
+from drawTpose import drawTpose
 import numpy as np
 
 from Joint import Joint
@@ -44,6 +45,10 @@ class MyWindow(QOpenGLWidget):
 		self.animation = True
 
 		self.frame_num = -1
+
+		# draw T pose
+		drawTpose()
+
 
 	def initializeGL(self):
 		glEnable(GL_DEPTH_TEST)
@@ -100,7 +105,8 @@ class MyWindow(QOpenGLWidget):
 		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, specularObjectColor)
 
 		from bvh_handler import joint_list
-		if len(joint_list) > 0:
+		if len(curFrame) > 0 :
+			print(joint_list)
 			# print("그리기 전 curFrame")
 			# print(curFrame)
 			drawJoint(np.identity(4), joint_list[0])
@@ -190,7 +196,7 @@ class MyWindow(QOpenGLWidget):
 		else:
 			e.ignore()
 
-
+	'''
 	def dropEvent(self, e):
 		global curFrame
 
@@ -225,7 +231,7 @@ class MyWindow(QOpenGLWidget):
 
 		else:
 			e.ignore()
-
+	'''
 
 	def orbit(self, dx, dy):
 
@@ -249,7 +255,6 @@ class MyWindow(QOpenGLWidget):
 		self.w -= self.w * yoffset / 5
 
 	# ===update frame===
-
 	def update_frame(self):
 		global curFrame #, curFrame_index
 		#from bvh_handler import num_of_frames, frame_list, set_feature_vector
