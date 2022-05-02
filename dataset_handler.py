@@ -299,7 +299,7 @@ def main():
     curFrame = []
     Joint.resize = 1
 
-    bvh_dir = './bvh_folder'
+    bvh_dir = './bvh folder'
     bvh_names = os.listdir(bvh_dir)
     bvh_names.sort()
 
