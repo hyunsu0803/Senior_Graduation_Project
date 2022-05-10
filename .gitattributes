@@ -1,1 +1,2 @@
 tree_dump.bin filter=lfs diff=lfs merge=lfs -text
+lafan1 filter=lfs diff=lfs merge=lfs -text
