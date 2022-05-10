@@ -68,8 +68,9 @@ def buildJoint(bvh, joint_name):
     line = bvh.readline().split()
     if line[0] == 'OFFSET':
         offset = np.array(list(map(float, line[1:])), dtype='float32')
-        if np.sqrt(np.dot(offset, offset)) > Joint.resize:
+        if joint_name != "Hips" and np.sqrt(np.dot(offset, offset)) > Joint.resize:
             Joint.resize = np.sqrt(np.dot(offset, offset))
+            print("####1", Joint.resize)
         newJoint.set_offset(offset)
 
     line = bvh.readline().split()
@@ -86,8 +87,12 @@ def buildJoint(bvh, joint_name):
             line = bvh.readline().split()
             if line[0] == 'OFFSET':
                 offset = np.array(list(map(float, line[1:])), dtype='float32')
+                print(offset)
+                print("####????", Joint.resize)
+                print("####????2", np.sqrt(np.dot(offset, offset)))
                 if np.sqrt(np.dot(offset, offset)) > Joint.resize:
                     Joint.resize = np.sqrt(np.dot(offset, offset))
+                    print("####2", Joint.resize)
                 newJoint.set_end_site(offset)
             line = bvh.readline().split()  # remove '}'
 
@@ -109,6 +114,7 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
 
     # get current joint's offset from parent joint
     curoffset = joint.get_offset() / Joint.resize
+    # print("@@@@@@@@@@", Joint.resize)
 
     # move transformation matrix's origin using offset data
     temp = np.identity(4)

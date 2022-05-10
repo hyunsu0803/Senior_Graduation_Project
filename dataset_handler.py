@@ -299,7 +299,7 @@ def main():
     curFrame = []
     Joint.resize = 1
 
-    bvh_dir = './bvh folder'
+    bvh_dir = './lafan1/'
     bvh_names = os.listdir(bvh_dir)
     bvh_names.sort()
 
@@ -313,7 +313,7 @@ def main():
 
             # db_index_info.txt 만들기
             num_of_frames, FPS = parsing_bvh(bvh)
-            info = ' '.join([str(db_index), bvh_name, str(line_index)+'\n'])
+            info = ' '.join([str(db_index), bvh_name, str(line_index), str(FPS)+'\n'])
             db_index_info.write(info)
             # frame rate == 1초 future frame 개수 == FPS
             db_index += num_of_frames - FPS 
@@ -343,7 +343,7 @@ def main():
         # temp_query = np.zeros((27,))
         # result = ddbb.query(temp_query)
         # print(result)
-        print(ddbb.data.shape)  
+        # print(ddbb.data.shape)  
 
 
 if __name__ == "__main__":
