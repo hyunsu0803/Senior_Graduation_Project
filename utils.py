@@ -59,8 +59,9 @@ def find_your_bvh(q):
 
     bvh_name = info[ans][1]
     bvh_line = q - info[ans][0] + info[ans][2]
+    FPS = info[ans][-1]
 
-    return bvh_name, bvh_line
+    return bvh_name, bvh_line, int(FPS)
 
         
 # find_your_bvh(0)

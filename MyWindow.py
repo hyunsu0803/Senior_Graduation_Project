@@ -23,11 +23,16 @@ class MyWindow(QOpenGLWidget):
 		self.setAcceptDrops(True)
 		self.setMouseTracking(True)
 
+		# update frame
+		self.matching_num = -1
+		self.coming_soon_50frames = []
+		self.FPS = 1
+
 		# timer
 		self.timer = QTimer(self)
-		self.timer.setInterval(1000 * timeStep)
 		self.timer.timeout.connect(self.update_frame)
-		self.timer.start(0)
+		self.timer.setInterval(1000 / self.FPS)
+		self.timer.start()
 
 		# initialize value
 		self.at = np.array([0., 0., 0.])
@@ -106,7 +111,7 @@ class MyWindow(QOpenGLWidget):
 
 		from bvh_handler import joint_list
 		if len(curFrame) > 0 :
-			print(joint_list)
+			# print(joint_list)
 			# print("그리기 전 curFrame")
 			# print(curFrame)
 			drawJoint(np.identity(4), joint_list[0])
@@ -260,8 +265,13 @@ class MyWindow(QOpenGLWidget):
 		#from bvh_handler import num_of_frames, frame_list, set_feature_vector
 
 		# coming_soon_50frames = motion_matching()
-		coming_soon_50frames = QnA()
-		for frame in coming_soon_50frames:
-			curFrame = frame
-			self.update()
-			QApplication.processEvents()
+		if self.matching_num % 50 == 49:
+			self.coming_soon_50frames, self.FPS = QnA()
+			self.timer.setInterval(1000 / self.FPS)
+
+		self.matching_num = (self.matching_num + 1) % 50
+		
+		curFrame = self.coming_soon_50frames[self.matching_num]
+		self.update()
+
+		#QApplication.processEvents()

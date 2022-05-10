@@ -61,17 +61,18 @@ def QnA():
 	# exit()
 	DB = pickle.load(tree_file)
 
-	temp_query = np.zeros((27,))
+	temp_query = np.ones((27,))
 	ans = DB.query(temp_query)
-	print(ans)
+	# print(ans)
 	qidx = ans[1]
 
-	bvh_name, nearest_frame_idx = utils.find_your_bvh(qidx)
-	bvh_folder = './bvh folder'
+	bvh_name, nearest_frame_idx, FPS = utils.find_your_bvh(qidx)
+	print("@@@@@@", bvh_name)
+	bvh_folder = './lafan1'
 	bvh_path = os.path.join(bvh_folder, bvh_name)
 	bvh_file = open(bvh_path, "r")
 
-	print(bvh_path)
+	# print(bvh_path)
 
 	coming_soon_50frames = bvh_file.readlines()
 	if nearest_frame_idx + 50 < len(coming_soon_50frames):
@@ -87,7 +88,7 @@ def QnA():
 	# print(coming_soon_50frames)
 	# exit()
 
-	return coming_soon_50frames
+	return coming_soon_50frames, FPS
 
 
 QnA()
