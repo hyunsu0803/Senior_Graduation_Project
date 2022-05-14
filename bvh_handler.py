@@ -10,7 +10,7 @@ from scipy.spatial.transform import Rotation as R
 joint_list = []
 # num_of_frames = 0
 frame_list = []
-feature_vector = Feature()
+query_vector = Feature()
 
 
 def parsing_bvh(bvh):
@@ -57,7 +57,7 @@ def buildJoint(bvh, joint_name):
     newJoint = Joint(joint_name)
 
     # check if it's foot joint
-    # 이건 사용하는 data set에 따라 달라질 수 있음(관절 이름이 달라질 수 있으니까)
+    # ?´ęą? ?Ź?Š?? data set? ?°?ź ?Ź?źě§? ? ??(ę´??  ?´ëŚě´ ?Ź?źě§? ? ??ź?ęš?)
     if "Foot" in joint_name:
         newJoint.set_is_foot(True)
 
@@ -202,7 +202,7 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     cur_position = global_position
 
     # Check if it's Root joint, otherwise update Joint class's data
-    # velocity, rotation velocity update 시키기
+    # velocity, rotation velocity update ??¤ę¸?
 
     if joint.get_is_root():
         rootMatrix = joint.get_transform_matrix()
@@ -211,14 +211,15 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
         # get root local position and root local velocity
         new_root_local_position = (rootMatrix.T @ global_position)[:3]  # local to root joint
         past_root_local_position = joint.get_root_local_position()  # local to root joint
-        root_local_velocity = ((new_root_local_position - past_root_local_position) / timeStep)
+        # root_local_velocity = ((new_root_local_position - past_root_local_position) / timeStep)
+        root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)   # 30 is FPS of LaFAN1
 
         # get root local rotation and root local angular velocity
         new_root_local_rotation_matrix = (rootMatrix.T @ transform_matrix)[:3, :3]
         r = R.from_matrix(new_root_local_rotation_matrix)
         new_root_local_rotation = np.array(r.as_quat())
         past_root_local_rotation = joint.get_root_local_rotation()
-        # 이건 어떻게 구하는지 모르겠네 root_local_rotvel =
+        # ?´ęą? ?´?ťę??? ęľŹí?ě§? ëŞ¨ëĽ´ę?� ë�? root_local_rotvel =
 
         # set joint class's value
         joint.set_global_position(global_position[:3])
@@ -226,7 +227,7 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
         joint.set_root_local_position(new_root_local_position[:3])
         joint.set_root_local_rotation(new_root_local_rotation)
 
-    # ==잘되는지 임시 확인용==
+    # ==???ě§? ?? ??¸?Š==
     '''
 	print(joint.joint_name)
 	if joint.get_is_root():
@@ -316,12 +317,52 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     glPopMatrix()
 
 
-def set_feature_vector():
-    global joint_list, feature_vector
+def set_query_vector(key_input = None):
+    global joint_list, query_vector
+    from MyWindow import curFrame
 
     two_foot_position = []
     two_foot_velocity = []
     hip_velocity = []
+
+
+    print("^^^^^^",curFrame[3:6])
+    # exit()
+    # future facing direction setting
+    default_facing_direction = np.array([1., 0., 0.])
+    rotation_current = R.from_euler('zxy', curFrame[3:6], degrees=True)
+    
+
+    if key_input is not None:
+
+        if key_input == "UP":
+            yr = np.radians(135)
+        elif key_input == "DOWN":
+            yr = np.radians(-45)
+        elif key_input == "RIGHT":
+            yr = np.radians(45)
+        elif key_input == "LEFT":
+            yr = np.radians(-135)
+
+        Ry = np.array([[np.cos(yr), 0, np.sin(yr)],
+                            [0, 1, 0],
+                            [-np.sin(yr), 0, np.cos(yr)]])
+        rotation_future = R.from_matrix(Ry)
+    else:   # key_input == None
+        rotation_future = rotation_current
+
+    rotation_current = rotation_current.as_matrix()
+    rotation_future = rotation_future.as_matrix()
+
+    future3Direction = R.from_matrix(rotation_current.T @ rotation_future).as_matrix() @ default_facing_direction
+    future2Direction = future3Direction[0::2]
+    future2Directions = [future2Direction, future2Direction, future2Direction]
+
+    # future trajectory setting
+    default_future_trajectory = np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
+    temp = np.array(future3Direction)
+    futurePosition = temp * default_future_trajectory
+    futurePosition = futurePosition[:, 0::2]
 
     for joint in joint_list:
         if joint.get_is_root():
@@ -330,15 +371,10 @@ def set_feature_vector():
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
 
-    feature_vector.set_foot_position(np.array(two_foot_position).reshape(1, 6))
-    feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(1, 6))
-    feature_vector.set_hip_velocity(np.array(hip_velocity))
+    query_vector.set_future_position(np.array(futurePosition).reshape(6, ))
+    query_vector.set_future_direction(np.array(future2Directions).reshape(6, ))
+    query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
+    query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
+    query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
 
-    print("two_foot_position")
-    print(feature_vector.get_foot_position())
-    print("two_foot_velocity")
-    print(feature_vector.get_foot_velocity())
-    print("hip_velocity")
-    print(feature_vector.get_hip_velocity())
-
-    return feature_vector
+    return query_vector.get_feature_list()

@@ -8,7 +8,7 @@ from drawTpose import drawTpose
 import numpy as np
 
 from Joint import Joint
-from bvh_handler import drawJoint, parsing_bvh
+from bvh_handler import drawJoint, parsing_bvh, set_query_vector
 from motion_matching_test import motion_matching, QnA
 
 curFrame = []
@@ -36,7 +36,7 @@ class MyWindow(QOpenGLWidget):
 
 		# initialize value
 		self.at = np.array([0., 0., 0.])
-		self.w = np.array([3., 4., 5.])
+		self.w = np.array([4., 4., 4.])
 		self.perspective = True
 		self.click = False
 		self.left = True
@@ -112,7 +112,7 @@ class MyWindow(QOpenGLWidget):
 		from bvh_handler import joint_list
 		if len(curFrame) > 0 :
 			# print(joint_list)
-			# print("그리기 전 curFrame")
+			# print("그리�? ?�� curFrame")
 			# print(curFrame)
 			drawJoint(np.identity(4), joint_list[0])
 
@@ -144,13 +144,28 @@ class MyWindow(QOpenGLWidget):
 
 	# ===event handler===
 	def keyPressEvent(self, e):
+		global curFrame
 
 		if e.key() == Qt.Key_Escape:
 			self.close()
 		elif e.key() == Qt.Key_V:
 			self.perspective = not self.perspective
-		# elif e.key() == Qt.Key_Space:
-		# 	self.animation = not self.animation
+
+		elif e.key() == Qt.Key_Up:
+			self.coming_soon_50frames, self.FPS = QnA(key_input="UP")
+			self.matching_num = 0
+		elif e.key() == Qt.Key_Down:
+			self.coming_soon_50frames, self.FPS = QnA(key_input="DOWN")
+			self.matching_num = 0
+		elif e.key() == Qt.Key_Left:
+			self.coming_soon_50frames, self.FPS = QnA(key_input="LEFT")
+			self.matching_num = 0
+		elif e.key() == Qt.Key_Right:
+			self.coming_soon_50frames, self.FPS = QnA(key_input="RIGHT")
+			self.matching_num = 0
+		
+		self.timer.setInterval(1000 / self.FPS)
+
 		self.update()
 
 	def mousePressEvent(self, e):
@@ -263,13 +278,16 @@ class MyWindow(QOpenGLWidget):
 	def update_frame(self):
 		global curFrame #, curFrame_index
 		#from bvh_handler import num_of_frames, frame_list, set_feature_vector
-
+		if curFrame == []:
+			self.coming_soon_50frames, self.FPS = QnA(key_input="init")
+			self.timer.setInterval(1000 / self.FPS)
+			print("curFrame == []")
 		# coming_soon_50frames = motion_matching()
-		if self.matching_num % 50 == 49:
+		elif self.matching_num % 10 == 9:
 			self.coming_soon_50frames, self.FPS = QnA()
 			self.timer.setInterval(1000 / self.FPS)
 
-		self.matching_num = (self.matching_num + 1) % 50
+		self.matching_num = (self.matching_num + 1) % 10
 		
 		curFrame = self.coming_soon_50frames[self.matching_num]
 		self.update()
