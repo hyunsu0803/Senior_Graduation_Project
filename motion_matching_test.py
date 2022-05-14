@@ -3,6 +3,7 @@ import pickle
 import utils
 import os
 from scipy.spatial import cKDTree
+from bvh_handler import set_query_vector
 
 def motion_matching():
 	# from MyWindow import curFrame
@@ -54,14 +55,18 @@ def motion_matching():
 
 
 
-def QnA():
+def QnA(key_input = None):
 
 	tree_file = open('tree_dump.bin', 'rb')
 	# print(tree_file)
 	# exit()
 	DB = pickle.load(tree_file)
 
-	temp_query = np.ones((27,))
+	if key_input == "init":
+		temp_query = np.zeros((27,))
+	else:	
+		temp_query = set_query_vector(key_input=key_input)
+
 	ans = DB.query(temp_query)
 	# print(ans)
 	qidx = ans[1]
@@ -75,7 +80,7 @@ def QnA():
 	# print(bvh_path)
 
 	coming_soon_50frames = bvh_file.readlines()
-	if nearest_frame_idx + 50 < len(coming_soon_50frames):
+	if nearest_frame_idx + 10 < len(coming_soon_50frames):
 		coming_soon_50frames = coming_soon_50frames[nearest_frame_idx: nearest_frame_idx + 50]
 	else:
 		coming_soon_50frames = coming_soon_50frames[nearest_frame_idx:]
@@ -91,4 +96,3 @@ def QnA():
 	return coming_soon_50frames, FPS
 
 
-QnA()
