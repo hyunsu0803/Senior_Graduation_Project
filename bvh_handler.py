@@ -11,6 +11,8 @@ joint_list = []
 # num_of_frames = 0
 frame_list = []
 query_vector = Feature()
+real_global_position = np.array([0., 0., 0.])
+bvh_past_position = np.array([])
 
 
 def parsing_bvh(bvh):
@@ -107,6 +109,7 @@ def buildJoint(bvh, joint_name):
 def drawJoint(parentMatrix, joint, rootMatrix=None):
     from MyWindow import curFrame
     from MyWindow import timeStep
+    global real_global_position, bvh_past_position
 
     glPushMatrix()
     newMatrix = np.identity(4)
@@ -114,17 +117,22 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
 
     # get current joint's offset from parent joint
     curoffset = joint.get_offset() / Joint.resize
-    # print("@@@@@@@@@@", Joint.resize)
 
     # move transformation matrix's origin using offset data
     temp = np.identity(4)
-    temp[:3, 3] = curoffset
+    if len(joint.get_channel()) != 6:
+        temp[:3, 3] = curoffset
     newMatrix = newMatrix @ temp
 
     # channel rotation
     # ROOT
     if len(joint.get_channel()) == 6:
-        ROOTPOSITION = np.array(curFrame[:3], dtype='float32')
+        if len(bvh_past_position) != 0: # Continuous motion playback received via the QnA function
+            real_global_position += np.array(curFrame[:3]) - bvh_past_position
+        bvh_past_position = curFrame[:3]
+
+        # ROOTPOSITION = np.array(curFrame[:3], dtype='float32')
+        ROOTPOSITION = np.array(real_global_position, dtype='float32')
         ROOTPOSITION /= Joint.resize
 
         # move root's transformation matrix's origin using translation data
@@ -326,7 +334,7 @@ def set_query_vector(key_input = None):
     hip_velocity = []
 
 
-    print("^^^^^^",curFrame[3:6])
+    print("root orientation",curFrame[3:6])
     # exit()
     # future facing direction setting
     default_facing_direction = np.array([1., 0., 0.])
@@ -378,3 +386,7 @@ def set_query_vector(key_input = None):
     query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
 
     return query_vector.get_feature_list()
+
+def reset_bvh_past_postion():
+    global bvh_past_position
+    bvh_past_position = np.array([])

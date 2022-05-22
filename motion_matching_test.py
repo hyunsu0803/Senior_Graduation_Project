@@ -58,8 +58,7 @@ def motion_matching():
 def QnA(key_input = None):
 
 	tree_file = open('tree_dump.bin', 'rb')
-	# print(tree_file)
-	# exit()
+
 	DB = pickle.load(tree_file)
 
 	if key_input == "init":
@@ -67,23 +66,19 @@ def QnA(key_input = None):
 	else:	
 		temp_query = set_query_vector(key_input=key_input)
 
-	ans = DB.query(temp_query)
-	# print(ans)
-	qidx = ans[1]
+	print("temp query", temp_query)
 
+	ans = DB.query(temp_query)
+	qidx = ans[1]
+	print("qidx", qidx)
 	bvh_name, nearest_frame_idx, FPS = utils.find_your_bvh(qidx)
 	print("@@@@@@", bvh_name)
 	bvh_folder = './lafan1'
 	bvh_path = os.path.join(bvh_folder, bvh_name)
 	bvh_file = open(bvh_path, "r")
 
-	# print(bvh_path)
-
 	coming_soon_50frames = bvh_file.readlines()
-	if nearest_frame_idx + 10 < len(coming_soon_50frames):
-		coming_soon_50frames = coming_soon_50frames[nearest_frame_idx: nearest_frame_idx + 50]
-	else:
-		coming_soon_50frames = coming_soon_50frames[nearest_frame_idx:]
+	coming_soon_50frames = coming_soon_50frames[nearest_frame_idx: nearest_frame_idx + 10]
 
 	coming_soon_50frames = [i.split() for i in coming_soon_50frames]
 	for i in range(len(coming_soon_50frames)):
