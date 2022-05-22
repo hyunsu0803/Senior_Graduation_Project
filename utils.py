@@ -38,33 +38,13 @@ def find_your_bvh(q):
         i[0] = int(i[0])
         i[2] = int(i[2])
 
-    left_idx = 0
-    right_idx = len(info)
+    best = info[-1]
+    for i in range(len(info) - 1):
+        if info[i][0] <= q and info[i+1][0] > q:
+            best = info[i]
     
-    while(left_idx < right_idx):
-        mid_idx = int((left_idx + right_idx) / 2)
-        mid = info[mid_idx][0]
-
-        if mid < q:
-            left_idx = mid_idx + 1
-        elif mid >= q:
-            right_idx = mid_idx - 1
-
-    ans = '@'
-    mid = info[mid_idx][0]
-    if mid <= q:
-        ans = mid_idx
-    else:
-        ans = mid_idx - 1
-
-    bvh_name = info[ans][1]
-    bvh_line = q - info[ans][0] + info[ans][2]
-    FPS = info[ans][-1]
+    bvh_name = best[1]
+    bvh_line = q - best[0] + best[2]
+    FPS = best[-1]
 
     return bvh_name, bvh_line, int(FPS)
-
-        
-# find_your_bvh(0)
-# find_your_bvh(811)
-# find_your_bvh(821)
-# find_your_bvh(1030)
