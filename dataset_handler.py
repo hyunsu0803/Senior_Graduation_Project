@@ -254,21 +254,8 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
         joint.set_root_local_position(new_root_local_position[:3])
         joint.set_root_local_rotation(new_root_local_rotation)
 
-    # print(joint.joint_name)
-    # if joint.get_is_root():
-    #     print("is root!!!")
-    # print("global position: ")
-    # print(joint.get_global_position())
-    # print("root local position")
-    # print(joint.get_root_local_position())
-    # print("root local velocity")
-    # print(joint.get_root_local_velocity())
-    # print("root local rotation")
-    # print(joint.get_root_local_rotation())
-    # print()
-    # print()
 
-    if joint.end_site is not None:
+    if joint.end_site is None:
         for j in joint.get_child():
             set_joint_feature(j, joint.get_transform_matrix(), rootMatrix)
 
@@ -289,6 +276,10 @@ def set_feature_vector(feature_vector):
 
     feature_vector.set_future_position(np.array(futurePosition).reshape(6, ))
     feature_vector.set_future_direction(np.array(futureDirection).reshape(6, ))
+
+    # test future info setting
+    # feature_vector.set_future_position(np.zeros_like(futurePosition).reshape(6, ))
+    # feature_vector.set_future_direction(np.zeros_like(futureDirection).reshape(6, ))
     feature_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     feature_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))

@@ -25,7 +25,7 @@ class MyWindow(QOpenGLWidget):
 
 		# update frame
 		self.matching_num = -1
-		self.coming_soon_50frames = []
+		self.coming_soon_10frames = []
 		self.FPS = 1
 
 		# timer
@@ -112,7 +112,7 @@ class MyWindow(QOpenGLWidget):
 		from bvh_handler import joint_list
 		if len(curFrame) > 0 :
 			# print(joint_list)
-			# print("ê·¸ë¦¬ê¸? ? „ curFrame")
+			# print("ê·¸ë¦¬ï¿½? ?ï¿½ï¿½ curFrame")
 			# print(curFrame)
 			drawJoint(np.identity(4), joint_list[0])
 
@@ -152,16 +152,16 @@ class MyWindow(QOpenGLWidget):
 			self.perspective = not self.perspective
 
 		elif e.key() == Qt.Key_Up:
-			self.coming_soon_50frames, self.FPS = QnA(key_input="UP")
+			self.coming_soon_10frames, self.FPS = QnA(key_input="UP")
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Down:
-			self.coming_soon_50frames, self.FPS = QnA(key_input="DOWN")
+			self.coming_soon_10frames, self.FPS = QnA(key_input="DOWN")
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Left:
-			self.coming_soon_50frames, self.FPS = QnA(key_input="LEFT")
+			self.coming_soon_10frames, self.FPS = QnA(key_input="LEFT")
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Right:
-			self.coming_soon_50frames, self.FPS = QnA(key_input="RIGHT")
+			self.coming_soon_10frames, self.FPS = QnA(key_input="RIGHT")
 			self.matching_num = 0
 		
 		self.timer.setInterval(1000 / self.FPS)
@@ -280,19 +280,19 @@ class MyWindow(QOpenGLWidget):
 		from bvh_handler import reset_bvh_past_postion
 
 		if curFrame == []:
-			self.coming_soon_50frames, self.FPS = QnA(key_input="init")
+			self.coming_soon_10frames, self.FPS = QnA(key_input="init")
 			reset_bvh_past_postion()
 			self.timer.setInterval(1000 / self.FPS)
 
 		elif self.matching_num % 10 == 9:
-			self.coming_soon_50frames, self.FPS = QnA()
+			self.coming_soon_10frames, self.FPS = QnA()
 			reset_bvh_past_postion()
 			self.timer.setInterval(1000 / self.FPS)
 			
 
 		self.matching_num = (self.matching_num + 1) % 10
 
-		curFrame = self.coming_soon_50frames[self.matching_num]
+		curFrame = self.coming_soon_10frames[self.matching_num]
 		self.update()
 
 		#QApplication.processEvents()

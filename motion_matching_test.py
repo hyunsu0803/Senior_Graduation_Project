@@ -35,23 +35,23 @@ def motion_matching():
 
 	bvh_file = open("sample-walk.bvh", "r")
 
-	coming_soon_50frames = bvh_file.readlines()
-	if nearest_index + 50 < len(coming_soon_50frames):
-		coming_soon_50frames = coming_soon_50frames[nearest_index: nearest_index + 50]
+	coming_soon_10frames = bvh_file.readlines()
+	if nearest_index + 50 < len(coming_soon_10frames):
+		coming_soon_10frames = coming_soon_10frames[nearest_index: nearest_index + 50]
 	else:
-		coming_soon_50frames = coming_soon_50frames[nearest_index:-1]
+		coming_soon_10frames = coming_soon_10frames[nearest_index:-1]
 
-	coming_soon_50frames = [i.split() for i in coming_soon_50frames]
-	for i in range(len(coming_soon_50frames)):
-		for j in range(len(coming_soon_50frames[i])):
-			coming_soon_50frames[i][j] = float(coming_soon_50frames[i][j])
+	coming_soon_10frames = [i.split() for i in coming_soon_10frames]
+	for i in range(len(coming_soon_10frames)):
+		for j in range(len(coming_soon_10frames[i])):
+			coming_soon_10frames[i][j] = float(coming_soon_10frames[i][j])
 
 	# print(nearest_index)
 	# print()
 	# print("curFrame")
 	# print(coming_soon_10frames)
 
-	return coming_soon_50frames
+	return coming_soon_10frames
 
 
 
@@ -77,17 +77,17 @@ def QnA(key_input = None):
 	bvh_path = os.path.join(bvh_folder, bvh_name)
 	bvh_file = open(bvh_path, "r")
 
-	coming_soon_50frames = bvh_file.readlines()
-	coming_soon_50frames = coming_soon_50frames[nearest_frame_idx: nearest_frame_idx + 10]
+	coming_soon_10frames = bvh_file.readlines()
+	coming_soon_10frames = coming_soon_10frames[nearest_frame_idx+1: nearest_frame_idx + 11]
 
-	coming_soon_50frames = [i.split() for i in coming_soon_50frames]
-	for i in range(len(coming_soon_50frames)):
-		for j in range(len(coming_soon_50frames[i])):
-			coming_soon_50frames[i][j] = float(coming_soon_50frames[i][j])
+	coming_soon_10frames = [i.split() for i in coming_soon_10frames]
+	for i in range(len(coming_soon_10frames)):
+		for j in range(len(coming_soon_10frames[i])):
+			coming_soon_10frames[i][j] = float(coming_soon_10frames[i][j])
 
 	# print(coming_soon_50frames)
 	# exit()
 
-	return coming_soon_50frames, FPS
+	return coming_soon_10frames, FPS
 
 
