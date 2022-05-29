@@ -11,7 +11,9 @@ joint_list = []
 # num_of_frames = 0
 frame_list = []
 query_vector = Feature()
+# The global position of the character on the window
 real_global_position = np.array([0., 0., 0.])
+
 bvh_past_position = np.array([])
 
 
@@ -127,8 +129,11 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     # channel rotation
     # ROOT
     if len(joint.get_channel()) == 6:
+
         if len(bvh_past_position) != 0: # Continuous motion playback received via the QnA function
             real_global_position += np.array(curFrame[:3]) - bvh_past_position
+        else:   # if QnA is newly called
+            real_global_position[1] = curFrame[1]   
         bvh_past_position = curFrame[:3]
 
         # ROOTPOSITION = np.array(curFrame[:3], dtype='float32')
@@ -227,7 +232,7 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
         r = R.from_matrix(new_root_local_rotation_matrix)
         new_root_local_rotation = np.array(r.as_quat())
         past_root_local_rotation = joint.get_root_local_rotation()
-        # ?´ęą? ?´?ťę??? ęľŹí?ě§? ëŞ¨ëĽ´ę?� ë�? root_local_rotvel =
+        # ?´ęą? ?´?ťę??? ęľŹí?ě§? ëŞ¨ëĽ´ę?� ë�? root_local_rotvel =
 
         # set joint class's value
         joint.set_global_position(global_position[:3])
@@ -381,6 +386,11 @@ def set_query_vector(key_input = None):
 
     query_vector.set_future_position(np.array(futurePosition).reshape(6, ))
     query_vector.set_future_direction(np.array(future2Directions).reshape(6, ))
+    
+    # test future info setting
+    # query_vector.set_future_position(np.zeros_like(futurePosition).reshape(6, ))
+    # query_vector.set_future_direction(np.zeros_like(future2Directions).reshape(6, ))
+
     query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
