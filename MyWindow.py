@@ -3,13 +3,13 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QOpenGLWidget
 from OpenGL.GL import *
 from OpenGL.GLU import *
-from PyQt5. QtWidgets import QApplication
+# from PyQt5. QtWidgets import QApplication
 from drawTpose import drawTpose
 import numpy as np
 
-from Joint import Joint
-from bvh_handler import drawJoint, parsing_bvh, set_query_vector
-from motion_matching_test import motion_matching, QnA
+# from Joint import Joint
+from bvh_handler import drawJoint	#, parsing_bvh, set_query_vector
+from motion_matching_test import QnA
 
 curFrame = []
 timeStep = 0.2
@@ -112,7 +112,7 @@ class MyWindow(QOpenGLWidget):
 		from bvh_handler import joint_list
 		if len(curFrame) > 0 :
 			# print(joint_list)
-			# print("그리�? ?�� curFrame")
+			# print("그리�?? ?�� curFrame")
 			# print(curFrame)
 			drawJoint(np.identity(4), joint_list[0])
 
@@ -215,43 +215,6 @@ class MyWindow(QOpenGLWidget):
 			e.accept()
 		else:
 			e.ignore()
-
-	'''
-	def dropEvent(self, e):
-		global curFrame
-
-		Joint.resize = 1
-		if e.mimeData().hasUrls:
-			e.setDropAction(Qt.CopyAction)
-			e.accept()
-			paths = []
-			for url in e.mimeData().urls():
-				paths.append(str(url.toLocalFile()))
-
-			if (paths[0].split('/'))[-1].split('.')[-1] != 'bvh':
-				return
-
-			with open(paths[0], 'r') as file:
-				self.animation = False
-				FPS = parsing_bvh(file)
-				file_name = (paths[0].split('/'))[-1].strip(".bvh")
-
-				# from bvh_handler import num_of_frames, joint_list, frame_list
-				# print("1. File name : " + file_name)
-				# print("2. Number of frames : " + str(num_of_frames))
-				# print("3. FPS : " + str(FPS))
-				# print("4. Number of joints : " + str(len(joint_list)))
-				# print("5. List of all joint names : ")
-				# for j in joint_list:
-				# 	print(j.get_joint_name(), end=' ')
-				# print('\n')
-
-				self.frame_num = -1
-				# curFrame = frame_list[self.frame_num]
-
-		else:
-			e.ignore()
-	'''
 
 	def orbit(self, dx, dy):
 
