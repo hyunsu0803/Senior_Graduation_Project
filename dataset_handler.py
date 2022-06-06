@@ -10,7 +10,6 @@ from scipy.spatial import cKDTree
 import pickle
 
 joint_list = []
-# num_of_frames = 0
 frame_list = []
 feature_list = []
 timeStep = 0.2
@@ -57,7 +56,7 @@ def parsing_bvh(bvh):
             line = bvh.readline().split()
             line = list(map(float, line))
             frame_list.append(line)
-        last = [0] * len(frame_list[0])     # 이건 뭐야 대체????
+        last = [0] * len(frame_list[0])   
         frame_list.append(last)
 
     FPS = int(1 / frameTime)
@@ -74,7 +73,6 @@ def buildJoint(bvh, joint_name):
     newJoint = Joint(joint_name)
 
     # check if it's foot joint
-    # 이건 사용하는 data set에 따라 달라질 수 있음(관절 이름이 달라질 수 있으니까)
     if "Foot" in joint_name:
         newJoint.set_is_foot(True)
 
@@ -214,9 +212,7 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
             futurePosition[i] = np.linalg.inv(transform_matrix) @ temp
 
             futurePosition[i] = futurePosition[i][0::2]
-            # 나중에 zxy 아닐 수도 있으니 바꾸쇼~!
-
-            # 만약 나중에 안된다면 이거때문일수도 있음! 자신이 없어~~~~
+            
             default_facing_direction = np.array([1., 0., 0.])
             rotation_current = R.from_euler('zxy', curFrame[3:6], degrees=True)
             rotation_future = R.from_euler('zxy', futureFrames[i][3:6], degrees=True)
@@ -231,7 +227,7 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     cur_position = global_position
 
     # Check if it's Root joint, otherwise update Joint class's data
-    # velocity, rotation velocity update 시키기
+    # velocity, rotation velocity update
 
     if joint.get_is_root():
         rootMatrix = joint.get_transform_matrix()
@@ -290,11 +286,11 @@ def main():
     curFrame = []
     Joint.resize = 1
 
-    bvh_dir = './lafan1/'
+    bvh_dir = './lafan2/'
     bvh_names = os.listdir(bvh_dir)
     bvh_names.sort()
 
-    with open('db_index_info.txt', 'w') as db_index_info:
+    with open('db_index_info2.txt', 'w') as db_index_info:
 
         db_index = 0
         data = []
@@ -302,18 +298,17 @@ def main():
             bvh_path = os.path.join(bvh_dir, bvh_name)
             bvh = open(bvh_path, 'r')
 
-            # db_index_info.txt 만들기
+            # db_index_info.txt 
             num_of_frames, FPS = parsing_bvh(bvh)
             info = ' '.join([str(db_index), bvh_name, str(line_index), str(FPS)+'\n'])
             db_index_info.write(info)
-            # frame rate == 1초 future frame 개수 == FPS
+
             db_index += num_of_frames - FPS 
 
-            # tree에 들어갈 data 쌓기 
             for i in range(0, len(frame_list) - FPS -1):
                 curFrame = frame_list[i]
-                futureFrames = []   # 전역변수 채워놓기. set_joint_feature에서 쓴다.
-                for j in [int(FPS/3), int(FPS/3*2), int(FPS)]:      # 원래 20, 40, 60으로 되어있었음.
+                futureFrames = []  
+                for j in [int(FPS/3), int(FPS/3*2), int(FPS)]:    
                     if i + j < len(frame_list):
                         futureFrames.append(frame_list[i + j])
                 set_joint_feature(joint_list[0], np.identity(4), None)
@@ -323,14 +318,12 @@ def main():
 
                 data.append(feature_vector.get_feature_list())
 
-    # tree를 한 번 만들고 pickle.dump 해서 파일에 저장해 두는 것이 최종 목표!
-    # 다음 부터는 필요할 때 pickle.load로 바로 불러올거임
     DB = cKDTree(np.array(data))
-    with open('tree_dump.bin', 'wb') as dump_file:
+    with open('tree_dump2.bin', 'wb') as dump_file:
         pickle.dump(DB, dump_file)
 
-    with open('tree_dump.bin', 'rb') as dump_file:
-        ddbb = pickle.load(dump_file)
+    # with open('tree_dump2.bin', 'rb') as dump_file:
+    #     ddbb = pickle.load(dump_file)
         # temp_query = np.zeros((27,))
         # result = ddbb.query(temp_query)
         # print(result)

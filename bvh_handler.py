@@ -8,9 +8,9 @@ from OpenGL.GLU import *
 from scipy.spatial.transform import Rotation as R
 
 joint_list = []
-# num_of_frames = 0
 frame_list = []
 query_vector = Feature()
+
 # The global position of the character on the window
 real_global_position = np.array([0., 0., 0.])
 
@@ -61,7 +61,6 @@ def buildJoint(bvh, joint_name):
     newJoint = Joint(joint_name)
 
     # check if it's foot joint
-    # ?´ęą? ?Ź?Š?? data set? ?°?ź ?Ź?źě§? ? ??(ę´??  ?´ëŚě´ ?Ź?źě§? ? ??ź?ęš?)
     if "Foot" in joint_name:
         newJoint.set_is_foot(True)
 
@@ -215,7 +214,7 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     cur_position = global_position
 
     # Check if it's Root joint, otherwise update Joint class's data
-    # velocity, rotation velocity update ??¤ę¸?
+    # velocity, rotation velocity update 
 
     if joint.get_is_root():
         rootMatrix = joint.get_transform_matrix()
@@ -232,30 +231,12 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
         r = R.from_matrix(new_root_local_rotation_matrix)
         new_root_local_rotation = np.array(r.as_quat())
         past_root_local_rotation = joint.get_root_local_rotation()
-        # ?´ęą? ?´?ťę??? ęľŹí?ě§? ëŞ¨ëĽ´ę?� ë�? root_local_rotvel =
 
         # set joint class's value
         joint.set_global_position(global_position[:3])
         joint.set_root_local_velocity(root_local_velocity)
         joint.set_root_local_position(new_root_local_position[:3])
         joint.set_root_local_rotation(new_root_local_rotation)
-
-    # ==???ě§? ?? ??¸?Š==
-    '''
-	print(joint.joint_name)
-	if joint.get_is_root():
-		print("is root!!!")
-	print("global poistion: ")
-	print(joint.get_global_position())
-	print("root local position")
-	print(joint.get_root_local_position())
-	print("root local velocity")
-	print(joint.get_root_local_velocity())
-	print("root local rotation")
-	print(joint.get_root_local_rotation())
-	print()
-	print()
-	'''
 
     v = cur_position - parent_position
     box_length = utils.l2norm(v)
@@ -338,9 +319,8 @@ def set_query_vector(key_input = None):
     two_foot_velocity = []
     hip_velocity = []
 
-
     print("root orientation",curFrame[3:6])
-    # exit()
+
     # future facing direction setting
     default_facing_direction = np.array([1., 0., 0.])
     rotation_current = R.from_euler('zxy', curFrame[3:6], degrees=True)
