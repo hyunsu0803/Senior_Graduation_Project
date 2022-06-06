@@ -8,12 +8,15 @@ from drawTpose import drawTpose
 import numpy as np
 
 # from Joint import Joint
-from bvh_handler import drawJoint	#, parsing_bvh, set_query_vector
+import bvh_handler
+from bvh_handler import drawJoint, reset_bvh_past_postion
 from motion_matching_test import QnA
 
-curFrame = []
-timeStep = 0.2
-curFrame_index = 0
+
+class state:
+	curFrame = []
+	# timeStep = 0.2
+	# curFrame_index = 0
 
 
 class MyWindow(QOpenGLWidget):
@@ -109,12 +112,8 @@ class MyWindow(QOpenGLWidget):
 		glMaterialfv(GL_FRONT, GL_SPECULAR, specularObjectColor)
 		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, specularObjectColor)
 
-		from bvh_handler import joint_list
-		if len(curFrame) > 0 :
-			# print(joint_list)
-			# print("그리�?? ?�� curFrame")
-			# print(curFrame)
-			drawJoint(np.identity(4), joint_list[0])
+		if len(state.curFrame) > 0 :
+			drawJoint(np.identity(4), bvh_handler.state.joint_list[0])
 
 		glDisable(GL_LIGHTING)
 
@@ -144,7 +143,6 @@ class MyWindow(QOpenGLWidget):
 
 	# ===event handler===
 	def keyPressEvent(self, e):
-		global curFrame
 
 		if e.key() == Qt.Key_Escape:
 			self.close()
@@ -239,10 +237,8 @@ class MyWindow(QOpenGLWidget):
 
 	# ===update frame===
 	def update_frame(self):
-		global curFrame
-		from bvh_handler import reset_bvh_past_postion
 
-		if curFrame == []:
+		if state.curFrame == []:
 			self.coming_soon_10frames, self.FPS = QnA(key_input="init")
 			reset_bvh_past_postion()
 			self.timer.setInterval(1000 / self.FPS)
@@ -255,7 +251,7 @@ class MyWindow(QOpenGLWidget):
 
 		self.matching_num = (self.matching_num + 1) % 10
 
-		curFrame = self.coming_soon_10frames[self.matching_num]
+		state.curFrame = self.coming_soon_10frames[self.matching_num]
 		self.update()
 
 		#QApplication.processEvents()

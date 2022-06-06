@@ -2,7 +2,6 @@ import numpy as np
 import pickle
 import utils
 import os
-# from scipy.spatial import cKDTree
 from bvh_handler import set_query_vector
 
 
@@ -23,7 +22,7 @@ def QnA(key_input = None):
 	qidx = ans[1]
 	print("qidx", qidx)
 	bvh_name, nearest_frame_idx, FPS = utils.find_your_bvh(qidx)
-	print("@@@@@@", bvh_name)
+	print(bvh_name)
 	bvh_folder = './lafan1'
 	bvh_path = os.path.join(bvh_folder, bvh_name)
 	bvh_file = open(bvh_path, "r")
