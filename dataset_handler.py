@@ -212,8 +212,8 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
             state.futurePosition[i] = state.futurePosition[i][0::2]
             
             default_facing_direction = np.array([1., 0., 0.])
-            rotation_current = R.from_euler('zxy', state.curFrame[3:6], degrees=True)
-            rotation_future = R.from_euler('zxy', state.futureFrames[i][3:6], degrees=True)
+            rotation_current = R.from_euler('zyx', state.curFrame[3:6], degrees=True)
+            rotation_future = R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True)
             rotation_current = np.array(rotation_current.as_matrix())
             rotation_future = np.array(rotation_future.as_matrix())
             state.futureDirection[i] = R.from_matrix(rotation_current.T @ rotation_future).as_matrix() @ default_facing_direction
@@ -235,7 +235,7 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
         new_root_local_position = (rootMatrix.T @ global_position)[:3]  # local to root joint
         past_root_local_position = joint.get_root_local_position()  # local to root joint
         root_local_velocity = ((new_root_local_position - past_root_local_position) / state.timeStep)
-        # root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)    # 이게 맞지 않나..?
+        # root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)    
 
         # get root local rotation and root local angular velocity
         new_root_local_rotation_matrix = (rootMatrix.T @ transform_matrix)[:3, :3]
@@ -317,13 +317,6 @@ def main():
     DB = cKDTree(np.array(data))
     with open('tree_dump2.bin', 'wb') as dump_file:
         pickle.dump(DB, dump_file)
-
-    # with open('tree_dump2.bin', 'rb') as dump_file:
-    #     ddbb = pickle.load(dump_file)
-        # temp_query = np.zeros((27,))
-        # result = ddbb.query(temp_query)
-        # print(result)
-        # print(ddbb.data.shape)  
 
 
 if __name__ == "__main__":
