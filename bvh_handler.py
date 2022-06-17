@@ -310,12 +310,10 @@ def set_query_vector(key_input = None):
     two_foot_velocity = []
     hip_velocity = []
 
-    print("root orientation", MyWindow.state.curFrame[3:6])
-
     # future facing direction setting
     default_facing_direction = np.array([1., 0., 0.])
-    rotation_current = R.from_euler('zxy', MyWindow.state.curFrame[3:6], degrees=True)
-    
+    rotation_current = R.from_euler('zyx', MyWindow.state.curFrame[3:6], degrees=True)
+    rotation_current = rotation_current.as_matrix()
 
     if key_input is not None:
 
@@ -328,24 +326,20 @@ def set_query_vector(key_input = None):
         elif key_input == "LEFT":
             yr = np.radians(-135)
 
-        Ry = np.array([[np.cos(yr), 0, np.sin(yr)],
+        rotation_future = np.array([[np.cos(yr), 0, np.sin(yr)],
                             [0, 1, 0],
                             [-np.sin(yr), 0, np.cos(yr)]])
-        rotation_future = R.from_matrix(Ry)
+
     else:   # key_input == None
-        rotation_future = rotation_current
+        rotation_future = rotation_current  # no change, keep going
 
-    rotation_current = rotation_current.as_matrix()
-    rotation_future = rotation_future.as_matrix()
-
-    future3Direction = R.from_matrix(rotation_current.T @ rotation_future).as_matrix() @ default_facing_direction
+    future3Direction = (rotation_current.T @ rotation_future) @ default_facing_direction
     future2Direction = future3Direction[0::2]
-    future2Directions = [future2Direction, future2Direction, future2Direction]
+    future2Directions = [future2Direction, future2Direction, future2Direction]  # future 10, 20, 30 direction
 
     # future trajectory setting
-    default_future_trajectory = np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
-    temp = np.array(future3Direction)
-    futurePosition = temp * default_future_trajectory
+    default_future_trajectory = np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])     # future 10, 20, 30 position
+    futurePosition = future3Direction * default_future_trajectory
     futurePosition = futurePosition[:, 0::2]
 
     for joint in state.joint_list:
@@ -368,6 +362,6 @@ def set_query_vector(key_input = None):
 
     return state.query_vector.get_feature_list()
 
+
 def reset_bvh_past_postion():
-    global bvh_past_position
     state.bvh_past_position = np.array([])

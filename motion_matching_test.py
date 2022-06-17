@@ -7,7 +7,7 @@ from bvh_handler import set_query_vector
 
 def QnA(key_input = None):
 
-	tree_file = open('tree_dump.bin', 'rb')
+	tree_file = open('tree_dump2.bin', 'rb')
 
 	DB = pickle.load(tree_file)
 
@@ -23,7 +23,7 @@ def QnA(key_input = None):
 	print("qidx", qidx)
 	bvh_name, nearest_frame_idx, FPS = utils.find_your_bvh(qidx)
 	print(bvh_name)
-	bvh_folder = './lafan1'
+	bvh_folder = './lafan2'
 	bvh_path = os.path.join(bvh_folder, bvh_name)
 	bvh_file = open(bvh_path, "r")
 
@@ -34,9 +34,6 @@ def QnA(key_input = None):
 	for i in range(len(coming_soon_10frames)):
 		for j in range(len(coming_soon_10frames[i])):
 			coming_soon_10frames[i][j] = float(coming_soon_10frames[i][j])
-
-	# print(coming_soon_50frames)
-	# exit()
 
 	return coming_soon_10frames, FPS
 

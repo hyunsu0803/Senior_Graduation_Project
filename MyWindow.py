@@ -187,7 +187,7 @@ class MyWindow(QOpenGLWidget):
 		self.update()
 
 	def wheelEvent(self, e):
-		self.zoom(e.angleDelta().y() / 2880)
+		self.zoom(e.angleDelta().y() / 2000)
 		self.update()
 
 	def mouseMoveEvent(self, e):
