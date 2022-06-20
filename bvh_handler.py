@@ -51,7 +51,6 @@ def parsing_bvh(bvh):
         state.frame_list.append(last)
 
     FPS = int(1 / frameTime)
-    print(state.frame_list)
     return FPS
 
 

@@ -15,8 +15,11 @@ def QnA(key_input = None):
 		temp_query = np.zeros((27,))
 	else:	
 		temp_query = set_query_vector(key_input=key_input)
-
-	print("temp query", temp_query)
+	
+	f = open("queryVectors.txt", 'a')
+	data = str(temp_query)+"\n"
+	f.write(data)
+	f.close()
 
 	ans = DB.query(temp_query)
 	qidx = ans[1]
