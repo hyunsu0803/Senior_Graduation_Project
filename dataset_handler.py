@@ -234,7 +234,7 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
         # get root local position and root local velocity
         new_root_local_position = (rootMatrix.T @ global_position)[:3]  # local to root joint
         past_root_local_position = joint.get_root_local_position()  # local to root joint
-        root_local_velocity = ((new_root_local_position - past_root_local_position) / state.timeStep)
+        root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)
         # root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)    
 
         # get root local rotation and root local angular velocity
@@ -267,12 +267,12 @@ def set_feature_vector(feature_vector):
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
 
-    feature_vector.set_future_position(np.array(state.futurePosition).reshape(6, ))
-    feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
+    #feature_vector.set_future_position(np.array(state.futurePosition).reshape(6, ))
+    #feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
 
     # test future info setting
-    # feature_vector.set_future_position(np.zeros_like(futurePosition).reshape(6, ))
-    # feature_vector.set_future_direction(np.zeros_like(futureDirection).reshape(6, ))
+    feature_vector.set_future_position(np.zeros_like(state.futurePosition).reshape(6, ))
+    feature_vector.set_future_direction(np.zeros_like(state.futureDirection).reshape(6, ))
     feature_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     feature_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
