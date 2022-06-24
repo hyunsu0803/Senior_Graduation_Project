@@ -20,10 +20,11 @@ def QnA(key_input = None):
   0.        ,  0.        ,  0.        ])
 	else:	
 		temp_query = set_query_vector(key_input=key_input)
-
-	print("!!!!!!!temp query!!!!!!!!!", temp_query)
-	with open("query_contents.txt", 'a') as q:
-		q.write(str(temp_query) + '\n')
+	
+	f = open("queryVectors.txt", 'a')
+	data = str(temp_query)+"\n"
+	f.write(data)
+	f.close()
 
 	ans = DB.query(temp_query)
 	qidx = ans[1]
