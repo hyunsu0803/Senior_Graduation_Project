@@ -105,3 +105,17 @@ class Joint:
 
     def get_root_local_rotvel(self):
         return self.root_local_rotvel
+
+    def printJoint(self):
+        print("#################################################")
+        print("joint name: ", self.joint_name)
+        print("joint index: ", self.index)
+        print("joint channel", self.channel)
+        print("joint offset", self.offset)
+        print("joint resize", self.resize)
+        print("joint child joint", self.child_joint)
+        print("joint transformation matrix:", self.get_transform_matrix())
+        print("joint global position", self.global_position)
+        print("joint root local position ", self.root_local_position)
+        print("joint root local velocity", self.root_local_velocity)
+        print("joint root local rotation: ", self.root_local_rotation)
