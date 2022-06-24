@@ -47,7 +47,7 @@ class MyWindow(QOpenGLWidget):
 		self.oldx = 0
 		self.oldy = 0
 		self.A = np.radians(30)
-		self.E = np.radians(36)
+		self.E = np.radians(36)		# 45....?
 
 		# modes
 		self.animation = True
@@ -237,27 +237,25 @@ class MyWindow(QOpenGLWidget):
 
 	# ===update frame===
 	def update_frame(self):
-		'''
-		if state.curFrame == []:
-			self.coming_soon_10frames, self.FPS = QnA(key_input="init")
-			reset_bvh_past_postion()
-			self.timer.setInterval(1000 / self.FPS)
-
-		elif self.matching_num % 10 == 9:
-			self.coming_soon_10frames, self.FPS = QnA()
-			reset_bvh_past_postion()
-			self.timer.setInterval(1000 / self.FPS)
+		
+		# if state.curFrame == []:
+		# 	self.coming_soon_10frames, self.FPS = QnA(key_input="init")
+		# 	reset_bvh_past_postion()
+		# 	self.timer.setInterval(1000 / self.FPS)
+		
+		# elif self.matching_num % 10 == 9:
+		# 	self.coming_soon_10frames, self.FPS = QnA()
+		# 	reset_bvh_past_postion()
+		# 	self.timer.setInterval(1000 / self.FPS)
 
 	
-		self.matching_num = (self.matching_num + 1) % 10
-
-		state.curFrame = self.coming_soon_10frames[self.matching_num]
-
-		self.update()
-		'''
+		# self.matching_num = (self.matching_num + 1) % 10
+		# state.curFrame = self.coming_soon_10frames[self.matching_num]
+		# self.update()
+		
 		state.curFrame = bvh_handler.state.frame_list[state.curFrame_index]
-		state.curFrame_index = (state.curFrame_index+1)%(len(bvh_handler.state.frame_list))
+		state.curFrame_index = (state.curFrame_index + 1) % (len(bvh_handler.state.frame_list))
 		QnA()
 		self.update()
-		
+
 		#QApplication.processEvents()

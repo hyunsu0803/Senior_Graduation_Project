@@ -13,11 +13,12 @@ def QnA(key_input = None):
 
 	if key_input == "init":
 		# temp_query = np.zeros((27,))
-		temp_query = np.array([ 0.          ,0.          ,0.          ,0.          ,0.          ,0.,
-  0.          ,0.          ,0.          ,0.          ,0.          ,0.,
-  0.18384297,  1.69866049,  0.10729861,  0.18609492,  1.79979874,  0.05209561,
- -0.02820048,  0.08129325, -0.72126381, -0.02636612,  0.12200875, -0.76057781,
-  0.        ,  0.        ,  0.        ])
+		temp_query = np.array([  0.          , 0.          , 0.          , 0.          , 0.,
+   0.          , 0.          , 0.          , 0.         ,  0.,
+   0.          , 0.         ,  0.2045277,   -1.84668984,   0.72330508,
+   0.2043837,   -1.850461 ,    0.67703678 ,  6.13583114 , -55.40069508,
+  21.69915251,   6.13151086, -55.51382989 , 20.31110331  , 0.,
+   0.         ,  0.        ])		# first frame
 	else:	
 		temp_query = set_query_vector(key_input=key_input)
 	
@@ -28,6 +29,7 @@ def QnA(key_input = None):
 
 	ans = DB.query(temp_query)
 	qidx = ans[1]
+	print("!!!!!!!! Query !!!!!!!!", temp_query)
 	print("qidx", qidx)
 	print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx])
 
