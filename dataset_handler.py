@@ -122,7 +122,8 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     curoffset = joint.get_offset() / Joint.resize
 
     temp = np.identity(4)
-    temp[:3, 3] = curoffset
+    if len(joint.get_channel()) != 6:
+        temp[:3, 3] = curoffset
     newMatrix = newMatrix @ temp
 
     # channel rotation
@@ -295,6 +296,7 @@ def main():
             db_index += num_of_frames - FPS 
 
             for i in range(0, len(state.frame_list) - FPS -1):
+                
                 state.curFrame = state.frame_list[i]
                 state.futureFrames = []  
                 for j in [int(FPS/3), int(FPS/3*2), int(FPS)]:    

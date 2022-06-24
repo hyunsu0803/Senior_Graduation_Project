@@ -122,15 +122,16 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     # channel rotation
     # ROOT
     if len(joint.get_channel()) == 6:
-        if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
-            state.real_global_position += np.array(MyWindow.state.curFrame[:3]) - state.bvh_past_position
-        else:   # if QnA is newly called
-            state.real_global_position[1] = MyWindow.state.curFrame[1]   
-        state.bvh_past_position = MyWindow.state.curFrame[:3]
+        # if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
+        #     state.real_global_position += np.array(MyWindow.state.curFrame[:3]) - state.bvh_past_position
+        # else:   # if QnA is newly called
+        #     state.real_global_position[1] = MyWindow.state.curFrame[1]   
+        # state.bvh_past_position = MyWindow.state.curFrame[:3]
 
         #ROOTPOSITION = np.array(MyWindow.state.curFrame[:3], dtype='float32')
 
-        ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
+        # ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
+        ROOTPOSITION = np.array(MyWindow.state.curFrame[:3])
         ROOTPOSITION /= Joint.resize
         # move root's transformation matrix's origin using translation data
         temp = np.identity(4)
