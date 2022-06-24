@@ -247,11 +247,12 @@ class MyWindow(QOpenGLWidget):
 			self.coming_soon_10frames, self.FPS = QnA()
 			reset_bvh_past_postion()
 			self.timer.setInterval(1000 / self.FPS)
-			
 
+	
 		self.matching_num = (self.matching_num + 1) % 10
 
 		state.curFrame = self.coming_soon_10frames[self.matching_num]
+
 		self.update()
 
 		#QApplication.processEvents()
