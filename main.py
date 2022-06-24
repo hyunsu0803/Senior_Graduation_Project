@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from MyWindow import MyWindow
 
+curFrame = []
 
 def main():
     app = QApplication(sys.argv)

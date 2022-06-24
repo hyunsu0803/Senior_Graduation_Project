@@ -122,17 +122,16 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     # channel rotation
     # ROOT
     if len(joint.get_channel()) == 6:
+        if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
+            state.real_global_position += np.array(MyWindow.state.curFrame[:3]) - state.bvh_past_position
+        else:   # if QnA is newly called
+            state.real_global_position[1] = MyWindow.state.curFrame[1]   
+        state.bvh_past_position = MyWindow.state.curFrame[:3]
 
-        # if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
-        #     state.real_global_position += np.array(MyWindow.state.curFrame[:3]) - state.bvh_past_position
-        # else:   # if QnA is newly called
-        #     state.real_global_position[1] = MyWindow.state.curFrame[1]   
-        # state.bvh_past_position = MyWindow.state.curFrame[:3]
+        #ROOTPOSITION = np.array(MyWindow.state.curFrame[:3], dtype='float32')
 
-        # ROOTPOSITION = np.array(MyWindow.state.curFrame[:3], dtype='float32')
         ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
         ROOTPOSITION /= Joint.resize
-
         # move root's transformation matrix's origin using translation data
         temp = np.identity(4)
         temp[:3, 3] = ROOTPOSITION
@@ -348,8 +347,8 @@ def set_query_vector(key_input = None):
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
 
-    #state.query_vector.set_future_position(np.array(futurePosition).reshape(6, ))
-    #state.query_vector.set_future_direction(np.array(future2Directions).reshape(6, ))
+    # state.query_vector.set_future_position(np.array(futurePosition).reshape(6, ))
+    # state.query_vector.set_future_direction(np.array(future2Directions).reshape(6, ))
     
     # test future info setting
     state.query_vector.set_future_position(np.zeros_like(futurePosition).reshape(6, ))

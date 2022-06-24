@@ -16,7 +16,7 @@ from motion_matching_test import QnA
 class state:
 	curFrame = []
 	# timeStep = 0.2
-	# curFrame_index = 0
+	curFrame_index = 0
 
 
 class MyWindow(QOpenGLWidget):
@@ -29,7 +29,7 @@ class MyWindow(QOpenGLWidget):
 		# update frame
 		self.matching_num = -1
 		self.coming_soon_10frames = []
-		self.FPS = 1
+		self.FPS = 30
 
 		# timer
 		self.timer = QTimer(self)
@@ -237,7 +237,7 @@ class MyWindow(QOpenGLWidget):
 
 	# ===update frame===
 	def update_frame(self):
-
+		'''
 		if state.curFrame == []:
 			self.coming_soon_10frames, self.FPS = QnA(key_input="init")
 			reset_bvh_past_postion()
@@ -254,5 +254,10 @@ class MyWindow(QOpenGLWidget):
 		state.curFrame = self.coming_soon_10frames[self.matching_num]
 
 		self.update()
-
+		'''
+		state.curFrame = bvh_handler.state.frame_list[state.curFrame_index]
+		state.curFrame_index = (state.curFrame_index+1)%(len(bvh_handler.state.frame_list))
+		QnA()
+		self.update()
+		
 		#QApplication.processEvents()

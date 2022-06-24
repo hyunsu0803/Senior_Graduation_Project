@@ -228,7 +228,8 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
         # get root local position and root local velocity
         new_root_local_position = (rootMatrix.T @ global_position)[:3]  # local to root joint
         past_root_local_position = joint.get_root_local_position()  # local to root joint
-        root_local_velocity = (new_root_local_position - past_root_local_position) * 30
+        root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)
+        # root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)    
 
         # get root local rotation and root local angular velocity
         new_root_local_rotation_matrix = (rootMatrix.T @ transform_matrix)[:3, :3]
