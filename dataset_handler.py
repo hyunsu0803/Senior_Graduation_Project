@@ -14,7 +14,6 @@ class state:
     joint_list = []
     frame_list = []
     feature_list = []
-    # timeStep = 0.2      # should remove
     line_index = 0
     curFrame = []
     futureFrames = [None, None, None]
@@ -38,6 +37,7 @@ def parsing_bvh(bvh):
         if line[0] == 'ROOT':
             state.joint_list = []
             buildJoint(bvh, line[1])  # build ROOT and other joints
+            Joint.resize = int(Joint.resize)
 
     line = bvh.readline().split()
     state.line_index += 1
@@ -83,7 +83,7 @@ def buildJoint(bvh, joint_name):
     state.line_index += 1
     if line[0] == 'OFFSET':
         offset = np.array(list(map(float, line[1:])), dtype='float32')
-        if np.sqrt(np.dot(offset, offset)) > Joint.resize:
+        if joint_name != "Hips" and np.sqrt(np.dot(offset, offset)) > Joint.resize:
             Joint.resize = np.sqrt(np.dot(offset, offset))
         newJoint.set_offset(offset)
 
@@ -105,7 +105,7 @@ def buildJoint(bvh, joint_name):
             state.line_index += 1
             if line[0] == 'OFFSET':
                 offset = np.array(list(map(float, line[1:])), dtype='float32')
-                if np.sqrt(np.dot(offset, offset)) > Joint.resize:
+                if joint_name != "Hips" and np.sqrt(np.dot(offset, offset)) > Joint.resize:
                     Joint.resize = np.sqrt(np.dot(offset, offset))
                 newJoint.set_end_site(offset)
             line = bvh.readline().split()  # remove '}'
@@ -273,7 +273,6 @@ def set_feature_vector(feature_vector):
 
 def main():
     state.curFrame = []
-    Joint.resize = 1
 
     bvh_dir = './lafan2/'
     bvh_names = os.listdir(bvh_dir)
@@ -284,6 +283,7 @@ def main():
         db_index = 0
         data = []
         for bvh_name in bvh_names:
+            Joint.resize = 1
             bvh_path = os.path.join(bvh_dir, bvh_name)
             bvh = open(bvh_path, 'r')
 
@@ -314,6 +314,8 @@ def main():
     with open('db_contents.txt', 'w') as f:
         for i in range(len(data)):
             f.write("#" + str(i) + str(data[i])+'\n')
+
+    print("RESIZE ", Joint.resize)
 
 
 if __name__ == "__main__":

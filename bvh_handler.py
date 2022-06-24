@@ -32,6 +32,7 @@ def parsing_bvh(bvh):
         if line[0] == 'ROOT':
             state.joint_list = []
             buildJoint(bvh, line[1])  # build ROOT and other joints
+            Joint.resize = int(Joint.resize)
 
     line = bvh.readline().split()
 
@@ -47,7 +48,7 @@ def parsing_bvh(bvh):
             line = bvh.readline().split()
             line = list(map(float, line))
             state.frame_list.append(line)
-        last = [0] * len(state.frame_list[0])
+        last = [0] * len(state.frame_list[0])   # what's this??
         state.frame_list.append(last)
 
     FPS = int(1 / frameTime)
@@ -72,7 +73,6 @@ def buildJoint(bvh, joint_name):
         offset = np.array(list(map(float, line[1:])), dtype='float32')
         if joint_name != "Hips" and np.sqrt(np.dot(offset, offset)) > Joint.resize:
             Joint.resize = np.sqrt(np.dot(offset, offset))
-
         newJoint.set_offset(offset)
 
     line = bvh.readline().split()
@@ -90,7 +90,7 @@ def buildJoint(bvh, joint_name):
             if line[0] == 'OFFSET':
                 offset = np.array(list(map(float, line[1:])), dtype='float32')
 
-                if np.sqrt(np.dot(offset, offset)) > Joint.resize:
+                if joint_name != "Hips" and np.sqrt(np.dot(offset, offset)) > Joint.resize:
                     Joint.resize = np.sqrt(np.dot(offset, offset))
 
                 newJoint.set_end_site(offset)
