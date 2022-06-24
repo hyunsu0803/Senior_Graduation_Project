@@ -123,11 +123,11 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     # ROOT
     if len(joint.get_channel()) == 6:
 
-        if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
-            state.real_global_position += np.array(MyWindow.state.curFrame[:3]) - state.bvh_past_position
-        else:   # if QnA is newly called
-            state.real_global_position[1] = MyWindow.state.curFrame[1]   
-        state.bvh_past_position = MyWindow.state.curFrame[:3]
+        # if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
+        #     state.real_global_position += np.array(MyWindow.state.curFrame[:3]) - state.bvh_past_position
+        # else:   # if QnA is newly called
+        #     state.real_global_position[1] = MyWindow.state.curFrame[1]   
+        # state.bvh_past_position = MyWindow.state.curFrame[:3]
 
         # ROOTPOSITION = np.array(MyWindow.state.curFrame[:3], dtype='float32')
         ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
@@ -205,7 +205,7 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     else:
         parent_position = parentMatrix @ np.array([0., 0., 0., 1.])
 
-    cur_position = global_position
+    cur_position = global_position      # global position of this joint
 
     # Check if it's Root joint, otherwise update Joint class's data
     # velocity, rotation velocity update 
@@ -217,13 +217,12 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
         # get root local position and root local velocity
         new_root_local_position = (rootMatrix.T @ global_position)[:3]  # local to root joint
         past_root_local_position = joint.get_root_local_position()  # local to root joint
-        root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)   # 30 is FPS of LaFAN1
+        root_local_velocity = (new_root_local_position - past_root_local_position) * 30   # 30 is FPS of LaFAN1
 
         # get root local rotation and root local angular velocity
         new_root_local_rotation_matrix = (rootMatrix.T @ transform_matrix)[:3, :3]
         r = R.from_matrix(new_root_local_rotation_matrix)
         new_root_local_rotation = np.array(r.as_quat())
-        past_root_local_rotation = joint.get_root_local_rotation()
 
         # set joint class's value
         joint.set_global_position(global_position[:3])
@@ -349,12 +348,12 @@ def set_query_vector(key_input = None):
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
 
-    state.query_vector.set_future_position(np.array(futurePosition).reshape(6, ))
-    state.query_vector.set_future_direction(np.array(future2Directions).reshape(6, ))
+    #state.query_vector.set_future_position(np.array(futurePosition).reshape(6, ))
+    #state.query_vector.set_future_direction(np.array(future2Directions).reshape(6, ))
     
     # test future info setting
-    # state.query_vector.set_future_position(np.zeros_like(futurePosition).reshape(6, ))
-    # state.query_vector.set_future_direction(np.zeros_like(future2Directions).reshape(6, ))
+    state.query_vector.set_future_position(np.zeros_like(futurePosition).reshape(6, ))
+    state.query_vector.set_future_direction(np.zeros_like(future2Directions).reshape(6, ))
 
     state.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     state.query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))

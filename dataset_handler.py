@@ -14,7 +14,7 @@ class state:
     joint_list = []
     frame_list = []
     feature_list = []
-    timeStep = 0.2      # should remove
+    # timeStep = 0.2      # should remove
     line_index = 0
     curFrame = []
     futureFrames = [None, None, None]
@@ -117,7 +117,6 @@ def buildJoint(bvh, joint_name):
 
 def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     newMatrix = np.identity(4)
-    # cur_position = [0, 0, 0, 1]
 
     # get current joint's offset from parent joint
     curoffset = joint.get_offset() / Joint.resize
@@ -200,7 +199,7 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
 
     # set parent's global position (if it is root joint, parent_position is current_position)
     if joint.get_is_root():
-        parent_position = global_position
+        # parent_position = global_position
         state.futurePosition = [None, None, None]
         state.futureDirection = [None, None, None]
 
@@ -219,11 +218,6 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
             state.futureDirection[i] = R.from_matrix(rotation_current.T @ rotation_future).as_matrix() @ default_facing_direction
             state.futureDirection[i] = state.futureDirection[i][0::2]
 
-    else:
-        parent_position = parentMatrix @ np.array([0., 0., 0., 1.])
-
-    cur_position = global_position
-
     # Check if it's Root joint, otherwise update Joint class's data
     # velocity, rotation velocity update
 
@@ -234,14 +228,12 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
         # get root local position and root local velocity
         new_root_local_position = (rootMatrix.T @ global_position)[:3]  # local to root joint
         past_root_local_position = joint.get_root_local_position()  # local to root joint
-        root_local_velocity = ((new_root_local_position - past_root_local_position) / state.timeStep)
-        # root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)    
+        root_local_velocity = (new_root_local_position - past_root_local_position) * 30
 
         # get root local rotation and root local angular velocity
         new_root_local_rotation_matrix = (rootMatrix.T @ transform_matrix)[:3, :3]
         r = R.from_matrix(new_root_local_rotation_matrix)
         new_root_local_rotation = np.array(r.as_quat())
-        past_root_local_rotation = joint.get_root_local_rotation()
 
         # set joint class's value
         joint.set_global_position(global_position[:3])
@@ -267,12 +259,12 @@ def set_feature_vector(feature_vector):
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
 
-    feature_vector.set_future_position(np.array(state.futurePosition).reshape(6, ))
-    feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
+    # feature_vector.set_future_position(np.array(state.futurePosition).reshape(6, ))
+    # feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
 
     # test future info setting
-    # feature_vector.set_future_position(np.zeros_like(futurePosition).reshape(6, ))
-    # feature_vector.set_future_direction(np.zeros_like(futureDirection).reshape(6, ))
+    feature_vector.set_future_position(np.zeros_like(state.futurePosition).reshape(6, ))
+    feature_vector.set_future_direction(np.zeros_like(state.futureDirection).reshape(6, ))
     feature_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     feature_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
@@ -317,6 +309,10 @@ def main():
     DB = cKDTree(np.array(data))
     with open('tree_dump2.bin', 'wb') as dump_file:
         pickle.dump(DB, dump_file)
+
+    with open('db_contents.txt', 'w') as f:
+        for i in range(len(data)):
+            f.write("#" + str(i) + str(data[i])+'\n')
 
 
 if __name__ == "__main__":
