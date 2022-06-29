@@ -122,16 +122,16 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     # channel rotation
     # ROOT
     if len(joint.get_channel()) == 6:
-        # if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
-        #     state.real_global_position += np.array(MyWindow.state.curFrame[:3]) - state.bvh_past_position
-        # else:   # if QnA is newly called
-        #     state.real_global_position[1] = MyWindow.state.curFrame[1]   
-        # state.bvh_past_position = MyWindow.state.curFrame[:3]
+        if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
+            state.real_global_position += np.array(MyWindow.state.curFrame[:3]) - state.bvh_past_position
+        else:   # if QnA is newly called
+            state.real_global_position[1] = MyWindow.state.curFrame[1]   
+        state.bvh_past_position = MyWindow.state.curFrame[:3]
 
         #ROOTPOSITION = np.array(MyWindow.state.curFrame[:3], dtype='float32')
 
-        # ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
-        ROOTPOSITION = np.array(MyWindow.state.curFrame[:3])
+        ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
+        # ROOTPOSITION = np.array(MyWindow.state.curFrame[:3])
         ROOTPOSITION /= Joint.resize
         # move root's transformation matrix's origin using translation data
         temp = np.identity(4)
@@ -212,15 +212,19 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
 
     if joint.get_is_root():
         rootMatrix = joint.get_transform_matrix()
+        global_velocity = (global_position[:3]- joint.get_global_position()) * 30
+        joint.set_global_position(global_position[:3])
+        joint.set_global_velocity(global_velocity)
+        
 
     else:
         # get root local position and root local velocity
-        new_root_local_position = (rootMatrix.T @ global_position)[:3]  # local to root joint
+        new_root_local_position = (np.linalg.inv(rootMatrix) @ global_position)[:3]  # local to root joint
         past_root_local_position = joint.get_root_local_position()  # local to root joint
         root_local_velocity = (new_root_local_position - past_root_local_position) * 30   # 30 is FPS of LaFAN1
 
         # get root local rotation and root local angular velocity
-        new_root_local_rotation_matrix = (rootMatrix.T @ transform_matrix)[:3, :3]
+        new_root_local_rotation_matrix = (np.linalg.inv(rootMatrix) @ transform_matrix)[:3, :3]
         r = R.from_matrix(new_root_local_rotation_matrix)
         new_root_local_rotation = np.array(r.as_quat())
 
@@ -310,10 +314,11 @@ def set_query_vector(key_input = None):
     hip_velocity = []
 
     # future facing direction setting
-    default_facing_direction = np.array([1., 0., 0.])
+    default_facing_direction = np.array([1., 0., 0.]) 
     rotation_current = R.from_euler('zyx', MyWindow.state.curFrame[3:6], degrees=True)
     rotation_current = rotation_current.as_matrix()
 
+    future3Direction = []
     if key_input is not None:
 
         if key_input == "UP":
@@ -328,17 +333,19 @@ def set_query_vector(key_input = None):
         rotation_future = np.array([[np.cos(yr), 0, np.sin(yr)],
                             [0, 1, 0],
                             [-np.sin(yr), 0, np.cos(yr)]])
+        future3Direction = (rotation_current.T @ rotation_future) @ default_facing_direction
 
     else:   # key_input == None
         rotation_future = rotation_current  # no change, keep going
+        future3Direction = rotation_future @ default_facing_direction
 
-    future3Direction = (rotation_current.T @ rotation_future) @ default_facing_direction
+    
     future2Direction = future3Direction[0::2]
     future2Directions = [future2Direction, future2Direction, future2Direction]  # future 10, 20, 30 direction
 
     # future trajectory setting
-    default_future_trajectory = np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])     # future 10, 20, 30 position
-    futurePosition = future3Direction * default_future_trajectory
+    default_future_trajectory = np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]]) * np.linalg.norm(state.joint_list[0].get_global_velocity()) # future 10, 20, 30 position
+    futurePosition = (rotation_future @ default_future_trajectory.T).T 
     futurePosition = futurePosition[:, 0::2]
 
     for joint in state.joint_list:
@@ -348,12 +355,12 @@ def set_query_vector(key_input = None):
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
 
-    # state.query_vector.set_future_position(np.array(futurePosition).reshape(6, ))
-    # state.query_vector.set_future_direction(np.array(future2Directions).reshape(6, ))
+    state.query_vector.set_future_position(np.array(futurePosition).reshape(6, ))
+    state.query_vector.set_future_direction(np.array(future2Directions).reshape(6, ))
     
     # test future info setting
-    state.query_vector.set_future_position(np.zeros_like(futurePosition).reshape(6, ))
-    state.query_vector.set_future_direction(np.zeros_like(future2Directions).reshape(6, ))
+    # state.query_vector.set_future_position(np.zeros_like(futurePosition).reshape(6, ))
+    # state.query_vector.set_future_direction(np.zeros_like(future2Directions).reshape(6, ))
 
     state.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     state.query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))

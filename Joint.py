@@ -16,6 +16,7 @@ class Joint:
         self.matrix = np.identity(4)
 
         self.global_position = np.array([0., 0., 0.], dtype='float32')  # global position
+        self.global_velocity = np.array([0., 0., 0.], dtype = 'float32') # global velocity
 
         self.root_local_position = np.array([0., 0., 0.], dtype='float32')  # local to root joint
         self.root_local_velocity = np.array([0., 0., 0.], dtype='float32')  # local to root joint
@@ -39,6 +40,9 @@ class Joint:
 
     def set_global_position(self, position):
         self.global_position = position
+
+    def set_global_velocity(self, velocity):
+        self.global_velocity = velocity
 
     def set_index(self, index):
         self.index = index
@@ -87,6 +91,9 @@ class Joint:
 
     def get_global_position(self):
         return self.global_position
+
+    def get_global_velocity(self):
+        return self.global_velocity
 
     def get_root_local_position(self):
         return self.root_local_position
