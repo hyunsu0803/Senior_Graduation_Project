@@ -157,10 +157,11 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
             elif joint.get_channel()[i].upper() == 'ZROTATION':
                 zr = state.curFrame[i]
                 zr = np.radians(zr)
-                Rz = np.array([[np.cos(zr), -np.sin(zr), 0, 0],
+                Rz = np.array([[np.cos(zr), -np.sin(zr), 0., 0.],
                                [np.sin(zr), np.cos(zr), 0, 0],
                                [0, 0, 1, 0],
-                               [0, 0, 0, 1]])
+                               [0, 0, 0, 1]], dtype="float32")
+                
                 newMatrix = newMatrix @ Rz
 
     # JOINT
@@ -205,19 +206,23 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
         state.futureDirection = [None, None, None]
 
         for i in range(0, 3):
-            temp = np.array([0, 0, 0, 1])
-            temp[:3] = state.futureFrames[i][:3]
-            state.futurePosition[i] = np.linalg.inv(transform_matrix) @ temp
 
+            root_position = np.array([0., 0., 0., 1.])
+            root_position[:3] = state.futureFrames[i][:3]
+            root_position[:3] /= Joint.resize
+
+            state.futurePosition[i] = np.linalg.inv(transform_matrix) @ root_position            
             state.futurePosition[i] = state.futurePosition[i][0::2]
+
             
             default_facing_direction = np.array([1., 0., 0.])
-            rotation_current = R.from_euler('zyx', state.curFrame[3:6], degrees=True)
-            rotation_future = R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True)
-            rotation_current = np.array(rotation_current.as_matrix())
-            rotation_future = np.array(rotation_future.as_matrix())
-            state.futureDirection[i] = R.from_matrix(rotation_current.T @ rotation_future).as_matrix() @ default_facing_direction
+            rotation_current = R.from_euler('zyx', state.curFrame[3:6], degrees=True).as_matrix()
+            rotation_future = R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True).as_matrix()
+
+            state.futureDirection[i] = rotation_future @ default_facing_direction
             state.futureDirection[i] = state.futureDirection[i][0::2]
+
+        # exit()
 
     # Check if it's Root joint, otherwise update Joint class's data
     # velocity, rotation velocity update
@@ -227,13 +232,13 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
 
     else:
         # get root local position and root local velocity
-        new_root_local_position = (rootMatrix.T @ global_position)[:3]  # local to root joint
+        new_root_local_position = (np.linalg.inv(rootMatrix) @ global_position)[:3]  # local to root joint
         past_root_local_position = joint.get_root_local_position()  # local to root joint
         root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)
-        # root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)    
+   
 
         # get root local rotation and root local angular velocity
-        new_root_local_rotation_matrix = (rootMatrix.T @ transform_matrix)[:3, :3]
+        new_root_local_rotation_matrix = (np.linalg.inv(rootMatrix) @ transform_matrix)[:3, :3]
         r = R.from_matrix(new_root_local_rotation_matrix)
         new_root_local_rotation = np.array(r.as_quat())
 
@@ -261,12 +266,12 @@ def set_feature_vector(feature_vector):
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
 
-    # feature_vector.set_future_position(np.array(state.futurePosition).reshape(6, ))
-    # feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
+    feature_vector.set_future_position(np.array(state.futurePosition).reshape(6, ))
+    feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
 
     # test future info setting
-    feature_vector.set_future_position(np.zeros_like(state.futurePosition).reshape(6, ))
-    feature_vector.set_future_direction(np.zeros_like(state.futureDirection).reshape(6, ))
+    # feature_vector.set_future_position(np.zeros_like(state.futurePosition).reshape(6, ))
+    # feature_vector.set_future_direction(np.zeros_like(state.futureDirection).reshape(6, ))
     feature_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     feature_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
