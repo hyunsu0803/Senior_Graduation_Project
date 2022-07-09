@@ -9,7 +9,7 @@ import numpy as np
 
 # from Joint import Joint
 import bvh_handler
-from bvh_handler import drawJoint, reset_bvh_past_postion
+from bvh_handler import drawJoint, reset_bvh_past_postion, draw_future_info
 from motion_matching_test import QnA
 
 
@@ -39,7 +39,7 @@ class MyWindow(QOpenGLWidget):
 
 		# initialize value
 		self.at = np.array([0., 0., 0.])
-		self.w = np.array([4., 4., 4.])
+		self.w = np.array([7., 4., 7.])
 		self.perspective = True
 		self.click = False
 		self.left = True
@@ -56,6 +56,8 @@ class MyWindow(QOpenGLWidget):
 
 		# draw T pose
 		drawTpose()
+		
+
 
 
 	def initializeGL(self):
@@ -114,6 +116,7 @@ class MyWindow(QOpenGLWidget):
 
 		if len(state.curFrame) > 0 :
 			drawJoint(np.identity(4), bvh_handler.state.joint_list[0])
+			draw_future_info()
 
 		glDisable(GL_LIGHTING)
 

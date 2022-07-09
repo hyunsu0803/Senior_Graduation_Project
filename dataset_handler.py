@@ -17,7 +17,7 @@ class state:
     line_index = 0
     curFrame = []
     futureFrames = [None, None, None]
-    futurePosition = [[None], [None], [None]]
+    local_futurePosition = [[None], [None], [None]]
     futureDirection = [[None], [None], [None]]
 
 
@@ -202,25 +202,26 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     # set parent's global position (if it is root joint, parent_position is current_position)
     if joint.get_is_root():
         # parent_position = global_position
-        state.futurePosition = [None, None, None]
+        state.local_futurePosition = [None, None, None]
         state.futureDirection = [None, None, None]
 
         for i in range(0, 3):
 
-            root_position = np.array([0., 0., 0., 1.])
-            root_position[:3] = state.futureFrames[i][:3]
-            root_position[:3] /= Joint.resize
+            global_root_position = np.array([0., 0., 0., 1.])
+            global_root_position[:3] = state.futureFrames[i][:3]
+            global_root_position[:3] /= Joint.resize
 
-            state.futurePosition[i] = np.linalg.inv(transform_matrix) @ root_position            
-            state.futurePosition[i] = state.futurePosition[i][0::2]
+            state.local_futurePosition[i] = np.linalg.inv(transform_matrix) @ global_root_position            
+            state.local_futurePosition[i] = state.local_futurePosition[i][0::2]
 
             
             default_facing_direction = np.array([1., 0., 0.])
-            rotation_current = R.from_euler('zyx', state.curFrame[3:6], degrees=True).as_matrix()
-            rotation_future = R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True).as_matrix()
+            global_rotation_current = R.from_euler('zyx', state.curFrame[3:6], degrees=True).as_matrix()
+            global_rotation_future = R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True).as_matrix()
 
-            state.futureDirection[i] = rotation_future @ default_facing_direction
-            state.futureDirection[i] = state.futureDirection[i][0::2]
+            global_future_direction = global_rotation_future @ default_facing_direction
+            local_future_direction = global_rotation_current.T @ global_future_direction
+            state.futureDirection[i] = local_future_direction[0::2]
 
         # exit()
 
@@ -266,7 +267,7 @@ def set_feature_vector(feature_vector):
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
 
-    feature_vector.set_future_position(np.array(state.futurePosition).reshape(6, ))
+    feature_vector.set_future_position(np.array(state.local_futurePosition).reshape(6, ))
     feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
 
     # test future info setting
