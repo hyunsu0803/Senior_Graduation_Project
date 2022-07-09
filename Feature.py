@@ -11,6 +11,10 @@ class Feature:
         self.foot_velocity = None  # 6 dim
         self.hip_velocity = None  # 3 dim
 
+        # for draw arrow and point
+        self.global_future_position = np.zeros(9)  # 9 dim 
+        self.global_future_direction = np.zeros(9) # 9 dim
+
     def set_future_position(self, value):
         self.future_position = value
 
@@ -26,6 +30,12 @@ class Feature:
     def set_hip_velocity(self, value):
         self.hip_velocity = value
 
+    def set_global_future_position(self, value):
+        self.global_future_position = value
+
+    def set_global_future_direction(self, value):
+        self.global_future_direction = value
+
     def get_future_position(self):
         return self.future_position
 
@@ -40,6 +50,12 @@ class Feature:
 
     def get_hip_velocity(self):
         return self.hip_velocity
+
+    def get_global_future_position(self):
+        return self.global_future_position
+
+    def get_global_future_direction(self):
+        return self.global_future_direction
 
     # def get_feature_string(self):
     #     data = ""
