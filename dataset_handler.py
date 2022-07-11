@@ -279,11 +279,11 @@ def set_feature_vector(feature_vector):
 def main():
     state.curFrame = []
 
-    bvh_dir = './lafan2/'
+    bvh_dir = './lafan1/'
     bvh_names = os.listdir(bvh_dir)
     bvh_names.sort()
 
-    with open('db_index_info2.txt', 'w') as db_index_info:
+    with open('db_index_info1.txt', 'w') as db_index_info:
 
         db_index = 0
         data = []
@@ -314,14 +314,13 @@ def main():
                 data.append(feature_vector.get_feature_list())
 
     DB = cKDTree(np.array(data))
-    with open('tree_dump2.bin', 'wb') as dump_file:
+    with open('tree_dump.bin', 'wb') as dump_file:
         pickle.dump(DB, dump_file)
 
-    with open('db_contents.txt', 'w') as f:
-        for i in range(len(data)):
-            f.write("#" + str(i) + str(data[i])+'\n')
+    # with open('db_contents.txt', 'w') as f:
+    #     for i in range(len(data)):
+    #         f.write("#" + str(i) + str(data[i])+'\n')
 
-    print("RESIZE ", Joint.resize)
 
 
 if __name__ == "__main__":

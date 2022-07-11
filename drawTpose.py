@@ -5,5 +5,4 @@ def drawTpose():
 
     with open(paths[0], 'r') as file:
         FPS = parsing_bvh(file)
-        file_name = (paths[0].split('/'))[-1].strip(".bvh")
-    
+        
