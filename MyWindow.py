@@ -17,6 +17,7 @@ class state:
 	curFrame = []
 	# timeStep = 0.2
 	curFrame_index = 0
+	coming_soon_10frames = []
 
 
 class MyWindow(QOpenGLWidget):
@@ -28,7 +29,6 @@ class MyWindow(QOpenGLWidget):
 
 		# update frame
 		self.matching_num = -1
-		self.coming_soon_10frames = []
 		self.FPS = 30
 
 		# timer
@@ -153,16 +153,16 @@ class MyWindow(QOpenGLWidget):
 			self.perspective = not self.perspective
 
 		elif e.key() == Qt.Key_Up:
-			self.coming_soon_10frames, self.FPS = QnA(key_input="UP")
+			state.coming_soon_10frames, self.FPS = QnA(key_input="UP")
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Down:
-			self.coming_soon_10frames, self.FPS = QnA(key_input="DOWN")
+			state.coming_soon_10frames, self.FPS = QnA(key_input="DOWN")
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Left:
-			self.coming_soon_10frames, self.FPS = QnA(key_input="LEFT")
+			state.coming_soon_10frames, self.FPS = QnA(key_input="LEFT")
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Right:
-			self.coming_soon_10frames, self.FPS = QnA(key_input="RIGHT")
+			state.coming_soon_10frames, self.FPS = QnA(key_input="RIGHT")
 			self.matching_num = 0
 		
 		self.timer.setInterval(1000 / self.FPS)
@@ -242,18 +242,18 @@ class MyWindow(QOpenGLWidget):
 	def update_frame(self):
 		
 		if state.curFrame == []:
-			self.coming_soon_10frames, self.FPS = QnA(key_input="init")
+			state.coming_soon_10frames, self.FPS = QnA(key_input="init")
 			reset_bvh_past_postion()
 			self.timer.setInterval(1000 / self.FPS)
 		
 		elif self.matching_num % 10 == 9:
-			self.coming_soon_10frames, self.FPS = QnA()
+			state.coming_soon_10frames, self.FPS = QnA()
 			reset_bvh_past_postion()
 			self.timer.setInterval(1000 / self.FPS)
 
 	
 		self.matching_num = (self.matching_num + 1) % 10
-		state.curFrame = self.coming_soon_10frames[self.matching_num]
+		state.curFrame = state.coming_soon_10frames[self.matching_num]
 		self.update()
 		# state.curFrame = bvh_handler.state.frame_list[state.curFrame_index]
 		# state.curFrame_index = (state.curFrame_index + 1) % (len(bvh_handler.state.frame_list))
