@@ -8,6 +8,7 @@ from scipy.spatial.transform import Rotation as R
 import os
 from scipy.spatial import cKDTree
 import pickle
+import utils
 
 
 class state:
@@ -211,15 +212,12 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
             global_root_position[:3] = state.futureFrames[i][:3]
             global_root_position[:3] /= Joint.resize
 
-            state.local_futurePosition[i] = np.linalg.inv(transform_matrix) @ global_root_position            
-            state.local_futurePosition[i] = state.local_futurePosition[i][0::2]
+            state.local_futurePosition[i] = np.linalg.inv(transform_matrix) @ global_root_position           
+            state.local_futurePosition[i] = state.local_futurePosition[i][0::2] #3X2
 
-            
-            default_facing_direction = np.array([1., 0., 0.])
+            global_future_direction = utils.normalized(global_root_position[:3] - state.curFrame[:3])
             global_rotation_current = R.from_euler('zyx', state.curFrame[3:6], degrees=True).as_matrix()
-            global_rotation_future = R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True).as_matrix()
-
-            global_future_direction = global_rotation_future @ default_facing_direction
+            
             local_future_direction = global_rotation_current.T @ global_future_direction
             state.futureDirection[i] = local_future_direction[0::2]
 
