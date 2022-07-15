@@ -384,7 +384,7 @@ def set_query_vector(key_input = None):
     for i in range(3):
         global_3Dposition_future[i] = global_direction * (abs_global_velocity * i)
 
-    state.query_vector.set_global_future_direction(global_3Dposition_future)
+    state.query_vector.set_global_future_direction(global_3Ddirection_future)
     state.query_vector.set_global_future_position(global_3Dposition_future)
 
     state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))

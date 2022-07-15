@@ -227,9 +227,8 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
                                 [0, 1, 0],
                                 [-np.sin(yr), 0, np.cos(yr)]])
             global_future_direction= (rotationZ @ rotationY @ R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True).as_matrix())[:3, 2]
-            global_rotation_current = R.from_euler('zyx', state.curFrame[3:6], degrees=True).as_matrix()
             
-            local_future_direction = global_rotation_current.T @ global_future_direction
+            local_future_direction = np.linalg.inv(state.joint_list[0].getLocalFrame()[:3, :3]) @ global_future_direction
             state.futureDirection[i] = local_future_direction[0::2]
 
         # exit()
