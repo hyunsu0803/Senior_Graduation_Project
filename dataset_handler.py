@@ -213,10 +213,10 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
             global_root_position[:3] = state.futureFrames[i][:3]
             global_root_position[:3] /= Joint.resize
 
-            state.local_futurePosition[i] = np.linalg.inv(joint.getLocalFrame) @ global_root_position           
+            state.local_futurePosition[i] = np.linalg.inv(joint.getLocalFrame()) @ global_root_position           
             state.local_futurePosition[i] = state.local_futurePosition[i][0::2] #3X2
 
-            # 이걸 어떻게 할것인가..
+        
             zr = np.radians(-90)
             yr = np.radians(-90)
             rotationZ = np.array([[np.cos(zr), -np.sin(zr), 0],
@@ -290,11 +290,11 @@ def set_feature_vector(feature_vector):
 def main():
     state.curFrame = []
 
-    bvh_dir = './lafan1/'
+    bvh_dir = './lafan2/'
     bvh_names = os.listdir(bvh_dir)
     bvh_names.sort()
 
-    with open('db_index_info1.txt', 'w') as db_index_info:
+    with open('db_index_info2.txt', 'w') as db_index_info:
 
         db_index = 0
         data = []
@@ -325,7 +325,7 @@ def main():
                 data.append(feature_vector.get_feature_list())
 
     DB = cKDTree(np.array(data))
-    with open('tree_dump.bin', 'wb') as dump_file:
+    with open('tree_dump2.bin', 'wb') as dump_file:
         pickle.dump(DB, dump_file)
 
     # with open('db_contents.txt', 'w') as f:

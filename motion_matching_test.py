@@ -22,10 +22,10 @@ def QnA(key_input = None):
 	else:	
 		temp_query = set_query_vector(key_input=key_input)
 	
-	f = open("queryVectors.txt", 'a')
-	data = str(temp_query)+"\n"
-	f.write(data)
-	f.close()
+	# f = open("queryVectors.txt", 'a')
+	# data = str(temp_query)+"\n"
+	# f.write(data)
+	# f.close()
 
 	ans = DB.query(temp_query)
 	qidx = ans[1]

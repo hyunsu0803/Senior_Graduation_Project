@@ -313,42 +313,42 @@ def set_query_vector(key_input = None):
     two_foot_velocity = []
     hip_velocity = []
 
-    '''
-    global_3Dposition_current = state.real_global_position / Joint.resize
-    global_3Ddirection_future = np.array(MyWindow.state.curFrame[:3]) - np.array(MyWindow.state.coming_soon_10frames[0][:3])
-    global_3Ddirection_future = utils.normalized(global_3Ddirection_future)
+    
+    # global_3Dposition_current = state.real_global_position / Joint.resize
+    # global_3Ddirection_future = np.array(MyWindow.state.curFrame[:3]) - np.array(MyWindow.state.coming_soon_10frames[0][:3])
+    # global_3Ddirection_future = utils.normalized(global_3Ddirection_future)
 
-    moving = np.array([0., 0., 0.])
-    abs_global_velocity = np.linalg.norm(state.joint_list[0].get_global_velocity())/3
-    moving[0] = abs_global_velocity 
-    moving[1] = abs_global_velocity *2 
-    moving[2] = abs_global_velocity *3
+    # moving = np.array([0., 0., 0.])
+    # abs_global_velocity = np.linalg.norm(state.joint_list[0].get_global_velocity())/3
+    # moving[0] = abs_global_velocity 
+    # moving[1] = abs_global_velocity *2 
+    # moving[2] = abs_global_velocity *3
 
-    global_3Dposition_future = np.ones((3,4))
-    global_3Dposition_future[0, :3] = global_3Dposition_current + global_3Ddirection_future * moving[0]
-    global_3Dposition_future[1, :3] = global_3Dposition_current + global_3Ddirection_future * moving[1]
-    global_3Dposition_future[2, :3] = global_3Dposition_current + global_3Ddirection_future * moving[2]
+    # global_3Dposition_future = np.ones((3,4))
+    # global_3Dposition_future[0, :3] = global_3Dposition_current + global_3Ddirection_future * moving[0]
+    # global_3Dposition_future[1, :3] = global_3Dposition_current + global_3Ddirection_future * moving[1]
+    # global_3Dposition_future[2, :3] = global_3Dposition_current + global_3Ddirection_future * moving[2]
 
-    # global character current rotation
-    global_rotation_current = R.from_euler('zyx', MyWindow.state.curFrame[3:6], degrees=True)
-    global_rotation_current = global_rotation_current.as_matrix()
+    # # global character current rotation
+    # global_rotation_current = R.from_euler('zyx', MyWindow.state.curFrame[3:6], degrees=True)
+    # global_rotation_current = global_rotation_current.as_matrix()
 
-    local_3Ddirection_future = global_rotation_current.T @ global_3Ddirection_future
-    local_3Ddirection_future = np.array([local_3Ddirection_future, local_3Ddirection_future, local_3Ddirection_future])     # 3x3
-    local_2Ddirection_future = local_3Ddirection_future[:, 0::2]  # 3X2
+    # local_3Ddirection_future = global_rotation_current.T @ global_3Ddirection_future
+    # local_3Ddirection_future = np.array([local_3Ddirection_future, local_3Ddirection_future, local_3Ddirection_future])     # 3x3
+    # local_2Ddirection_future = local_3Ddirection_future[:, 0::2]  # 3X2
 
-    global_transformation_current = np.identity(4)
-    global_transformation_current[:3, :3] = global_rotation_current
-    global_transformation_current[:3, 3] = global_3Dposition_current
+    # global_transformation_current = np.identity(4)
+    # global_transformation_current[:3, :3] = global_rotation_current
+    # global_transformation_current[:3, 3] = global_3Dposition_current
 
-    print("##shape", global_3Dposition_future.shape)
-    print("###shape", global_transformation_current.shape)
-    local_3Dposition_future = (np.linalg.inv(global_transformation_current) @ global_3Dposition_future.T).T
-    local_3Dposition_future = local_3Dposition_future[:, :3]    # 3x3
-    local_2Dposition_future = local_3Dposition_future[:, 0::2]  # 3X2
+    # print("##shape", global_3Dposition_future.shape)
+    # print("###shape", global_transformation_current.shape)
+    # local_3Dposition_future = (np.linalg.inv(global_transformation_current) @ global_3Dposition_future.T).T
+    # local_3Dposition_future = local_3Dposition_future[:, :3]    # 3x3
+    # local_2Dposition_future = local_3Dposition_future[:, 0::2]  # 3X2
 
-    state.query_vector.set_global_future_direction(np.array([global_3Ddirection_future]*3))
-    state.query_vector.set_global_future_position(global_3Dposition_future[:, :3])
+    # state.query_vector.set_global_future_direction(np.array([global_3Ddirection_future]*3))
+    # state.query_vector.set_global_future_position(global_3Dposition_future[:, :3])
 
     for joint in state.joint_list:
         if joint.get_is_root():
@@ -357,9 +357,9 @@ def set_query_vector(key_input = None):
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
 
-    state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
-    state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
-    '''
+    # state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
+    # state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
+    
 
     # future direction setting
     future_direction = np.array([0., 0., 1.])
@@ -375,7 +375,7 @@ def set_query_vector(key_input = None):
     local_2Dposition_future = local_3Dposition_future[:, 0::2]
 
     # global direction setting
-    global_direction = state.joint_list[0].getLocalDirection
+    global_direction = state.joint_list[0].getLocalDirection()
     global_3Ddirection_future = np.array([global_direction, global_direction, global_direction])
 
     # global position setting
