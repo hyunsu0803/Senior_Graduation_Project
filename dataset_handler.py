@@ -206,16 +206,27 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
         state.local_futurePosition = [None, None, None]
         state.futureDirection = [None, None, None]
 
+
         for i in range(0, 3):
 
             global_root_position = np.array([0., 0., 0., 1.])
             global_root_position[:3] = state.futureFrames[i][:3]
             global_root_position[:3] /= Joint.resize
 
-            state.local_futurePosition[i] = np.linalg.inv(transform_matrix) @ global_root_position           
+            state.local_futurePosition[i] = np.linalg.inv(joint.getLocalFrame) @ global_root_position           
             state.local_futurePosition[i] = state.local_futurePosition[i][0::2] #3X2
 
-            global_future_direction = utils.normalized(global_root_position[:3] - state.curFrame[:3])
+            # 이걸 어떻게 할것인가..
+            zr = np.radians(-90)
+            yr = np.radians(-90)
+            rotationZ = np.array([[np.cos(zr), -np.sin(zr), 0],
+                                [np.sin(zr), np.cos(zr), 0],
+                                [0, 0, 1]])
+
+            rotationY = np.array([[np.cos(yr), 0, np.sin(yr)],
+                                [0, 1, 0],
+                                [-np.sin(yr), 0, np.cos(yr)]])
+            global_future_direction= (rotationZ @ rotationY @ R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True).as_matrix())[:3, 2]
             global_rotation_current = R.from_euler('zyx', state.curFrame[3:6], degrees=True).as_matrix()
             
             local_future_direction = global_rotation_current.T @ global_future_direction
