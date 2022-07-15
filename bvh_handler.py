@@ -313,6 +313,7 @@ def set_query_vector(key_input = None):
     two_foot_velocity = []
     hip_velocity = []
 
+    '''
     global_3Dposition_current = state.real_global_position / Joint.resize
     global_3Ddirection_future = np.array(MyWindow.state.curFrame[:3]) - np.array(MyWindow.state.coming_soon_10frames[0][:3])
     global_3Ddirection_future = utils.normalized(global_3Ddirection_future)
@@ -355,6 +356,36 @@ def set_query_vector(key_input = None):
         elif joint.get_is_foot():
             two_foot_position.append(joint.get_root_local_position())
             two_foot_velocity.append(joint.get_root_local_velocity())
+
+    state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
+    state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
+    '''
+
+    # future direction setting
+    future_direction = np.array([0., 0., 1.])
+    local_3Ddirection_future = np.array([future_direction, future_direction, future_direction])
+    local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
+
+    # future position setting
+    abs_global_velocity = np.linalg.norm(state.joint_list[0].get_global_velocity())/3
+    local_3Dposition_future = np.zeros((3, 3))
+
+    for i in range(3):
+        local_3Dposition_future[i] = future_direction * (abs_global_velocity * i)
+    local_2Dposition_future = local_3Dposition_future[:, 0::2]
+
+    # global direction setting
+    global_direction = state.joint_list[0].getLocalDirection
+    global_3Ddirection_future = np.array([global_direction, global_direction, global_direction])
+
+    # global position setting
+    global_3Dposition_future = np.zeros((3, 3))
+
+    for i in range(3):
+        global_3Dposition_future[i] = global_direction * (abs_global_velocity * i)
+
+    state.query_vector.set_global_future_direction(global_3Dposition_future)
+    state.query_vector.set_global_future_position(global_3Dposition_future)
 
     state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
     state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
