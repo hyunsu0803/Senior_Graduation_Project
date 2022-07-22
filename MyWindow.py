@@ -169,6 +169,9 @@ class MyWindow(QOpenGLWidget):
 			state.coming_soon_10frames, self.FPS = QnA(key_input="RIGHT")
 			bvh_handler.reset_bvh_past_postion()
 			self.matching_num = 0
+
+		state.curFrame = state.coming_soon_10frames[self.matching_num]
+		self.matching_num = (self.matching_num + 1) % 10
 		
 		self.timer.setInterval(1000 / self.FPS)
 
