@@ -1,3 +1,4 @@
+from sre_parse import State
 from PyQt5.QtCore import *
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QOpenGLWidget
@@ -39,7 +40,7 @@ class MyWindow(QOpenGLWidget):
 
 		# initialize value
 		self.at = np.array([0., 0., 0.])
-		self.w = np.array([7., 4., 7.])
+		self.w = np.array([0., 17., -20.])
 		self.perspective = True
 		self.click = False
 		self.left = True
@@ -124,13 +125,13 @@ class MyWindow(QOpenGLWidget):
 	def drawFrame(self):
 		glBegin(GL_LINES)
 		glColor3ub(255, 0, 0)
-		glVertex3fv(np.array([-30., 0., 0.]))
+		glVertex3fv(np.array([0., 0., 0.]))
 		glVertex3fv(np.array([30., 0., 0.]))
 		glColor3ub(0, 255, 0)
 		glVertex3fv(np.array([0., 0., 0.]))
 		glVertex3fv(np.array([0., 1., 0.]))
 		glColor3ub(0, 0, 255)
-		glVertex3fv(np.array([0., 0., -30]))
+		glVertex3fv(np.array([0., 0., 0]))
 		glVertex3fv(np.array([0., 0., 30.]))
 		glEnd()
 
@@ -253,7 +254,9 @@ class MyWindow(QOpenGLWidget):
 
 	
 		self.matching_num = (self.matching_num + 1) % 10
+		print("length", len(state.coming_soon_10frames))
 		state.curFrame = state.coming_soon_10frames[self.matching_num]
+	
 		self.update()
 		# state.curFrame = bvh_handler.state.frame_list[state.curFrame_index]
 		# state.curFrame_index = (state.curFrame_index + 1) % (len(bvh_handler.state.frame_list))
