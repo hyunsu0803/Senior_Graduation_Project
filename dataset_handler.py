@@ -219,7 +219,7 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
             global_future_direction= (R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True).as_matrix())[:3, 1]
             
             local_future_direction = np.linalg.inv(state.joint_list[0].get_transform_matrix()[:3, :3]) @ global_future_direction
-            state.futureDirection[i] = local_future_direction[1:]
+            state.futureDirection[i] = utils.normalized(local_future_direction[1:])
 
         # exit()
 
