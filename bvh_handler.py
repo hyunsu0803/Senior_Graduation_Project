@@ -224,7 +224,7 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
         global_velocity = (global_position[:3]- joint.get_global_position()) * 30
         joint.set_global_position(global_position[:3])
         joint.set_global_velocity(global_velocity)
-        drawLocalFrame(rootMatrix)
+        # drawLocalFrame(rootMatrix)
         
 
     else:
