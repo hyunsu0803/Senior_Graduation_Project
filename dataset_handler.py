@@ -213,23 +213,13 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
             global_root_position[:3] = state.futureFrames[i][:3]
             global_root_position[:3] /= Joint.resize
 
-            state.local_futurePosition[i] = np.linalg.inv(joint.getLocalFrame()) @ global_root_position           
-            state.local_futurePosition[i] = state.local_futurePosition[i][0::2] #3X2
+            state.local_futurePosition[i] = np.linalg.inv(joint.get_transform_matrix()) @ global_root_position           
+            state.local_futurePosition[i] = state.local_futurePosition[i][1:3] #3X2
 
-        
-            zr = np.radians(-90)
-            yr = np.radians(-90)
-            rotationZ = np.array([[np.cos(zr), -np.sin(zr), 0],
-                                [np.sin(zr), np.cos(zr), 0],
-                                [0, 0, 1]])
-
-            rotationY = np.array([[np.cos(yr), 0, np.sin(yr)],
-                                [0, 1, 0],
-                                [-np.sin(yr), 0, np.cos(yr)]])
-            global_future_direction= (rotationZ @ rotationY @ R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True).as_matrix())[:3, 2]
+            global_future_direction= (R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True).as_matrix())[:3, 1]
             
-            local_future_direction = np.linalg.inv(state.joint_list[0].getLocalFrame()[:3, :3]) @ global_future_direction
-            state.futureDirection[i] = local_future_direction[0::2]
+            local_future_direction = np.linalg.inv(state.joint_list[0].get_transform_matrix()[:3, :3]) @ global_future_direction
+            state.futureDirection[i] = local_future_direction[1:]
 
         # exit()
 
@@ -277,10 +267,6 @@ def set_feature_vector(feature_vector):
 
     feature_vector.set_future_position(np.array(state.local_futurePosition).reshape(6, ))
     feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
-
-    # test future info setting
-    # feature_vector.set_future_position(np.zeros_like(state.futurePosition).reshape(6, ))
-    # feature_vector.set_future_direction(np.zeros_like(state.futureDirection).reshape(6, ))
     feature_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     feature_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
@@ -289,11 +275,11 @@ def set_feature_vector(feature_vector):
 def main():
     state.curFrame = []
 
-    bvh_dir = './lafan2/'
+    bvh_dir = './lafan1/'
     bvh_names = os.listdir(bvh_dir)
     bvh_names.sort()
 
-    with open('db_index_info2.txt', 'w') as db_index_info:
+    with open('db_index_info.txt', 'w') as db_index_info:
 
         db_index = 0
         data = []
@@ -324,7 +310,7 @@ def main():
                 data.append(feature_vector.get_feature_list())
 
     DB = cKDTree(np.array(data))
-    with open('tree_dump2.bin', 'wb') as dump_file:
+    with open('tree_dump.bin', 'wb') as dump_file:
         pickle.dump(DB, dump_file)
 
     # with open('db_contents.txt', 'w') as f:

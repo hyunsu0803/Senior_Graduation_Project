@@ -127,22 +127,8 @@ class Joint:
         print("joint root local velocity", self.root_local_velocity)
         print("joint root local rotation: ", self.root_local_rotation)
 
-    def getLocalFrame(self):
-        M = self.matrix.copy()
-        zr = np.radians(-90)
-        yr = np.radians(-90)
-        rotationZ = np.array([[np.cos(zr), -np.sin(zr), 0],
-                              [np.sin(zr), np.cos(zr), 0],
-                              [0, 0, 1]])
 
-        rotationY = np.array([[np.cos(yr), 0, np.sin(yr)],
-                               [0, 1, 0],
-                               [-np.sin(yr), 0, np.cos(yr)]])
-        M[:3, :3] = rotationZ @ rotationY @ M[:3, :3]
-
-        return M
-
-    def getLocalDirection(self):
-        # local z direction is local direction
-        M = self.getLocalFrame()
-        return M[:3, 2]
+    def getGlobalDirection(self):
+        # find character global diredction
+        M = self.get_transform_matrix()
+        return M[:3, 1]
