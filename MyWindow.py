@@ -155,15 +155,19 @@ class MyWindow(QOpenGLWidget):
 
 		elif e.key() == Qt.Key_Up:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="UP")
+			bvh_handler.reset_bvh_past_postion()
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Down:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="DOWN")
+			bvh_handler.reset_bvh_past_postion()
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Left:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="LEFT")
+			bvh_handler.reset_bvh_past_postion()
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Right:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="RIGHT")
+			bvh_handler.reset_bvh_past_postion()
 			self.matching_num = 0
 		
 		self.timer.setInterval(1000 / self.FPS)
