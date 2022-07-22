@@ -123,18 +123,23 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     # ROOT
     if len(joint.get_channel()) == 6:
         if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
-            state.real_global_position += np.array(MyWindow.state.curFrame[:3]) - state.bvh_past_position
+            print("I'm old!!")
+            print("curFrame data position", MyWindow.state.curFrame[:3])
+            print("pastFrame data position", state.bvh_past_position)
+            state.real_global_position += (np.array(MyWindow.state.curFrame[:3]) - np.array(state.bvh_past_position))
+            
         else:   # if QnA is newly called
+            print("I'm new!!!")
+            print("curFrame data position", MyWindow.state.curFrame[:3])
             state.real_global_position[1] = MyWindow.state.curFrame[1]
             print("new query!!")
         state.bvh_past_position = MyWindow.state.curFrame[:3]
 
-        #ROOTPOSITION = np.array(MyWindow.state.curFrame[:3], dtype='float32')
-
         ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
-        # ROOTPOSITION = np.array(MyWindow.state.curFrame[:3])
-        ROOTPOSITION /= Joint.resize
         print(ROOTPOSITION)
+        ROOTPOSITION /= Joint.resize
+        #print(ROOTPOSITION)
+
         # move root's transformation matrix's origin using translation data
         temp = np.identity(4)
         temp[:3, 3] = ROOTPOSITION
@@ -200,10 +205,12 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     joint.set_transform_matrix(parentMatrix @ newMatrix)
     transform_matrix = joint.get_transform_matrix()
     global_position = transform_matrix @ np.array([0., 0., 0., 1.])
+    
 
     # set parent's global position (if it is root joint, parent_position is current_position)
     if joint.get_is_root():
         parent_position = global_position
+        print("resized position", global_position)
     else:
         parent_position = parentMatrix @ np.array([0., 0., 0., 1.])
 

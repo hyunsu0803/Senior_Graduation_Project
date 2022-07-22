@@ -22,26 +22,21 @@ def QnA(key_input = None):
 	else:	
 		temp_query = set_query_vector(key_input=key_input)
 	
-	# f = open("queryVectors.txt", 'a')
-	# data = str(temp_query)+"\n"
-	# f.write(data)
-	# f.close()
 
 	ans = DB.query(temp_query)
 	qidx = ans[1]
-	print("!!!!!!!! Query !!!!!!!!", temp_query)
-	# print("qidx", qidx)
-	print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx])
+	if key_input != "init" and key_input != None:
+		print("!!!!!!!! Query !!!!!!!!", temp_query)
+		print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx])
 
 	bvh_name, nearest_frame_idx, FPS = utils.find_your_bvh(qidx)
 	print("bvh name", bvh_name)
-	print("nearest frame index", nearest_frame_idx)
+
 	bvh_folder = './lafan1'
 	bvh_path = os.path.join(bvh_folder, bvh_name)
 	bvh_file = open(bvh_path, "r")
 
 	coming_soon_10frames = bvh_file.readlines()
-	print("lines length", len(coming_soon_10frames))
 	coming_soon_10frames = coming_soon_10frames[nearest_frame_idx+1: nearest_frame_idx + 11]
 
 	coming_soon_10frames = [i.split() for i in coming_soon_10frames]
