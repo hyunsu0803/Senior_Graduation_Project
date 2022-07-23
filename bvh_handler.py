@@ -357,7 +357,7 @@ def set_query_vector(key_input = None):
     local_3Dposition_future = np.zeros((3, 3))
 
     for i in range(3):
-        local_3Dposition_future[i] = future_direction * (abs_global_velocity * i)
+        local_3Dposition_future[i] = future_direction * (abs_global_velocity * (i+1))
     local_2Dposition_future = local_3Dposition_future[:, 1:]
 
     # global direction setting

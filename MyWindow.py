@@ -1,7 +1,7 @@
 from sre_parse import State
 from PyQt5.QtCore import *
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QOpenGLWidget
+from PyQt5.QtWidgets import QOpenGLWidget, QLabel
 from OpenGL.GL import *
 from OpenGL.GLU import *
 # from PyQt5. QtWidgets import QApplication
@@ -19,6 +19,7 @@ class state:
 	# timeStep = 0.2
 	curFrame_index = 0
 	coming_soon_10frames = []
+	KEY_MODE = None
 
 
 class MyWindow(QOpenGLWidget):
@@ -40,7 +41,7 @@ class MyWindow(QOpenGLWidget):
 
 		# initialize value
 		self.at = np.array([0., 0., 0.])
-		self.w = np.array([0., 17., -20.])
+		self.w = np.array([0., 20., -20.])
 		self.perspective = True
 		self.click = False
 		self.left = True
@@ -90,6 +91,7 @@ class MyWindow(QOpenGLWidget):
 
 		self.drawGrid()
 		self.drawFrame()
+		self.draw_keyinput()
 
 		glEnable(GL_LIGHTING)  # try to uncomment: no lighting
 		glEnable(GL_LIGHT0)
@@ -156,18 +158,22 @@ class MyWindow(QOpenGLWidget):
 		elif e.key() == Qt.Key_Up:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="UP")
 			bvh_handler.reset_bvh_past_postion()
+			state.KEY_MODE = "UP"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Down:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="DOWN")
 			bvh_handler.reset_bvh_past_postion()
+			state.KEY_MODE = "DOWN"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Left:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="LEFT")
 			bvh_handler.reset_bvh_past_postion()
+			state.KEY_MODE = "LEFT"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Right:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="RIGHT")
 			bvh_handler.reset_bvh_past_postion()
+			state.KEY_MODE = "RIGHT"
 			self.matching_num = 0
 
 		state.curFrame = state.coming_soon_10frames[self.matching_num]
@@ -245,6 +251,40 @@ class MyWindow(QOpenGLWidget):
 
 	def zoom(self, yoffset):
 		self.w -= self.w * yoffset / 5
+
+	def draw_keyinput(self):
+		if state.KEY_MODE == "UP":
+			glLineWidth(100.0)
+			glColor3ub(255,255, 0)
+			glBegin(GL_LINES)
+			glVertex3fv(np.array([0., .1, 0.]))
+			glVertex3fv(np.array([0., .1, 3.]))
+			glEnd()
+		elif state.KEY_MODE == "DOWN":
+			glLineWidth(100.0)
+			glColor3ub(255,255, 0)
+			glBegin(GL_LINES)
+			glVertex3fv(np.array([0., .1, 0.]))
+			glVertex3fv(np.array([0., .1, -3.]))
+			glEnd()
+		elif state.KEY_MODE == "RIGHT":
+			glLineWidth(100.0)
+			glColor3ub(255,255, 0)
+			glBegin(GL_LINES)
+			glVertex3fv(np.array([-3., .1, 0.]))
+			glVertex3fv(np.array([0., .1, 0.]))
+			glEnd()
+		elif state.KEY_MODE == "LEFT":
+			glLineWidth(100.0)
+			glColor3ub(255,255, 0)
+			glBegin(GL_LINES)
+			glVertex3fv(np.array([3., .1, 0.]))
+			glVertex3fv(np.array([0., .1, 0.]))
+			glEnd()
+
+		state.KEY_MODE = None
+		
+
 
 	# ===update frame===
 	def update_frame(self):
