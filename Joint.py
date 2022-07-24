@@ -1,4 +1,6 @@
+from xxlimited import new
 import numpy as np
+import utils
 
 
 class Joint:
@@ -18,10 +20,10 @@ class Joint:
         self.global_position = np.array([0., 0., 0.], dtype='float32')  # global position
         self.global_velocity = np.array([0., 0., 0.], dtype = 'float32') # global velocity
 
-        self.root_local_position = np.array([0., 0., 0.], dtype='float32')  # local to root joint
-        self.root_local_velocity = np.array([0., 0., 0.], dtype='float32')  # local to root joint
-        self.root_local_rotation = np.array([1., 0., 0., 0.], dtype='float32')  # local to root joint, quaternion
-        self.root_local_rotvel = np.array([0., 0., 0.], dtype='float32')  # rotational velocity local to root joint
+        self.character_local_position = np.array([0., 0., 0.], dtype='float32')  # local to root joint
+        self.character_local_velocity = np.array([0., 0., 0.], dtype='float32')  # local to root joint
+        self.character_local_rotation = np.array([1., 0., 0., 0.], dtype='float32')  # local to root joint, quaternion
+        # self.character_local_rotvel = np.array([0., 0., 0.], dtype='float32')  # rotational velocity local to root joint
 
     def set_channel(self, channel):
         self.channel = channel
@@ -50,11 +52,11 @@ class Joint:
             self.is_root = True
             print(self.joint_name)
 
-    def set_root_local_position(self, vector):
-        self.root_local_position = vector
+    def set_character_local_position(self, vector):
+        self.character_local_position = vector
 
-    def set_root_local_velocity(self, vector):
-        self.root_local_velocity = vector
+    def set_character_local_velocity(self, vector):
+        self.character_local_velocity = vector
 
     def set_is_root(self, value):
         self.is_root = value
@@ -62,11 +64,11 @@ class Joint:
     def set_is_foot(self, value):
         self.is_foot = value
 
-    def set_root_local_rotation(self, vector):
-        self.root_local_rotation = vector
+    def set_character_local_rotation(self, vector):
+        self.character_local_rotation = vector
 
-    def set_root_local_rotvel(self, vector):
-        self.root_local_rotvel = vector
+    # def set_character_local_rotvel(self, vector):
+    #     self.character_local_rotvel = vector
 
     def get_joint_name(self):
         return self.joint_name
@@ -95,11 +97,11 @@ class Joint:
     def get_global_velocity(self):
         return self.global_velocity
 
-    def get_root_local_position(self):
-        return self.root_local_position
+    def get_character_local_position(self):
+        return self.character_local_position
 
-    def get_root_local_velocity(self):
-        return self.root_local_velocity
+    def get_character_local_velocity(self):
+        return self.character_local_velocity
 
     def get_is_root(self):
         return self.is_root
@@ -107,28 +109,52 @@ class Joint:
     def get_is_foot(self):
         return self.is_foot
 
-    def get_root_local_rotation(self):
-        return self.root_local_rotation
+    def get_character_local_rotation(self):
+        return self.character_local_rotation
 
-    def get_root_local_rotvel(self):
-        return self.root_local_rotvel
+    # def get_root_local_rotvel(self):
+    #     return self.character_local_rotvel
 
-    def printJoint(self):
-        print("#################################################")
-        print("joint name: ", self.joint_name)
-        print("joint index: ", self.index)
-        print("joint channel", self.channel)
-        print("joint offset", self.offset)
-        print("joint resize", self.resize)
-        print("joint child joint", self.child_joint)
-        print("joint transformation matrix:", self.get_transform_matrix())
-        print("joint global position", self.global_position)
-        print("joint root local position ", self.root_local_position)
-        print("joint root local velocity", self.root_local_velocity)
-        print("joint root local rotation: ", self.root_local_rotation)
+    # def printJoint(self):
+    #     print("#################################################")
+    #     print("joint name: ", self.joint_name)
+    #     print("joint index: ", self.index)
+    #     print("joint channel", self.channel)
+    #     print("joint offset", self.offset)
+    #     print("joint resize", self.resize)
+    #     print("joint child joint", self.child_joint)
+    #     print("joint transformation matrix:", self.get_transform_matrix())
+    #     print("joint global position", self.global_position)
+    #     print("joint root local position ", self.character_local_position)
+    #     print("joint root local velocity", self.character_local_velocity)
+    #     print("joint root local rotation: ", self.character_local_rotation)
 
+
+    def getCharacterLocalFrame(self):
+        M = self.get_transform_matrix().copy()
+        
+        # origin projection 
+        newOrigin = M[:3, 3]
+        newOrigin[1] = 0
+
+        newDirection = M[:3, 1]
+        newDirection[1] = 0.
+
+        newZaxis=  utils.normalized(newDirection)
+        newYaxis = np.array([0., 1., 0.])
+        newXaxis = np.cross(newYaxis, newZaxis)
+
+        newTransformationMatrix = np.identity(4)
+        newTransformationMatrix[:3, 0] = newXaxis
+        newTransformationMatrix[:3, 1] = newYaxis
+        newTransformationMatrix[:3, 2] = newZaxis
+        newTransformationMatrix[:3, 3] = newOrigin
+
+        return newTransformationMatrix
 
     def getGlobalDirection(self):
         # find character global diredction
-        M = self.get_transform_matrix()
-        return M[:3, 1]
+        M = self.getCharacterLocalFrame().copy()
+
+        # length 1, projected on the ground
+        return M[:3, 2]
