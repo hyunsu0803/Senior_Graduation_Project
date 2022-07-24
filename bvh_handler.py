@@ -17,6 +17,8 @@ class state:
     
     # The global position of the character on the window
     real_global_position = np.array([0., 0., 0.])
+    mean_array = np.array([2.36585591, 1.73205081, 0.82158168, 0.80883124, 2.53172006, 2.52759052, 0.52743636])
+    std_array = np.array([2.23298544e+00, 1.36543381e-15, 5.28420125e-01, 5.27584931e-01, 2.37860209e+00, 2.41494757e+00, 1.03629294e+00])
 
 
 def parsing_bvh(bvh):
@@ -48,8 +50,8 @@ def parsing_bvh(bvh):
             line = bvh.readline().split()
             line = list(map(float, line))
             state.frame_list.append(line)
-        last = [0] * len(state.frame_list[0])   # what's this??
-        state.frame_list.append(last)
+        # last = [0] * len(state.frame_list[0])   # what's this??
+        # state.frame_list.append(last)
 
     FPS = int(1 / frameTime)
     return FPS
@@ -104,7 +106,7 @@ def buildJoint(bvh, joint_name):
 # the rootMatrix enters None when drawing a root joint
 # the parentMatrix enters identity(4) when drawing a root joint
 
-def drawJoint(parentMatrix, joint, rootMatrix=None):
+def drawJoint(parentMatrix, joint, characterMatrix=None):
 
     glPushMatrix()
     newMatrix = np.identity(4)
@@ -210,7 +212,6 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     # set parent's global position (if it is root joint, parent_position is current_position)
     if joint.get_is_root():
         parent_position = global_position
-        print("resized position", global_position)
     else:
         parent_position = parentMatrix @ np.array([0., 0., 0., 1.])
 
@@ -220,29 +221,22 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     # velocity, rotation velocity update 
 
     if joint.get_is_root():
-        rootMatrix = joint.get_transform_matrix()
+        characterMatrix = joint.getCharacterLocalFrame().copy()
         global_velocity = (global_position[:3]- joint.get_global_position()) * 30
         joint.set_global_position(global_position[:3])
         joint.set_global_velocity(global_velocity)
-        # drawLocalFrame(rootMatrix)
+        drawLocalFrame(characterMatrix)
         
 
-    else:
-        # get root local position and root local velocity
-        new_root_local_position = (np.linalg.inv(rootMatrix) @ global_position)[:3]  # local to root joint
-        past_root_local_position = joint.get_root_local_position()  # local to root joint
-        root_local_velocity = (new_root_local_position - past_root_local_position) * 30   # 30 is FPS of LaFAN1
+    # get root local position and root local velocity
+    new_character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]  # local to root joint
+    past_character_local_position = joint.get_character_local_position()  # local to root joint
+    character_local_velocity = (new_character_local_position - past_character_local_position) * 30   # 30 is FPS of LaFAN1)
 
-        # get root local rotation and root local angular velocity
-        new_root_local_rotation_matrix = (np.linalg.inv(rootMatrix) @ transform_matrix)[:3, :3]
-        r = R.from_matrix(new_root_local_rotation_matrix)
-        new_root_local_rotation = np.array(r.as_quat())
-
-        # set joint class's value
-        joint.set_global_position(global_position[:3])
-        joint.set_root_local_velocity(root_local_velocity)
-        joint.set_root_local_position(new_root_local_position[:3])
-        joint.set_root_local_rotation(new_root_local_rotation)
+    # set joint class's value
+    joint.set_global_position(global_position[:3])
+    joint.set_character_local_velocity(character_local_velocity)
+    joint.set_character_local_position(new_character_local_position[:3])
 
     v = cur_position - parent_position
     box_length = utils.l2norm(v)
@@ -313,7 +307,7 @@ def drawJoint(parentMatrix, joint, rootMatrix=None):
     # draw child joints
     else:
         for j in joint.get_child():
-            drawJoint(joint.get_transform_matrix(), j, rootMatrix)
+            drawJoint(joint.get_transform_matrix(), j, characterMatrix)
 
     glPopMatrix()
 
@@ -326,31 +320,31 @@ def set_query_vector(key_input = None):
 
     for joint in state.joint_list:
         if joint.get_is_root():
-            hip_velocity.append(joint.get_root_local_velocity())
+            hip_velocity.append(joint.get_character_local_velocity())
         elif joint.get_is_foot():
-            two_foot_position.append(joint.get_root_local_position())
-            two_foot_velocity.append(joint.get_root_local_velocity())
+            two_foot_position.append(joint.get_character_local_position())
+            two_foot_velocity.append(joint.get_character_local_velocity())
     
 
     # future direction setting
     future_direction = None
     if key_input == None:
-        future_direction = np.array([0., 1., 0.])
+        future_direction = np.array([0., 0., 1.])
     elif key_input == "LEFT":
         global_future_direction = np.array([1., 0., 0.])
-        future_direction = joint.get_transform_matrix()[:3, :3].T @ global_future_direction
+        future_direction = joint.getCharacterLocalFrame()[:3, :3].T @ global_future_direction
     elif key_input == "RIGHT":
         global_future_direction = np.array([-1., 0., 0.])
-        future_direction = joint.get_transform_matrix()[:3, :3].T @ global_future_direction
+        future_direction = joint.getCharacterLocalFrame()[:3, :3].T @ global_future_direction
     elif key_input == "UP":
         global_future_direction = np.array([0., 0., 1.])
-        future_direction = joint.get_transform_matrix()[:3, :3].T @ global_future_direction
+        future_direction = joint.getCharacterLocalFrame()[:3, :3].T @ global_future_direction
     elif key_input == "DOWN":
         global_future_direction = np.array([0., 0., -1.])
-        future_direction = joint.get_transform_matrix()[:3, :3].T @ global_future_direction
+        future_direction = joint.getCharacterLocalFrame()[:3, :3].T @ global_future_direction
 
     local_3Ddirection_future = np.array([future_direction, future_direction, future_direction])
-    local_2Ddirection_future = local_3Ddirection_future[:, 1:]
+    local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
 
     # future position setting
     abs_global_velocity = np.linalg.norm(state.joint_list[0].get_global_velocity())/3
@@ -358,20 +352,30 @@ def set_query_vector(key_input = None):
 
     for i in range(3):
         local_3Dposition_future[i] = future_direction * (abs_global_velocity * (i+1))
-    local_2Dposition_future = local_3Dposition_future[:, 1:]
+    local_2Dposition_future = local_3Dposition_future[:, 0::2]
 
     # global direction setting
-    global_direction = state.joint_list[0].getGlobalDirection()
+    global_direction = state.joint_list[0].getGlobalDirection().copy()
     global_3Ddirection_future = np.array([global_direction, global_direction, global_direction])
 
     # global position setting
     global_3Dposition_future = np.zeros((3, 3))
 
     for i in range(3):
-        global_3Dposition_future[i] = global_direction * (abs_global_velocity * i)
+        global_3Dposition_future[i] = state.real_global_position/Joint.resize + global_direction * (abs_global_velocity * (i+1))
 
-    state.query_vector.set_global_future_direction(global_3Ddirection_future)
+    # normalize
+    local_2Dposition_future = local_2Dposition_future.reshape(6, ) * (1 - state.mean_array[0] / np.linalg.norm(local_2Dposition_future.reshape(6, ))) / state.std_array[0]
+    #local_2Ddirection_future = local_2Ddirection_future.reshape(6, ) * (1 - state.mean_array[1] / np.linalg.norm(local_2Ddirection_future.reshape(6, )))/state.std_array[1]
+    two_foot_position[0] = np.array(two_foot_position[0]) * (1 - state.mean_array[2] / np.linalg.norm(np.array(two_foot_position[0])))/state.std_array[2]
+    two_foot_position[1] = np.array(two_foot_position[1]) * (1 - state.mean_array[3] / np.linalg.norm(np.array(two_foot_position[1])))/state.std_array[3]
+    two_foot_velocity[0] = np.array(two_foot_velocity[0]) * (1 - state.mean_array[4] / np.linalg.norm(np.array(two_foot_velocity[0])))/state.std_array[4]
+    two_foot_velocity[1] = np.array(two_foot_velocity[1]) * (1 - state.mean_array[5] / np.linalg.norm(np.array(two_foot_velocity[1])))/state.std_array[5]
+    hip_velocity = np.array(hip_velocity) * (1 - state.mean_array[6] / np.linalg.norm(np.array(hip_velocity)))/state.std_array[6]
+
+
     state.query_vector.set_global_future_position(global_3Dposition_future)
+    state.query_vector.set_global_future_direction(global_3Ddirection_future)
     state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
     state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
     state.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))

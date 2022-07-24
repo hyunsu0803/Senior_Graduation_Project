@@ -11,6 +11,7 @@ import pickle
 import utils
 
 
+
 class state:
     joint_list = []
     frame_list = []
@@ -20,6 +21,9 @@ class state:
     futureFrames = [None, None, None]
     local_futurePosition = [[None], [None], [None]]
     futureDirection = [[None], [None], [None]]
+    
+    mean_array = np.zeros((7,))
+    std_array = np.zeros((7,))
 
 
 def parsing_bvh(bvh):
@@ -58,8 +62,8 @@ def parsing_bvh(bvh):
             line = bvh.readline().split()
             line = list(map(float, line))
             state.frame_list.append(line)
-        last = [0] * len(state.frame_list[0])   
-        state.frame_list.append(last)
+        # last = [0] * len(state.frame_list[0])   
+        # state.frame_list.append(last)
 
     FPS = int(1 / frameTime)
 
@@ -116,7 +120,7 @@ def buildJoint(bvh, joint_name):
             return newJoint
 
 
-def set_joint_feature(joint, parentMatrix, rootMatrix=None):
+def set_joint_feature(joint, parentMatrix, characterMatrix=None):
     newMatrix = np.identity(4)
 
     # get current joint's offset from parent joint
@@ -213,13 +217,17 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
             global_root_position[:3] = state.futureFrames[i][:3]
             global_root_position[:3] /= Joint.resize
 
-            state.local_futurePosition[i] = np.linalg.inv(joint.get_transform_matrix()) @ global_root_position           
-            state.local_futurePosition[i] = state.local_futurePosition[i][1:3] #3X2
+            characterLocalFrame = joint.getCharacterLocalFrame()
+
+            state.local_futurePosition[i] = np.linalg.inv(characterLocalFrame)@ global_root_position           
+            state.local_futurePosition[i] = state.local_futurePosition[i][0::2] #3X2
 
             global_future_direction= (R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True).as_matrix())[:3, 1]
+            global_future_direction[1] = 0.
+            global_future_direction = utils.normalized(global_future_direction)
             
-            local_future_direction = np.linalg.inv(state.joint_list[0].get_transform_matrix()[:3, :3]) @ global_future_direction
-            state.futureDirection[i] = utils.normalized(local_future_direction[1:])
+            local_future_direction = np.linalg.inv(characterLocalFrame[:3, :3]) @ global_future_direction
+            state.futureDirection[i] = utils.normalized(local_future_direction[0::2])
 
         # exit()
 
@@ -227,30 +235,24 @@ def set_joint_feature(joint, parentMatrix, rootMatrix=None):
     # velocity, rotation velocity update
 
     if joint.get_is_root():
-        rootMatrix = joint.get_transform_matrix()
+        characterMatrix = joint.getCharacterLocalFrame()
 
-    else:
-        # get root local position and root local velocity
-        new_root_local_position = (np.linalg.inv(rootMatrix) @ global_position)[:3]  # local to root joint
-        past_root_local_position = joint.get_root_local_position()  # local to root joint
-        root_local_velocity = ((new_root_local_position - past_root_local_position) * 30)
-   
+    
+    # get root local position and root local velocity
+    new_character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]  # local to root joint
+    past_character_local_position = joint.get_character_local_position()  # local to root joint
+    character_local_velocity = ((new_character_local_position - past_character_local_position) * 30)
 
-        # get root local rotation and root local angular velocity
-        new_root_local_rotation_matrix = (np.linalg.inv(rootMatrix) @ transform_matrix)[:3, :3]
-        r = R.from_matrix(new_root_local_rotation_matrix)
-        new_root_local_rotation = np.array(r.as_quat())
 
-        # set joint class's value
-        joint.set_global_position(global_position[:3])
-        joint.set_root_local_velocity(root_local_velocity)
-        joint.set_root_local_position(new_root_local_position[:3])
-        joint.set_root_local_rotation(new_root_local_rotation)
+    # set joint class's value
+    joint.set_global_position(global_position[:3])
+    joint.set_character_local_velocity(character_local_velocity)
+    joint.set_character_local_position(new_character_local_position[:3])
 
 
     if joint.end_site is None:
         for j in joint.get_child():
-            set_joint_feature(j, joint.get_transform_matrix(), rootMatrix)
+            set_joint_feature(j, joint.get_transform_matrix(), characterMatrix = characterMatrix)
 
 
 def set_feature_vector(feature_vector):
@@ -260,16 +262,55 @@ def set_feature_vector(feature_vector):
 
     for joint in state.joint_list:
         if joint.get_is_root():
-            hip_velocity.append(joint.get_root_local_velocity())
+            hip_velocity.append(joint.get_character_local_velocity())
         elif joint.get_is_foot():
-            two_foot_position.append(joint.get_root_local_position())
-            two_foot_velocity.append(joint.get_root_local_velocity())
+            two_foot_position.append(joint.get_character_local_position())
+            two_foot_velocity.append(joint.get_character_local_velocity())
 
     feature_vector.set_future_position(np.array(state.local_futurePosition).reshape(6, ))
     feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
     feature_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     feature_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
+
+
+def db_normalizing(data):
+    # future position 6
+    # future direction 6
+    # left foot position 3
+    # right foot position 3
+    # left foot velocity 3
+    # right foot velocity 3
+    # hip joint velocity 3
+
+    abs_data = np.zeros((len(data), 7))
+
+    abs_data[:, 0] = np.linalg.norm(data[:, 0:6], axis=1)
+    abs_data[:, 1] = np.linalg.norm(data[:, 6:12], axis=1)
+    abs_data[:, 2] = np.linalg.norm(data[:, 12:15], axis=1)
+    abs_data[:, 3] = np.linalg.norm(data[:, 15:18], axis=1)
+    abs_data[:, 4] = np.linalg.norm(data[:, 18:21], axis=1)
+    abs_data[:, 5] = np.linalg.norm(data[:, 21:24], axis=1)
+    abs_data[:, 6] = np.linalg.norm(data[:, 24:27], axis=1)
+
+    for i in range(7):
+        state.mean_array[i] = np.mean(abs_data[:, i])
+
+    for i in range(7):
+        state.std_array[i] = np.sqrt(np.mean((abs_data[:, i] - state.mean_array[i]) ** 2))
+
+    for i in range(len(data)):
+       
+        data[i, 0:6] = data[i, 0:6] * (1 - state.mean_array[0] / abs_data[i, 0]) / state.std_array[0]
+        #data[i, 6:12] = data[i, 6:12] * (1 - state.mean_array[1] / abs_data[i, 1]) / state.std_array[1]
+        data[i, 12:15] = data[i, 12:15] * (1 - state.mean_array[2] / abs_data[i, 2]) / state.std_array[2]
+        data[i, 15:18] = data[i, 15:18] * (1 - state.mean_array[3] / abs_data[i, 3]) / state.std_array[3]
+        data[i, 18:21] = data[i, 18:21] * (1 - state.mean_array[4] / abs_data[i, 4]) / state.std_array[4]
+        data[i, 21:24] = data[i, 21:24] * (1 - state.mean_array[5] / abs_data[i, 5]) / state.std_array[5]
+        data[i, 24:27] = data[i, 24:27] * (1 - state.mean_array[6] / abs_data[i, 6]) / state.std_array[6]
+
+    print("mean", state.mean_array)
+    print("std", state.std_array)
 
 
 def main():
@@ -309,9 +350,13 @@ def main():
 
                 data.append(feature_vector.get_feature_list())
 
+
+    db_normalizing(np.array(data))
+
     DB = cKDTree(np.array(data))
     with open('tree_dump.bin', 'wb') as dump_file:
         pickle.dump(DB, dump_file)
+
 
     # with open('db_contents.txt', 'w') as f:
     #     for i in range(len(data)):
