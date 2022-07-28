@@ -9,7 +9,7 @@ import os
 from scipy.spatial import cKDTree
 import pickle
 import utils
-import warnings
+
 
 
 class state:
@@ -22,8 +22,8 @@ class state:
     local_futurePosition = [[None], [None], [None]]
     futureDirection = [[None], [None], [None]]
     
-    mean_array = np.zeros((11,), dtype='float32')
-    std_array = np.zeros((11,), dtype='float32')
+    mean_array = np.zeros((7,))
+    std_array = np.zeros((7,))
 
 
 def parsing_bvh(bvh):
@@ -227,10 +227,6 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
             global_future_direction = utils.normalized(global_future_direction)
             
             local_future_direction = np.linalg.inv(characterLocalFrame[:3, :3]) @ global_future_direction
-
-            # print("local future direction 길이", np.linalg.norm(local_future_direction))
-            # print("y축 성분 없앴을 때 local future driection 길이", np.linalg.norm(local_future_direction[0::2]))
-
             state.futureDirection[i] = utils.normalized(local_future_direction[0::2])
 
         # exit()
@@ -286,50 +282,32 @@ def db_normalizing(data):
     # left foot velocity 3
     # right foot velocity 3
     # hip joint velocity 3
-    warnings.filterwarnings("error")
 
-    abs_data = np.zeros((len(data), 11))
+    abs_data = np.zeros((len(data), 7))
 
-    # future position
-    abs_data[:, 0] = np.linalg.norm(data[:, 0:2], axis=1)
-    abs_data[:, 1] = np.linalg.norm(data[:, 2:4], axis=1)
-    abs_data[:, 2] = np.linalg.norm(data[:, 4:6], axis=1)
-    # future direction
-    abs_data[:, 3] = np.linalg.norm(data[:, 6:8], axis=1)
-    abs_data[:, 4] = np.linalg.norm(data[:, 8:10], axis=1)
-    abs_data[:, 5] = np.linalg.norm(data[:, 10:12], axis=1)
-    
-    abs_data[:, 6] = np.linalg.norm(data[:, 12:15], axis=1)
-    abs_data[:, 7] = np.linalg.norm(data[:, 15:18], axis=1)
-    abs_data[:, 8] = np.linalg.norm(data[:, 18:21], axis=1)
-    abs_data[:, 9] = np.linalg.norm(data[:, 21:24], axis=1)
-    abs_data[:, 10] = np.linalg.norm(data[:, 24:27], axis=1)
+    abs_data[:, 0] = np.linalg.norm(data[:, 0:6], axis=1)
+    abs_data[:, 1] = np.linalg.norm(data[:, 6:12], axis=1)
+    abs_data[:, 2] = np.linalg.norm(data[:, 12:15], axis=1)
+    abs_data[:, 3] = np.linalg.norm(data[:, 15:18], axis=1)
+    abs_data[:, 4] = np.linalg.norm(data[:, 18:21], axis=1)
+    abs_data[:, 5] = np.linalg.norm(data[:, 21:24], axis=1)
+    abs_data[:, 6] = np.linalg.norm(data[:, 24:27], axis=1)
 
-    for i in range(11):
+    for i in range(7):
         state.mean_array[i] = np.mean(abs_data[:, i])
 
-    for i in range(11):
+    for i in range(7):
         state.std_array[i] = np.sqrt(np.mean((abs_data[:, i] - state.mean_array[i]) ** 2))
 
-    print("data length", len(data))
     for i in range(len(data)):
-        try:
-            data[i, 0:2] = data[i, 0:2] * (1 - state.mean_array[0] / abs_data[i, 0]) / state.std_array[0]
-            data[i, 2:4] = data[i, 2:4] * (1 - state.mean_array[1] / abs_data[i, 1]) / state.std_array[1]
-            data[i, 4:6] = data[i, 4:6] * (1 - state.mean_array[2] / abs_data[i, 2]) / state.std_array[2]
-            data[i, 12:15] = data[i, 12:15] * (1 - state.mean_array[6] / abs_data[i, 6]) / state.std_array[6]
-            data[i, 15:18] = data[i, 15:18] * (1 - state.mean_array[7] / abs_data[i, 7]) / state.std_array[7]
-            data[i, 18:21] = data[i, 18:21] * (1 - state.mean_array[8] / abs_data[i, 8]) / state.std_array[8]
-            data[i, 21:24] = data[i, 21:24] * (1 - state.mean_array[9] / abs_data[i, 9]) / state.std_array[9]
-            data[i, 24:27] = data[i, 24:27] * (1 - state.mean_array[10] / abs_data[i, 10]) / state.std_array[10]
-
-            # weight
-            data[i, 0:6] = 2 * data[i, 0:6]
-            data[i, 6:12] = 2 * data[i, 6:12]
-            
-        except RuntimeWarning as err:
-            print(i, err)
-
+       
+        data[i, 0:6] = data[i, 0:6] * (1 - state.mean_array[0] / abs_data[i, 0]) / state.std_array[0]
+        #data[i, 6:12] = data[i, 6:12] * (1 - state.mean_array[1] / abs_data[i, 1]) / state.std_array[1]
+        data[i, 12:15] = data[i, 12:15] * (1 - state.mean_array[2] / abs_data[i, 2]) / state.std_array[2]
+        data[i, 15:18] = data[i, 15:18] * (1 - state.mean_array[3] / abs_data[i, 3]) / state.std_array[3]
+        data[i, 18:21] = data[i, 18:21] * (1 - state.mean_array[4] / abs_data[i, 4]) / state.std_array[4]
+        data[i, 21:24] = data[i, 21:24] * (1 - state.mean_array[5] / abs_data[i, 5]) / state.std_array[5]
+        data[i, 24:27] = data[i, 24:27] * (1 - state.mean_array[6] / abs_data[i, 6]) / state.std_array[6]
 
     print("mean", state.mean_array)
     print("std", state.std_array)
@@ -388,4 +366,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

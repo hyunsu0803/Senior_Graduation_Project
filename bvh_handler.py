@@ -17,8 +17,8 @@ class state:
     
     # The global position of the character on the window
     real_global_position = np.array([0., 0., 0.])
-    mean_array = np.array([0.65431756, 1.27628343, 1.85926014, 1., 1. ,1., 0.82163285, 0.80887833, 2.53196615, 2.52783342, 0.52748333])
-    std_array = np.array([6.22265566e-01, 1.22174815e+00, 1.78640590e+00, 0., 0., 0., 5.28428548e-01, 5.27593020e-01, 2.37865282e+00, 2.41500696e+00, 1.03633932e+00])
+    mean_array = np.array([2.36585591, 1.73205081, 0.82158168, 0.80883124, 2.53172006, 2.52759052, 0.52743636])
+    std_array = np.array([2.23298544e+00, 1.36543381e-15, 5.28420125e-01, 5.27584931e-01, 2.37860209e+00, 2.41494757e+00, 1.03629294e+00])
 
 
 def parsing_bvh(bvh):
@@ -225,7 +225,7 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
         global_velocity = (global_position[:3]- joint.get_global_position()) * 30
         joint.set_global_position(global_position[:3])
         joint.set_global_velocity(global_velocity)
-        #drawLocalFrame(characterMatrix)
+        drawLocalFrame(characterMatrix)
         
 
     # get root local position and root local velocity
@@ -365,19 +365,17 @@ def set_query_vector(key_input = None):
         global_3Dposition_future[i] = state.real_global_position/Joint.resize + global_direction * (abs_global_velocity * (i+1))
 
     # normalize
-    local_2Dposition_future[0] = local_2Dposition_future[0] * (1 - state.mean_array[0] / np.linalg.norm(local_2Dposition_future[0])) / state.std_array[0]
-    local_2Dposition_future[1] = local_2Dposition_future[1] * (1 - state.mean_array[1] / np.linalg.norm(local_2Dposition_future[1])) / state.std_array[1]
-    local_2Dposition_future[2] = local_2Dposition_future[2] * (1 - state.mean_array[2] / np.linalg.norm(local_2Dposition_future[2])) / state.std_array[2]
-    
-    two_foot_position[0] = np.array(two_foot_position[0]) * (1 - state.mean_array[6] / np.linalg.norm(np.array(two_foot_position[0])))/state.std_array[6]
-    two_foot_position[1] = np.array(two_foot_position[1]) * (1 - state.mean_array[7] / np.linalg.norm(np.array(two_foot_position[1])))/state.std_array[7]
-    two_foot_velocity[0] = np.array(two_foot_velocity[0]) * (1 - state.mean_array[8] / np.linalg.norm(np.array(two_foot_velocity[0])))/state.std_array[8]
-    two_foot_velocity[1] = np.array(two_foot_velocity[1]) * (1 - state.mean_array[9] / np.linalg.norm(np.array(two_foot_velocity[1])))/state.std_array[9]
-    hip_velocity = np.array(hip_velocity) * (1 - state.mean_array[10] / np.linalg.norm(np.array(hip_velocity)))/state.std_array[10]
+    local_2Dposition_future = local_2Dposition_future.reshape(6, ) * (1 - state.mean_array[0] / np.linalg.norm(local_2Dposition_future.reshape(6, ))) / state.std_array[0]
+    #local_2Ddirection_future = local_2Ddirection_future.reshape(6, ) * (1 - state.mean_array[1] / np.linalg.norm(local_2Ddirection_future.reshape(6, )))/state.std_array[1]
+    two_foot_position[0] = np.array(two_foot_position[0]) * (1 - state.mean_array[2] / np.linalg.norm(np.array(two_foot_position[0])))/state.std_array[2]
+    two_foot_position[1] = np.array(two_foot_position[1]) * (1 - state.mean_array[3] / np.linalg.norm(np.array(two_foot_position[1])))/state.std_array[3]
+    two_foot_velocity[0] = np.array(two_foot_velocity[0]) * (1 - state.mean_array[4] / np.linalg.norm(np.array(two_foot_velocity[0])))/state.std_array[4]
+    two_foot_velocity[1] = np.array(two_foot_velocity[1]) * (1 - state.mean_array[5] / np.linalg.norm(np.array(two_foot_velocity[1])))/state.std_array[5]
+    hip_velocity = np.array(hip_velocity) * (1 - state.mean_array[6] / np.linalg.norm(np.array(hip_velocity)))/state.std_array[6]
 
 
-    state.query_vector.set_global_future_position(2* global_3Dposition_future)
-    state.query_vector.set_global_future_direction(2* global_3Ddirection_future)
+    state.query_vector.set_global_future_position(global_3Dposition_future)
+    state.query_vector.set_global_future_direction(global_3Ddirection_future)
     state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
     state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
     state.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
