@@ -30,7 +30,7 @@ def QnA(key_input = None):
 		print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx])
 
 	bvh_name, nearest_frame_idx, FPS = utils.find_your_bvh(qidx)
-	print("bvh name", bvh_name)
+	print("bvh name", bvh_name, nearest_frame_idx)
 
 	bvh_folder = './lafan1'
 	bvh_path = os.path.join(bvh_folder, bvh_name)
