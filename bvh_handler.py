@@ -17,8 +17,20 @@ class state:
     
     # The global position of the character on the window
     real_global_position = np.array([0., 0., 0.])
-    mean_array = np.array([2.36585591, 1.73205081, 0.82158168, 0.80883124, 2.53172006, 2.52759052, 0.52743636])
-    std_array = np.array([2.23298544e+00, 1.36543381e-15, 5.28420125e-01, 5.27584931e-01, 2.37860209e+00, 2.41494757e+00, 1.03629294e+00])
+    mean_array = np.array([ 1.41277287e-02,  4.27515134e-01,  3.89398700e-02,  8.42000393e-01,
+                            7.17285028e-02,  1.20716830e+00, -8.23741644e-02,  1.84959764e-02,
+                            -8.22155663e-02,  1.82737104e-02, -8.15859744e-02,  1.79583760e-02,
+                            2.96535476e-01,  4.09111197e-01, -5.73196245e-02, -3.08930586e-01,
+                            4.04232245e-01, -6.19720699e-02,  1.28611388e-03,  1.24453725e-03,
+                            -4.38613943e-04, -1.33293606e-03,  1.24974156e-03, -1.89162694e-04,
+                            2.22365800e-19,  1.00846789e-02,  2.17101458e-19])
+    std_array = np.array([3.67570835e-01, 7.05172893e-01, 7.44494015e-01, 1.36265022e+00,
+                            1.16910184e+00, 1.95419930e+00, 7.56352291e-01, 6.48693771e-01,
+                            7.52681095e-01, 6.52976142e-01, 7.51695391e-01, 6.54198184e-01,
+                            3.98546797e-01, 4.81824252e-01, 5.52025651e-01, 3.83578971e-01,
+                            4.77795089e-01, 5.42710984e-01, 1.74015595e+00, 1.33964037e+00,
+                            2.69185055e+00, 1.76546581e+00, 1.36998779e+00, 2.68857973e+00,
+                            3.24655240e-14, 1.16281390e+00, 2.67810824e-14])
 
 
 def parsing_bvh(bvh):
@@ -125,20 +137,20 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
     # ROOT
     if len(joint.get_channel()) == 6:
         if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
-            print("I'm old!!")
-            print("curFrame data position", MyWindow.state.curFrame[:3])
-            print("pastFrame data position", state.bvh_past_position)
+            # print("I'm old!!")
+            # print("curFrame data position", MyWindow.state.curFrame[:3])
+            # print("pastFrame data position", state.bvh_past_position)
             state.real_global_position += (np.array(MyWindow.state.curFrame[:3]) - np.array(state.bvh_past_position))
             
         else:   # if QnA is newly called
-            print("I'm new!!!")
-            print("curFrame data position", MyWindow.state.curFrame[:3])
+            # print("I'm new!!!")
+            # print("curFrame data position", MyWindow.state.curFrame[:3])
             state.real_global_position[1] = MyWindow.state.curFrame[1]
-            print("new query!!")
+            # print("new query!!")
         state.bvh_past_position = MyWindow.state.curFrame[:3]
 
         ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
-        print(ROOTPOSITION)
+        # print(ROOTPOSITION)
         ROOTPOSITION /= Joint.resize
         #print(ROOTPOSITION)
 
@@ -364,16 +376,6 @@ def set_query_vector(key_input = None):
     for i in range(3):
         global_3Dposition_future[i] = state.real_global_position/Joint.resize + global_direction * (abs_global_velocity * (i+1))
 
-    # normalize
-    local_2Dposition_future = local_2Dposition_future.reshape(6, ) * (1 - state.mean_array[0] / np.linalg.norm(local_2Dposition_future.reshape(6, ))) / state.std_array[0]
-    #local_2Ddirection_future = local_2Ddirection_future.reshape(6, ) * (1 - state.mean_array[1] / np.linalg.norm(local_2Ddirection_future.reshape(6, )))/state.std_array[1]
-    two_foot_position[0] = np.array(two_foot_position[0]) * (1 - state.mean_array[2] / np.linalg.norm(np.array(two_foot_position[0])))/state.std_array[2]
-    two_foot_position[1] = np.array(two_foot_position[1]) * (1 - state.mean_array[3] / np.linalg.norm(np.array(two_foot_position[1])))/state.std_array[3]
-    two_foot_velocity[0] = np.array(two_foot_velocity[0]) * (1 - state.mean_array[4] / np.linalg.norm(np.array(two_foot_velocity[0])))/state.std_array[4]
-    two_foot_velocity[1] = np.array(two_foot_velocity[1]) * (1 - state.mean_array[5] / np.linalg.norm(np.array(two_foot_velocity[1])))/state.std_array[5]
-    hip_velocity = np.array(hip_velocity) * (1 - state.mean_array[6] / np.linalg.norm(np.array(hip_velocity)))/state.std_array[6]
-
-
     state.query_vector.set_global_future_position(global_3Dposition_future)
     state.query_vector.set_global_future_direction(global_3Ddirection_future)
     state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
@@ -382,7 +384,13 @@ def set_query_vector(key_input = None):
     state.query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     state.query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
 
-    return state.query_vector.get_feature_list()
+    feature_vector = state.query_vector.get_feature_list().copy()
+
+    # normalization
+    for i in range(0, 27):
+        feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
+
+    return feature_vector
 
  
 def draw_future_info():
