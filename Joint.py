@@ -1,4 +1,3 @@
-from xxlimited import new
 import numpy as np
 import utils
 
