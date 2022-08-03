@@ -1,3 +1,4 @@
+from telnetlib import theNULL
 import numpy as np
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -14,7 +15,7 @@ class state:
     frame_list = []
     query_vector = Feature()
     bvh_past_position = np.array([])
-    bvh_past_oreintation = np.array([])
+    bvh_past_orientation = np.array([])
     
     # The global position of the character on the window
     real_global_position = np.array([0., 0., 0.])
@@ -194,32 +195,38 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
                 bvh_current_orientation = bvh_current_orientation @ Rz
 
         # calculate real global orientation
-        if len(state.bvh_past_oreintation) != 0: #Continuous motion playback received via the QnA function
-            bvh_past_orienation_direction = state.bvh_past_oreintation[:3, 1].copy()
-            bvh_past_orienation_direction[1] = 0
-            bvh_past_orienation_direction = utils.normalized(bvh_past_orienation_direction)
+        if len(state.bvh_past_orientation) != 0: #Continuous motion playback received via the QnA function
+            bvh_past_to_current_rotation = state.bvh_past_orientation.T @ bvh_current_orientation
+            state.real_global_orientation = bvh_past_to_current_rotation @ state.real_global_orientation
+            bvh_to_real_rotation = bvh_current_orientation.T @ state.real_global_orientation
 
-            bvh_current_orienation_direction = bvh_current_orientation[:3, 1].copy()
-            bvh_current_orienation_direction[1] = 0
-            bvh_current_orienation_direction = utils.normalized(bvh_current_orienation_direction)
+        else:   # if QnA is newly called
+            bvh_current_orientation_direction = bvh_current_orientation[:3, 1].copy()
+            bvh_current_orientation_direction[1] = 0
+            bvh_current_orientation_direction = utils.normalized(bvh_current_orientation_direction)
 
-            th = np.arccos(np.dot(bvh_past_orienation_direction, bvh_current_orienation_direction))
-            crossing = np.cross(bvh_past_orienation_direction, bvh_current_orienation_direction)
+            real_global_orientation_direction = state.real_global_orientation[:3, 1].copy()
+            real_global_orientation_direction[1] = 0
+            real_global_orientation_direction = utils.normalized(real_global_orientation_direction)
+
+            th = np.arccos(np.dot(bvh_current_orientation_direction, real_global_orientation_direction))
+            crossing = np.cross(bvh_current_orientation_direction, real_global_orientation_direction)
+
             if crossing[1] < 0:
                 th *= -1
+            
+            bvh_to_real_rotation_yrotation = np.array([[np.cos(th), 0, np.sin(th)],
+                                             [0, 1, 0],
+                                             [-np.sin(th), 0, np.cos(th)]])
 
-            bvh_to_real_rotation = np.array([[np.cos(th), 0, np.sin(th)],
-                                            [0, 1, 0],
-                                            [-np.sin(th), 0, np.cos(th)]])
+            state.real_global_orientation = bvh_to_real_rotation_yrotation @ bvh_current_orientation
 
-            state.real_global_orientation = bvh_to_real_rotation @ state.real_global_orientation
-        state.bvh_past_oreintation = bvh_current_orientation
+        state.bvh_past_orientation = bvh_current_orientation
 
         # calculate real global position
         if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
             movement_vector = (np.array(MyWindow.state.curFrame[:3]) - np.array(state.bvh_past_position))
-            state.real_global_position += bvh_to_real_rotation @ movement_vector
-            state.real_global_position[1] = MyWindow.state.curFrame[1] 
+            state.real_global_position += bvh_to_real_rotation @ movement_vector    
         else:   # if QnA is newly called
             state.real_global_position[1] = MyWindow.state.curFrame[1]
             
@@ -232,6 +239,20 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
         newMatrix[:3, 3] = ROOTPOSITION
         newMatrix[:3, :3] = state.real_global_orientation
 
+        print("@@@@@", state.real_global_orientation.T @ np.array([0.,0., 1]))
+
+        joint.set_transform_matrix(parentMatrix @ newMatrix)
+        transform_matrix = joint.get_transform_matrix()
+        global_position = transform_matrix @ np.array([0., 0., 0., 1.])
+
+        temp = state.real_global_orientation.copy()
+        temp = temp[1]
+        temp[1] = 0
+        temp = utils.normalized(temp)
+
+        print("#######I want 0, 0, 1", joint.getCharacterLocalFrame()[:3, :3].T @ temp)
+
+        # print("real character frame", joint.getCharacterLocalFrame()[:3, :3])
     # JOINT
     else:
         index = joint.get_index()
@@ -263,9 +284,9 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
                                [0, 0, 0, 1]])
                 newMatrix = newMatrix @ Rz
 
-    joint.set_transform_matrix(parentMatrix @ newMatrix)
-    transform_matrix = joint.get_transform_matrix()
-    global_position = transform_matrix @ np.array([0., 0., 0., 1.])
+        joint.set_transform_matrix(parentMatrix @ newMatrix)
+        transform_matrix = joint.get_transform_matrix()
+        global_position = transform_matrix @ np.array([0., 0., 0., 1.])
     
 
     # set parent's global position (if it is root joint, parent_position is current_position)
@@ -284,7 +305,7 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
         global_velocity = (global_position[:3]- joint.get_global_position()) * 30
         joint.set_global_position(global_position[:3])
         joint.set_global_velocity(global_velocity)
-        drawLocalFrame(characterMatrix)
+        #drawLocalFrame(characterMatrix)
         
 
     # get root local position and root local velocity
@@ -411,6 +432,15 @@ def set_query_vector(key_input = None):
 
     for i in range(3):
         local_3Dposition_future[i] = future_direction * (abs_global_velocity * (i+1))
+    
+    # direction
+    temp = state.real_global_orientation.copy()
+    temp = temp[1]
+    temp[1] = 0
+    temp = utils.normalized(temp)
+
+    print("I want 0, 0, 1", state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ temp)
+
     local_2Dposition_future = local_3Dposition_future[:, 0::2]
 
     # global direction setting
@@ -425,6 +455,7 @@ def set_query_vector(key_input = None):
 
     state.query_vector.set_global_future_position(global_3Dposition_future)
     state.query_vector.set_global_future_direction(global_3Ddirection_future)
+
     state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
     state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
     state.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
@@ -473,7 +504,7 @@ def reset_bvh_past_postion():
     state.bvh_past_position = np.array([])
 
 def reset_bvh_past_orientation():
-    state.bvh_past_oreintation = np.array([])
+    state.bvh_past_orientation = np.array([])
 
 def drawLocalFrame(M):
     glPushMatrix()
