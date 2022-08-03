@@ -14,9 +14,15 @@ class state:
     frame_list = []
     query_vector = Feature()
     bvh_past_position = np.array([])
+    bvh_past_oreintation = np.array([])
     
     # The global position of the character on the window
     real_global_position = np.array([0., 0., 0.])
+    TposeX = [0, 1, 0]
+    TposeY = [1, 0, 0]
+    TposeZ = [0, 0, 1]
+    real_global_orientation = np.array([TposeX, TposeY, TposeZ]).T
+
     mean_array = np.array([ 1.41277287e-02,  4.27515134e-01,  3.89398700e-02,  8.42000393e-01,
                             7.17285028e-02,  1.20716830e+00, -8.23741644e-02,  1.84959764e-02,
                             -8.22155663e-02,  1.82737104e-02, -8.15859744e-02,  1.79583760e-02,
@@ -62,8 +68,6 @@ def parsing_bvh(bvh):
             line = bvh.readline().split()
             line = list(map(float, line))
             state.frame_list.append(line)
-        # last = [0] * len(state.frame_list[0])   # what's this??
-        # state.frame_list.append(last)
 
     FPS = int(1 / frameTime)
     return FPS
@@ -136,54 +140,80 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
     # channel rotation
     # ROOT
     if len(joint.get_channel()) == 6:
-        if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
-            # print("I'm old!!")
-            # print("curFrame data position", MyWindow.state.curFrame[:3])
-            # print("pastFrame data position", state.bvh_past_position)
-            state.real_global_position += (np.array(MyWindow.state.curFrame[:3]) - np.array(state.bvh_past_position))
+        # if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
+        #     # print("I'm old!!")
+        #     # print("curFrame data position", MyWindow.state.curFrame[:3])
+        #     # print("pastFrame data position", state.bvh_past_position)
             
-        else:   # if QnA is newly called
-            # print("I'm new!!!")
-            # print("curFrame data position", MyWindow.state.curFrame[:3])
-            state.real_global_position[1] = MyWindow.state.curFrame[1]
-            # print("new query!!")
-        state.bvh_past_position = MyWindow.state.curFrame[:3]
+        #     movement_vector = (np.array(MyWindow.state.curFrame[:3]) - np.array(state.bvh_past_position))
 
-        ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
-        # print(ROOTPOSITION)
-        ROOTPOSITION /= Joint.resize
-        #print(ROOTPOSITION)
+        #     # state.real_global_position += 
+            
+        # else:   # if QnA is newly called
+        #     # print("I'm new!!!")
+        #     # print("curFrame data position", MyWindow.state.curFrame[:3])
+        #     state.real_global_position[1] = MyWindow.state.curFrame[1]
+        #     # print("new query!!")
+        # state.bvh_past_position = MyWindow.state.curFrame[:3]
 
-        # move root's transformation matrix's origin using translation data
-        temp = np.identity(4)
-        temp[:3, 3] = ROOTPOSITION
-        newMatrix = newMatrix @ temp
+        # ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
+        # # print(ROOTPOSITION)
+        # ROOTPOSITION /= Joint.resize
+        # #print(ROOTPOSITION)
+
+        # # move root's transformation matrix's origin using translation data
+        # temp = np.identity(4)
+        # temp[:3, 3] = ROOTPOSITION
+        # newMatrix = newMatrix @ temp
+
+        bvh_current_orientation = np.identity(3)
+        bvh_to_real_rotation = None
+        
 
         for i in range(3, 6):
             if joint.get_channel()[i].upper() == 'XROTATION':
                 xr = MyWindow.state.curFrame[i]
                 xr = np.radians(xr)
-                Rx = np.array([[1., 0., 0., 0.],
-                               [0, np.cos(xr), -np.sin(xr), 0],
-                               [0, np.sin(xr), np.cos(xr), 0],
-                               [0., 0., 0., 1.]])
-                newMatrix = newMatrix @ Rx
+                Rx = np.array([[1., 0., 0.],
+                               [0, np.cos(xr), -np.sin(xr)],
+                               [0, np.sin(xr), np.cos(xr)]])
+                bvh_current_orientation = bvh_current_orientation @ Rx
             elif joint.get_channel()[i].upper() == 'YROTATION':
                 yr = MyWindow.state.curFrame[i]
                 yr = np.radians(yr)
-                Ry = np.array([[np.cos(yr), 0, np.sin(yr), 0.],
-                               [0, 1, 0, 0],
-                               [-np.sin(yr), 0, np.cos(yr), 0],
-                               [0., 0., 0., 1.]])
-                newMatrix = newMatrix @ Ry
+                Ry = np.array([[np.cos(yr), 0, np.sin(yr)],
+                               [0, 1, 0],
+                               [-np.sin(yr), 0, np.cos(yr)]])
+                bvh_current_orientation = bvh_current_orientation @ Ry
             elif joint.get_channel()[i].upper() == 'ZROTATION':
                 zr = MyWindow.state.curFrame[i]
                 zr = np.radians(zr)
-                Rz = np.array([[np.cos(zr), -np.sin(zr), 0, 0],
-                               [np.sin(zr), np.cos(zr), 0, 0],
-                               [0, 0, 1, 0],
-                               [0, 0, 0, 1]])
-                newMatrix = newMatrix @ Rz
+                Rz = np.array([[np.cos(zr), -np.sin(zr), 0],
+                               [np.sin(zr), np.cos(zr), 0],
+                               [0, 0, 1]])
+                bvh_current_orientation = bvh_current_orientation @ Rz
+
+        # calculate real global orientation
+        if len(state.bvh_past_oreintation) != 0: #Continuous motion playback received via the QnA function
+            bvh_to_real_rotation = state.bvh_past_oreintation.T @ bvh_current_orientation
+            state.real_global_orientation = bvh_to_real_rotation @ state.real_global_orientation
+        state.bvh_past_oreintation = bvh_current_orientation
+
+        # calculate real global position
+        if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
+            movement_vector = (np.array(MyWindow.state.curFrame[:3]) - np.array(state.bvh_past_position))
+            state.real_global_position += bvh_to_real_rotation @ movement_vector    
+        else:   # if QnA is newly called
+            state.real_global_position[1] = MyWindow.state.curFrame[1]
+            
+        state.bvh_past_position = MyWindow.state.curFrame[:3]
+
+        ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
+        ROOTPOSITION /= Joint.resize
+
+        # move root's transformation matrix's origin using translation data
+        newMatrix[:3, 3] = ROOTPOSITION
+        newMatrix[:3, :3] = state.real_global_orientation
 
     # JOINT
     else:
@@ -424,6 +454,9 @@ def draw_future_info():
 
 def reset_bvh_past_postion():
     state.bvh_past_position = np.array([])
+
+def reset_bvh_past_orientation():
+    state.bvh_past_oreintation = np.array([])
 
 def drawLocalFrame(M):
     glPushMatrix()

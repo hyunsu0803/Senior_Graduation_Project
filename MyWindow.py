@@ -158,21 +158,25 @@ class MyWindow(QOpenGLWidget):
 		elif e.key() == Qt.Key_Up:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="UP")
 			bvh_handler.reset_bvh_past_postion()
+			bvh_handler.reset_bvh_past_orientation()
 			state.KEY_MODE = "UP"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Down:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="DOWN")
 			bvh_handler.reset_bvh_past_postion()
+			bvh_handler.reset_bvh_past_orientation()
 			state.KEY_MODE = "DOWN"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Left:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="LEFT")
 			bvh_handler.reset_bvh_past_postion()
+			bvh_handler.reset_bvh_past_orientation()
 			state.KEY_MODE = "LEFT"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Right:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="RIGHT")
 			bvh_handler.reset_bvh_past_postion()
+			bvh_handler.reset_bvh_past_orientation()
 			state.KEY_MODE = "RIGHT"
 			self.matching_num = 0
 
@@ -292,22 +296,19 @@ class MyWindow(QOpenGLWidget):
 		if state.curFrame == []:
 			state.coming_soon_10frames, self.FPS = QnA(key_input="init")
 			reset_bvh_past_postion()
+			bvh_handler.reset_bvh_past_orientation()
 			self.timer.setInterval(1000 / self.FPS)
 		
 		elif self.matching_num % 10 == 9:
 			state.coming_soon_10frames, self.FPS = QnA()
 			reset_bvh_past_postion()
+			bvh_handler.reset_bvh_past_orientation()
 			self.timer.setInterval(1000 / self.FPS)
 
 	
 		self.matching_num = (self.matching_num + 1) % 10
-		# print("length", len(state.coming_soon_10frames))
 		state.curFrame = state.coming_soon_10frames[self.matching_num]
 	
 		self.update()
-		# state.curFrame = bvh_handler.state.frame_list[state.curFrame_index]
-		# state.curFrame_index = (state.curFrame_index + 1) % (len(bvh_handler.state.frame_list))
-		
-		# QnA()
-		# self.update()
+
 		#QApplication.processEvents()
