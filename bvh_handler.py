@@ -195,14 +195,31 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
 
         # calculate real global orientation
         if len(state.bvh_past_oreintation) != 0: #Continuous motion playback received via the QnA function
-            bvh_to_real_rotation = state.bvh_past_oreintation.T @ bvh_current_orientation
+            bvh_past_orienation_direction = state.bvh_past_oreintation[:3, 1].copy()
+            bvh_past_orienation_direction[1] = 0
+            bvh_past_orienation_direction = utils.normalized(bvh_past_orienation_direction)
+
+            bvh_current_orienation_direction = bvh_current_orientation[:3, 1].copy()
+            bvh_current_orienation_direction[1] = 0
+            bvh_current_orienation_direction = utils.normalized(bvh_current_orienation_direction)
+
+            th = np.arccos(np.dot(bvh_past_orienation_direction, bvh_current_orienation_direction))
+            crossing = np.cross(bvh_past_orienation_direction, bvh_current_orienation_direction)
+            if crossing[1] < 0:
+                th *= -1
+
+            bvh_to_real_rotation = np.array([[np.cos(th), 0, np.sin(th)],
+                                            [0, 1, 0],
+                                            [-np.sin(th), 0, np.cos(th)]])
+
             state.real_global_orientation = bvh_to_real_rotation @ state.real_global_orientation
         state.bvh_past_oreintation = bvh_current_orientation
 
         # calculate real global position
         if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
             movement_vector = (np.array(MyWindow.state.curFrame[:3]) - np.array(state.bvh_past_position))
-            state.real_global_position += bvh_to_real_rotation @ movement_vector    
+            state.real_global_position += bvh_to_real_rotation @ movement_vector
+            state.real_global_position[1] = MyWindow.state.curFrame[1] 
         else:   # if QnA is newly called
             state.real_global_position[1] = MyWindow.state.curFrame[1]
             
