@@ -70,13 +70,13 @@ class Joint:
     #     self.character_local_rotvel = vector
 
     def get_joint_name(self):
-        return self.joint_name
+        return self.joint_name.copy()
 
     def get_channel(self):
-        return self.channel
+        return self.channel.copy()
 
     def get_offset(self):
-        return self.offset
+        return self.offset.copy()
 
     def get_index(self):
         return self.index
@@ -85,22 +85,22 @@ class Joint:
         return self.end_site
 
     def get_child(self):
-        return self.child_joint
+        return self.child_joint.copy()
 
     def get_transform_matrix(self):
-        return self.matrix
+        return self.matrix.copy()
 
     def get_global_position(self):
-        return self.global_position
+        return self.global_position.copy()
 
     def get_global_velocity(self):
-        return self.global_velocity
+        return self.global_velocity.copy()
 
     def get_character_local_position(self):
-        return self.character_local_position
+        return self.character_local_position.copy()
 
     def get_character_local_velocity(self):
-        return self.character_local_velocity
+        return self.character_local_velocity.copy()
 
     def get_is_root(self):
         return self.is_root
@@ -109,7 +109,7 @@ class Joint:
         return self.is_foot
 
     def get_character_local_rotation(self):
-        return self.character_local_rotation
+        return self.character_local_rotation.copy()
 
     # def get_root_local_rotvel(self):
     #     return self.character_local_rotvel
@@ -131,7 +131,7 @@ class Joint:
 
     def getCharacterLocalFrame(self):
         M = self.get_transform_matrix().copy()
-        
+
         # origin projection 
         newOrigin = M[:3, 3]
         newOrigin[1] = 0
@@ -140,6 +140,7 @@ class Joint:
         newDirection[1] = 0.
 
         newZaxis=  utils.normalized(newDirection)
+
         newYaxis = np.array([0., 1., 0.])
         newXaxis = np.cross(newYaxis, newZaxis)
 
