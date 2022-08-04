@@ -16,6 +16,7 @@ class state:
     query_vector = Feature()
     bvh_past_position = np.array([])
     bvh_past_orientation = np.array([])
+    target_orientation = np.array([1., 0., 0.])
     
     # The global position of the character on the window
     real_global_position = np.array([0., 0., 0.])
@@ -141,35 +142,8 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
     # channel rotation
     # ROOT
     if len(joint.get_channel()) == 6:
-        # if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
-        #     # print("I'm old!!")
-        #     # print("curFrame data position", MyWindow.state.curFrame[:3])
-        #     # print("pastFrame data position", state.bvh_past_position)
-            
-        #     movement_vector = (np.array(MyWindow.state.curFrame[:3]) - np.array(state.bvh_past_position))
-
-        #     # state.real_global_position += 
-            
-        # else:   # if QnA is newly called
-        #     # print("I'm new!!!")
-        #     # print("curFrame data position", MyWindow.state.curFrame[:3])
-        #     state.real_global_position[1] = MyWindow.state.curFrame[1]
-        #     # print("new query!!")
-        # state.bvh_past_position = MyWindow.state.curFrame[:3]
-
-        # ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
-        # # print(ROOTPOSITION)
-        # ROOTPOSITION /= Joint.resize
-        # #print(ROOTPOSITION)
-
-        # # move root's transformation matrix's origin using translation data
-        # temp = np.identity(4)
-        # temp[:3, 3] = ROOTPOSITION
-        # newMatrix = newMatrix @ temp
-
         bvh_current_orientation = np.identity(3)
         bvh_to_real_rotation = None
-        
 
         for i in range(3, 6):
             if joint.get_channel()[i].upper() == 'XROTATION':
@@ -196,9 +170,9 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
 
         # calculate real global orientation
         if len(state.bvh_past_orientation) != 0: #Continuous motion playback received via the QnA function
-            bvh_past_to_current_rotation = state.bvh_past_orientation.T @ bvh_current_orientation
+            bvh_past_to_current_rotation =  bvh_current_orientation @ state.bvh_past_orientation.T   # about global frame
             state.real_global_orientation = bvh_past_to_current_rotation @ state.real_global_orientation
-            bvh_to_real_rotation = bvh_current_orientation.T @ state.real_global_orientation
+            bvh_to_real_rotation = state.real_global_orientation @ bvh_current_orientation.T # about global frame
 
         else:   # if QnA is newly called
             bvh_current_orientation_direction = bvh_current_orientation[:3, 1].copy()
@@ -217,7 +191,7 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
             
             bvh_to_real_rotation_yrotation = np.array([[np.cos(th), 0, np.sin(th)],
                                              [0, 1, 0],
-                                             [-np.sin(th), 0, np.cos(th)]])
+                                             [-np.sin(th), 0, np.cos(th)]]) # about global frame
 
             state.real_global_orientation = bvh_to_real_rotation_yrotation @ bvh_current_orientation
 
@@ -239,20 +213,13 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
         newMatrix[:3, 3] = ROOTPOSITION
         newMatrix[:3, :3] = state.real_global_orientation
 
-        print("@@@@@", state.real_global_orientation.T @ np.array([0.,0., 1]))
+        #print("@@@@@", state.real_global_orientation.T @ np.array([0.,0., 1]))
 
         joint.set_transform_matrix(parentMatrix @ newMatrix)
         transform_matrix = joint.get_transform_matrix()
+    
         global_position = transform_matrix @ np.array([0., 0., 0., 1.])
 
-        temp = state.real_global_orientation.copy()
-        temp = temp[1]
-        temp[1] = 0
-        temp = utils.normalized(temp)
-
-        print("#######I want 0, 0, 1", joint.getCharacterLocalFrame()[:3, :3].T @ temp)
-
-        # print("real character frame", joint.getCharacterLocalFrame()[:3, :3])
     # JOINT
     else:
         index = joint.get_index()
@@ -305,7 +272,7 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
         global_velocity = (global_position[:3]- joint.get_global_position()) * 30
         joint.set_global_position(global_position[:3])
         joint.set_global_velocity(global_velocity)
-        #drawLocalFrame(characterMatrix)
+        drawLocalFrame(characterMatrix)
         
 
     # get root local position and root local velocity
@@ -408,50 +375,61 @@ def set_query_vector(key_input = None):
 
     # future direction setting
     future_direction = None
+    global_future_direction = None
+
     if key_input == None:
-        future_direction = np.array([0., 0., 1.])
+        global_future_direction = state.target_orientation
+        future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
     elif key_input == "LEFT":
-        global_future_direction = np.array([1., 0., 0.])
-        future_direction = joint.getCharacterLocalFrame()[:3, :3].T @ global_future_direction
+        state.target_orientation = np.array([1., 0., 0.])
+        global_future_direction = state.target_orientation
+        future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
     elif key_input == "RIGHT":
-        global_future_direction = np.array([-1., 0., 0.])
-        future_direction = joint.getCharacterLocalFrame()[:3, :3].T @ global_future_direction
+        state.target_orientation = np.array([-1., 0., 0.])
+        global_future_direction = state.target_orientation
+        future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
     elif key_input == "UP":
-        global_future_direction = np.array([0., 0., 1.])
-        future_direction = joint.getCharacterLocalFrame()[:3, :3].T @ global_future_direction
+        state.target_orientation = np.array([0., 0., 1.])
+        global_future_direction = state.target_orientation
+        future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
     elif key_input == "DOWN":
-        global_future_direction = np.array([0., 0., -1.])
-        future_direction = joint.getCharacterLocalFrame()[:3, :3].T @ global_future_direction
+        state.target_orientation = np.array([0., 0., -1.])
+        global_future_direction = state.target_orientation
+        future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
+
 
     local_3Ddirection_future = np.array([future_direction, future_direction, future_direction])
     local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
 
     # future position setting
-    abs_global_velocity = np.linalg.norm(state.joint_list[0].get_global_velocity())/3
+    #abs_global_velocity = np.linalg.norm(state.joint_list[0].get_global_velocity())/3
+    abs_global_velocity = 1.3
     local_3Dposition_future = np.zeros((3, 3))
 
     for i in range(3):
         local_3Dposition_future[i] = future_direction * (abs_global_velocity * (i+1))
-    
-    # direction
-    temp = state.real_global_orientation.copy()
-    temp = temp[1]
-    temp[1] = 0
-    temp = utils.normalized(temp)
-
-    print("I want 0, 0, 1", state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ temp)
+    print("case1) !!!!!!!!!!")
+    print(local_3Dposition_future)
 
     local_2Dposition_future = local_3Dposition_future[:, 0::2]
 
     # global direction setting
-    global_direction = state.joint_list[0].getGlobalDirection().copy()
-    global_3Ddirection_future = np.array([global_direction, global_direction, global_direction])
+    global_3Ddirection_future = np.array([global_future_direction, global_future_direction, global_future_direction])
 
     # global position setting
     global_3Dposition_future = np.zeros((3, 3))
 
     for i in range(3):
-        global_3Dposition_future[i] = state.real_global_position/Joint.resize + global_direction * (abs_global_velocity * (i+1))
+        global_3Dposition_future[i] = state.real_global_position/Joint.resize + global_future_direction * (abs_global_velocity * (i+1))
+    global_3Dposition_future[:, 1] = 0
+    print("global position")
+    print(global_3Dposition_future)
+    print("case2) !!!!!!!!!!")
+    for i in range(3):
+        temp = np.array([0., 0., 0., 1])
+        temp[:3] = global_3Dposition_future[i]
+        print(np.linalg.inv(state.joint_list[0].getCharacterLocalFrame()) @ temp)
+        
 
     state.query_vector.set_global_future_position(global_3Dposition_future)
     state.query_vector.set_global_future_direction(global_3Ddirection_future)
@@ -461,12 +439,14 @@ def set_query_vector(key_input = None):
     state.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     state.query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     state.query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
-
     feature_vector = state.query_vector.get_feature_list().copy()
 
     # normalization
     for i in range(0, 27):
         feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
+
+    for i in range(0, 12):
+        feature_vector[i] = feature_vector[i] * 2
 
     return feature_vector
 
