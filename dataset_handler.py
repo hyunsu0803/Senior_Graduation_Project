@@ -295,7 +295,7 @@ def db_normalizing(data):
 
     for i in range(len(data)):
         for j in range(12):
-            data[i, j] = data[i, j] * 2
+            data[i, j] = data[i, j] * 1.5
 
     print("mean", state.mean_array)
     print("std", state.std_array)
