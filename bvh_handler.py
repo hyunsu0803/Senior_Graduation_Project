@@ -271,6 +271,7 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
     if joint.get_is_root():
         characterMatrix = joint.getCharacterLocalFrame().copy()
         global_velocity = (global_position[:3]- joint.get_global_position()) * 30
+        joint.set_global_position(global_position[:3])
         joint.set_global_velocity(global_velocity)
         drawLocalFrame(characterMatrix)
         
@@ -279,7 +280,6 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
     new_character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]  # local to root joint
     past_character_local_position = joint.get_character_local_position()  # local to root joint
     character_local_velocity = (new_character_local_position - past_character_local_position) * 30   # 30 is FPS of LaFAN1)
-
 
     # set joint class's value
     joint.set_global_position(global_position[:3])
@@ -462,8 +462,7 @@ def set_query_vector(key_input = None):
     state.query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
     feature_vector = state.query_vector.get_feature_list().copy()
 
-
-    # # normalization
+    # normalization
     for i in range(0, 27):
         #feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
         feature_vector[i] = feature_vector[i] / state.std_array[i]
