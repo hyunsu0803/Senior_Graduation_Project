@@ -21,7 +21,6 @@ def QnA(key_input = None):
    0.         ,  0.        ])		# first frame
 	else:	
 		temp_query = set_query_vector(key_input=key_input)
-	
 
 	ans = DB.query(temp_query)
 	qidx = ans[1]

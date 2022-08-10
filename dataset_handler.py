@@ -291,12 +291,10 @@ def db_normalizing(data):
 
     for i in range(len(data)):
         for j in range(27):
-            print("before data", data[i, j])
             data[i, j] = (data[i, j] - state.mean_array[j]) / state.std_array[j]
             if j == 24 or j == 26:
                 print("after data", data[i, j])
-                print("mean", state.mean_array[j])
-                print("std", state.std_array[j])
+
 
     print("mean", state.mean_array)
     print("std", state.std_array)
@@ -340,7 +338,7 @@ def main():
                 data.append(feature_vector.get_feature_list())
 
 
-    db_normalizing(np.array(data))
+    #db_normalizing(np.array(data))
 
     DB = cKDTree(np.array(data))
     with open('tree_dump.bin', 'wb') as dump_file:
