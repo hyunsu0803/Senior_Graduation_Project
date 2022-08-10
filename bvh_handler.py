@@ -279,14 +279,7 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
     new_character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]  # local to root joint
     past_character_local_position = joint.get_character_local_position()  # local to root joint
     character_local_velocity = (new_character_local_position - past_character_local_position) * 30   # 30 is FPS of LaFAN1)
-    
-    if joint.get_is_root():
-        print("new hip position")
-        print(new_character_local_position)
-        print("past hip position")
-        print(past_character_local_position)
-        print("hip velocity")
-        print(character_local_velocity)
+
 
     # set joint class's value
     joint.set_global_position(global_position[:3])
@@ -407,7 +400,7 @@ def set_query_vector(key_input = None):
 
     # future position setting
     #abs_global_velocity = np.linalg.norm(state.joint_list[0].get_global_velocity())/3
-    abs_global_velocity = 1.2
+    abs_global_velocity = 1.6
     local_3Dposition_future = np.zeros((3, 3))
 
     for i in range(3):
@@ -419,6 +412,8 @@ def set_query_vector(key_input = None):
     # local_3Ddirection_future = np.array([local_future_direction_for_position, local_future_direction_for_position, local_future_direction_for_position])
     # local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
     
+    local_future_direction[1] = 0
+    local_future_direction = utils.normalized(local_future_direction)
     local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
     # current_local_direction = np.array([0., 0., 1])
     # desired_local_direction = local_future_direction
@@ -468,9 +463,9 @@ def set_query_vector(key_input = None):
     feature_vector = state.query_vector.get_feature_list().copy()
 
 
-    # normalization
-    for i in range(0, 27):
-        feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
+    # # normalization
+    # for i in range(0, 27):
+    #     feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
 
 
 
