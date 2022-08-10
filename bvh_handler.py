@@ -1,4 +1,5 @@
 from telnetlib import theNULL
+from threading import local
 import numpy as np
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -374,36 +375,36 @@ def set_query_vector(key_input = None):
     
 
     # future direction setting
-    local_future_direction_for_position = None
-    global_future_direction_for_position = None
+    local_future_direction = None
+    global_future_direction = None
 
     if key_input == None:
-        global_future_direction_for_position = state.target_orientation
-        local_future_direction_for_position = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction_for_position
+        global_future_direction = state.target_orientation
+        local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
     elif key_input == "LEFT":
         state.target_orientation = np.array([1., 0., 0.])
-        global_future_direction_for_position = state.target_orientation
-        local_future_direction_for_position = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction_for_position
+        global_future_direction = state.target_orientation
+        local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
     elif key_input == "RIGHT":
         state.target_orientation = np.array([-1., 0., 0.])
-        global_future_direction_for_position = state.target_orientation
-        local_future_direction_for_position = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction_for_position
+        global_future_direction = state.target_orientation
+        local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
     elif key_input == "UP":
         state.target_orientation = np.array([0., 0., 1.])
-        global_future_direction_for_position = state.target_orientation
-        local_future_direction_for_position = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction_for_position
+        global_future_direction = state.target_orientation
+        local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
     elif key_input == "DOWN":
         state.target_orientation = np.array([0., 0., -1.])
-        global_future_direction_for_position = state.target_orientation
-        local_future_direction_for_position = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction_for_position
+        global_future_direction = state.target_orientation
+        local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
 
     # future position setting
     #abs_global_velocity = np.linalg.norm(state.joint_list[0].get_global_velocity())/3
-    abs_global_velocity = 0.9
+    abs_global_velocity = 1.2
     local_3Dposition_future = np.zeros((3, 3))
 
     for i in range(3):
-        local_3Dposition_future[i] = local_future_direction_for_position * (abs_global_velocity * (i+1))
+        local_3Dposition_future[i] = local_future_direction * (abs_global_velocity * (i+1))
 
     local_2Dposition_future = local_3Dposition_future[:, 0::2]
 
@@ -411,22 +412,21 @@ def set_query_vector(key_input = None):
     # local_3Ddirection_future = np.array([local_future_direction_for_position, local_future_direction_for_position, local_future_direction_for_position])
     # local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
     
-    local_3Ddirection_future = []
-    current_local_direction = np.array([0., 0., 1])
-    desired_local_direction = local_future_direction_for_position
+    local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
+    # current_local_direction = np.array([0., 0., 1])
+    # desired_local_direction = local_future_direction
 
-    th = np.arccos(np.dot(current_local_direction, desired_local_direction))
-    crossing = np.cross(current_local_direction, desired_local_direction)
-    if crossing[1] < 0:
-        th *= -1
+    # th = np.arccos(np.dot(current_local_direction, desired_local_direction))
+    # crossing = np.cross(current_local_direction, desired_local_direction)
+    # if crossing[1] < 0:
+    #     th *= -1
     
-    for i in range(1, 4):
-        current_to_desired_rotation_local = (np.array([[np.cos(th/5 * i), 0, np.sin(th/5 * i)],
-                                                        [0, 1, 0],
-                                                        [-np.sin(th/5 * i), 0, np.cos(th/5 * i)]])) 
-        local_3Ddirection_future.append(current_to_desired_rotation_local @ current_local_direction)
+    # for i in range(1, 4):
+    #     current_to_desired_rotation_local = (np.array([[np.cos(th/5 * i), 0, np.sin(th/5 * i)],
+    #                                                     [0, 1, 0],
+    #                                                     [-np.sin(th/5 * i), 0, np.cos(th/5 * i)]])) 
+    #     local_3Ddirection_future.append(current_to_desired_rotation_local @ current_local_direction)
     
-    local_3Ddirection_future = np.array(local_3Ddirection_future)
     local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
 
 
@@ -435,7 +435,7 @@ def set_query_vector(key_input = None):
     global_3Dposition_future = np.zeros((3, 3))
 
     for i in range(3):
-        global_3Dposition_future[i] = state.real_global_position/Joint.resize + global_future_direction_for_position * (abs_global_velocity * (i+1))
+        global_3Dposition_future[i] = state.real_global_position/Joint.resize + global_future_direction * (abs_global_velocity * (i+1))
     global_3Dposition_future[:, 1] = 0
     for i in range(3):
         temp = np.array([0., 0., 0., 1])
@@ -464,8 +464,7 @@ def set_query_vector(key_input = None):
     for i in range(0, 27):
         feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
 
-    for i in range(0, 12):
-        feature_vector[i] = feature_vector[i] * 1.5
+
 
     return feature_vector
 
