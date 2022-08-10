@@ -464,9 +464,9 @@ def set_query_vector(key_input = None):
 
 
     # # normalization
-    # for i in range(0, 27):
-    #     feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
-
+    for i in range(0, 27):
+        #feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
+        feature_vector[i] = feature_vector[i] / state.std_array[i]
 
 
     return feature_vector
