@@ -210,7 +210,7 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
         state.local_futurePosition = [None, None, None]
         state.futureDirection = [None, None, None]
 
-
+        # future frame info setting
         for i in range(0, 3):
 
             global_root_position = np.array([0., 0., 0., 1.])
@@ -291,7 +291,12 @@ def db_normalizing(data):
 
     for i in range(len(data)):
         for j in range(27):
+            print("before data", data[i, j])
             data[i, j] = (data[i, j] - state.mean_array[j]) / state.std_array[j]
+            if j == 24 or j == 26:
+                print("after data", data[i, j])
+                print("mean", state.mean_array[j])
+                print("std", state.std_array[j])
 
     print("mean", state.mean_array)
     print("std", state.std_array)
