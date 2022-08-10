@@ -24,11 +24,9 @@ def QnA(key_input = None):
 
 	ans = DB.query(temp_query)
 	qidx = ans[1]
-	# if key_input != "init" and key_input != None:
-	print("!!!!!!!! Query !!!!!!!!", temp_query)
-	print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx])
-	print("&&&&&", abs(temp_query - DB.data[qidx]))
-	print("&&&&&", np.linalg.norm(np.array(abs(temp_query - DB.data[qidx]))))
+	if key_input != "init" and key_input != None:
+		print("!!!!!!!! Query !!!!!!!!", temp_query)
+		print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx])
 
 	bvh_name, nearest_frame_idx, FPS = utils.find_your_bvh(qidx)
 	print("bvh name", bvh_name, nearest_frame_idx)
