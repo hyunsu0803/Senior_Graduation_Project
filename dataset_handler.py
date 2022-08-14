@@ -243,6 +243,8 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
     global_velocity = (new_global_position - past_global_position) * 30
     character_local_velocity = np.linalg.inv(characterMatrix)[:3, :3] @ global_velocity
     character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]  # local to root joint
+    # if joint.get_is_root():
+        #print("character_local_velocity", character_local_velocity)
 
     # set joint class's value
     joint.set_global_position(global_position[:3])
@@ -289,18 +291,15 @@ def db_normalizing(data):
     for i in range(27):
         state.std_array[i] = np.sqrt(np.mean((data[:, i] - state.mean_array[i]) ** 2))
 
-    # for i in range(len(data)):
-    #     for j in range(27):
-    #         data[i, j] = (data[i, j] - state.mean_array[j]) / state.std_array[j]
-    #         if j == 24 or j == 26:
-    #             print("after data", data[i, j])
-
     for i in range(len(data)):
         for j in range(27):
             data[i, j] = (data[i, j] - state.mean_array[j]) / state.std_array[j]
+            if j == 24 or j == 26:
+                print(data[i, j])
 
     print("mean", state.mean_array)
     print("std", state.std_array)
+
 
 
 def main():

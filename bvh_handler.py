@@ -281,23 +281,18 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
 
     if joint.get_is_root():
         characterMatrix = joint.getCharacterLocalFrame().copy()
-        global_velocity = (global_position[:3]- joint.get_global_position()) * 30
-        joint.set_global_position(global_position[:3])
-        joint.set_global_velocity(global_velocity)
         drawLocalFrame(characterMatrix)
         
 
     # get root local position and root local velocity
     new_global_position = global_position[:3]
     past_global_position = joint.get_global_position()
-    if joint.get_is_root():
-        print("##############", new_global_position - past_global_position)
     global_velocity = (new_global_position - past_global_position) * 30
     character_local_velocity = np.linalg.inv(characterMatrix)[:3, :3] @ global_velocity
     character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]  # local to root joint
 
     # set joint class's value
-    joint.set_global_position(global_position[:3])
+    joint.set_global_position(new_global_position)
     joint.set_character_local_velocity(character_local_velocity)
     joint.set_character_local_position(character_local_position[:3])
 
