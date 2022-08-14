@@ -365,7 +365,7 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
     # draw child joints
     else:
         for j in joint.get_child():
-            drawJoint(joint.get_transform_matrix(), j, characterMatrix)
+            drawJoint(joint.get_transform_matrix(), j, characterMatrix = characterMatrix)
 
     glPopMatrix()
 
@@ -379,9 +379,14 @@ def set_query_vector(key_input = None):
     for joint in state.joint_list:
         if joint.get_is_root():
             hip_velocity.append(joint.get_character_local_velocity())
+            print("root position", joint.get_character_local_position())
+            
+
         elif joint.get_is_foot():
             two_foot_position.append(joint.get_character_local_position())
+            print(joint.joint_name, joint.get_character_local_position())
             two_foot_velocity.append(joint.get_character_local_velocity())
+
     
 
     # future direction setting
@@ -473,9 +478,10 @@ def set_query_vector(key_input = None):
 
     # normalization
     for i in range(0, 27):
-        #feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
-        feature_vector[i] = feature_vector[i] / state.std_array[i]
-
+        feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
+        
+    print("after normalization left foot position", feature_vector[12:15])
+    print("after normalization right foot position", feature_vector[15:18])
 
     return feature_vector
 
