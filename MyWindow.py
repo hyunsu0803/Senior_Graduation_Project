@@ -156,24 +156,28 @@ class MyWindow(QOpenGLWidget):
 			self.perspective = not self.perspective
 
 		elif e.key() == Qt.Key_Up:
+			print("--------up---------")
 			state.coming_soon_10frames, self.FPS = QnA(key_input="UP")
 			bvh_handler.reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
 			state.KEY_MODE = "UP"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Down:
+			print("--------down---------")
 			state.coming_soon_10frames, self.FPS = QnA(key_input="DOWN")
 			bvh_handler.reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
 			state.KEY_MODE = "DOWN"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Left:
+			print("--------left---------")
 			state.coming_soon_10frames, self.FPS = QnA(key_input="LEFT")
 			bvh_handler.reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
 			state.KEY_MODE = "LEFT"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Right:
+			print("--------right---------")
 			state.coming_soon_10frames, self.FPS = QnA(key_input="RIGHT")
 			bvh_handler.reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
