@@ -294,8 +294,6 @@ def db_normalizing(data):
     for i in range(len(data)):
         for j in range(27):
             data[i, j] = (data[i, j] - state.mean_array[j]) / state.std_array[j]
-            if j == 24 or j == 26:
-                print(data[i, j])
 
     print("mean", state.mean_array)
     print("std", state.std_array)
