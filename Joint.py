@@ -40,7 +40,7 @@ class Joint:
         self.matrix = matrix
 
     def set_global_position(self, position):
-        self.global_position = position
+        self.global_position = position.copy()
 
     def set_global_velocity(self, velocity):
         self.global_velocity = velocity
