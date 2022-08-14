@@ -26,21 +26,32 @@ class state:
     TposeZ = [0, 0, 1]
     real_global_orientation = np.array([TposeX, TposeY, TposeZ]).T
 
-    mean_array = np.array([ 1.41277287e-02,  4.27515134e-01,  3.89398700e-02,  8.42000393e-01,
-                            7.17285028e-02,  1.20716830e+00, -8.23741644e-02,  1.84959764e-02,
-                            -8.22155663e-02,  1.82737104e-02, -8.15859744e-02,  1.79583760e-02,
-                            2.96535476e-01,  4.09111197e-01, -5.73196245e-02, -3.08930586e-01,
-                            4.04232245e-01, -6.19720699e-02,  1.28611388e-03,  1.24453725e-03,
-                            -4.38613943e-04, -1.33293606e-03,  1.24974156e-03, -1.89162694e-04,
-                            2.22365800e-19,  1.00846789e-02,  2.17101458e-19])
-    std_array = np.array([3.67570835e-01, 7.05172893e-01, 7.44494015e-01, 1.36265022e+00,
-                            1.16910184e+00, 1.95419930e+00, 7.56352291e-01, 6.48693771e-01,
-                            7.52681095e-01, 6.52976142e-01, 7.51695391e-01, 6.54198184e-01,
-                            3.98546797e-01, 4.81824252e-01, 5.52025651e-01, 3.83578971e-01,
-                            4.77795089e-01, 5.42710984e-01, 1.74015595e+00, 1.33964037e+00,
-                            2.69185055e+00, 1.76546581e+00, 1.36998779e+00, 2.68857973e+00,
-                            3.24655240e-14, 1.16281390e+00, 2.67810824e-14])
-
+    # mean_array = np.array([ 1.41277287e-02,  4.27515134e-01,  3.89398700e-02,  8.42000393e-01,
+    #                         7.17285028e-02,  1.20716830e+00, -8.23741644e-02,  1.84959764e-02,
+    #                         -8.22155663e-02,  1.82737104e-02, -8.15859744e-02,  1.79583760e-02,
+    #                         2.96535476e-01,  4.09111197e-01, -5.73196245e-02, -3.08930586e-01,
+    #                         4.04232245e-01, -6.19720699e-02,  1.28611388e-03,  1.24453725e-03,
+    #                         -4.38613943e-04, -1.33293606e-03,  1.24974156e-03, -1.89162694e-04,
+    #                         2.22365800e-19,  1.00846789e-02,  2.17101458e-19])
+    # std_array = np.array([3.67570835e-01, 7.05172893e-01, 7.44494015e-01, 1.36265022e+00,
+    #                         1.16910184e+00, 1.95419930e+00, 7.56352291e-01, 6.48693771e-01,
+    #                         7.52681095e-01, 6.52976142e-01, 7.51695391e-01, 6.54198184e-01,
+    #                         3.98546797e-01, 4.81824252e-01, 5.52025651e-01, 3.83578971e-01,
+    #                         4.77795089e-01, 5.42710984e-01, 1.74015595e+00, 1.33964037e+00,
+    #                         2.69185055e+00, 1.76546581e+00, 1.36998779e+00, 2.68857973e+00,
+    #                         3.24655240e-14, 1.16281390e+00, 2.67810824e-14])
+    mean_array = np.array([ 3.96641086e-02,  3.86646081e-01,  8.07923595e-02,  7.65387857e-01,
+                            1.22890080e-01,  1.12233411e+00, -4.33346525e-02, -2.01902337e-02,
+                            -4.34143420e-02, -2.07237915e-02, -4.43262646e-02, -2.11419204e-02,
+                            2.81307738e-01,  2.31036082e-01,  3.78676228e-02, -2.87099623e-01,
+                            2.29538444e-01,  1.80696202e-02,  9.05595138e-02,  7.63847903e-04,
+                            1.13003899e+00,  1.57329582e-01,  7.02027734e-04,  1.13206893e+00,
+                            1.32993700e-01,  7.92512608e-03,  1.11138424e+00])
+    std_array = np.array([0.21776958, 0.45401483, 0.43843937, 0.89688114, 0.69075731, 1.3252949,
+                          0.77729875, 0.62731261, 0.77303758, 0.63253349, 0.77294406, 0.6325707,
+                          0.2052435,  0.08995102, 0.43104437, 0.21388302, 0.0926858,  0.44669098,
+                          1.91980644, 0.6210064,  4.80592145, 1.7238057, 0.62843958, 4.81778621,
+                          1.66849336, 0.79803529, 4.27439904])
 
 def parsing_bvh(bvh):
 
@@ -216,10 +227,10 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
 
         #print("@@@@@", state.real_global_orientation.T @ np.array([0.,0., 1]))
 
-        joint.set_transform_matrix(parentMatrix @ newMatrix)
-        transform_matrix = joint.get_transform_matrix()
+        # joint.set_transform_matrix(parentMatrix @ newMatrix)
+        # transform_matrix = joint.get_transform_matrix()
     
-        global_position = transform_matrix @ np.array([0., 0., 0., 1.])
+        # global_position = transform_matrix @ np.array([0., 0., 0., 1.])
 
     # JOINT
     else:
@@ -252,9 +263,9 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
                                [0, 0, 0, 1]])
                 newMatrix = newMatrix @ Rz
 
-        joint.set_transform_matrix(parentMatrix @ newMatrix)
-        transform_matrix = joint.get_transform_matrix()
-        global_position = transform_matrix @ np.array([0., 0., 0., 1.])
+    joint.set_transform_matrix(parentMatrix @ newMatrix)
+    transform_matrix = joint.get_transform_matrix()
+    global_position = transform_matrix @ np.array([0., 0., 0., 1.])
     
 
     # set parent's global position (if it is root joint, parent_position is current_position)
@@ -277,14 +288,18 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
         
 
     # get root local position and root local velocity
-    new_character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]  # local to root joint
-    past_character_local_position = joint.get_character_local_position()  # local to root joint
-    character_local_velocity = (new_character_local_position - past_character_local_position) * 30   # 30 is FPS of LaFAN1)
+    new_global_position = global_position[:3]
+    past_global_position = joint.get_global_position()
+    if joint.get_is_root():
+        print("##############", new_global_position - past_global_position)
+    global_velocity = (new_global_position - past_global_position) * 30
+    character_local_velocity = np.linalg.inv(characterMatrix)[:3, :3] @ global_velocity
+    character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]  # local to root joint
 
     # set joint class's value
     joint.set_global_position(global_position[:3])
     joint.set_character_local_velocity(character_local_velocity)
-    joint.set_character_local_position(new_character_local_position[:3])
+    joint.set_character_local_position(character_local_position[:3])
 
     v = cur_position - parent_position
     box_length = utils.l2norm(v)
@@ -400,7 +415,7 @@ def set_query_vector(key_input = None):
 
     # future position setting
     #abs_global_velocity = np.linalg.norm(state.joint_list[0].get_global_velocity())/3
-    abs_global_velocity = 1.3
+    abs_global_velocity = 1.
     local_3Dposition_future = np.zeros((3, 3))
 
     for i in range(3):
@@ -442,7 +457,6 @@ def set_query_vector(key_input = None):
     for i in range(3):
         temp = np.array([0., 0., 0., 1])
         temp[:3] = global_3Dposition_future[i]
-        print(np.linalg.inv(state.joint_list[0].getCharacterLocalFrame()) @ temp)
     
     # global direction setting
     global_3Ddirection_future = []
