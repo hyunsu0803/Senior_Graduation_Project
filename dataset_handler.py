@@ -305,11 +305,11 @@ def db_normalizing(data):
 def main():
     state.curFrame = []
 
-    bvh_dir = './lafan2/'
+    bvh_dir = './lafan1/'
     bvh_names = os.listdir(bvh_dir)
     bvh_names.sort()
 
-    with open('db_index_info2.txt', 'w') as db_index_info:
+    with open('db_index_info.txt', 'w') as db_index_info:
 
         db_index = 0
         data = []

@@ -7,37 +7,37 @@ from bvh_handler import set_query_vector
 
 def QnA(key_input = None):
 
-	tree_file = open('tree_dump2.bin', 'rb')
+	tree_file = open('tree_dump.bin', 'rb')
 
 	DB = pickle.load(tree_file)
 
 	if key_input == "init":
-		# temp_query = np.zeros((27,))
-		temp_query = np.array([  0.          , 0.          , 0.          , 0.          , 0.,
-   0.          , 0.          , 0.          , 0.         ,  0.,
-   0.          , 0.         ,  0.2045277,   -1.84668984,   0.72330508,
-   0.2043837,   -1.850461 ,    0.67703678 ,  6.13583114 , -55.40069508,
-  21.69915251,   6.13151086, -55.51382989 , 20.31110331  , 0.,
-   0.         ,  0.        ])		# first frame
+		temp_query = np.zeros((27,))
+# 		temp_query = np.array([  0.          , 0.          , 0.          , 0.          , 0.,
+#    0.          , 0.          , 0.          , 0.         ,  0.,
+#    0.          , 0.         ,  0.2045277,   -1.84668984,   0.72330508,
+#    0.2043837,   -1.850461 ,    0.67703678 ,  6.13583114 , -55.40069508,
+#   21.69915251,   6.13151086, -55.51382989 , 20.31110331  , 0.,
+#    0.         ,  0.        ])		# first frame
 	else:	
 		temp_query = set_query_vector(key_input=key_input)
 
 	ans = DB.query(temp_query)
 	qidx = ans[1]
-	# print("!!!!!!!! Query !!!!!!!!", temp_query)
-	# print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx])
+	print("!!!!!!!! Query !!!!!!!!", temp_query)
+	print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx])
 
-	# print()
-	# print("############query feature difference##############")
-	# print(np.linalg.norm(temp_query - np.array(DB.data[qidx])))
-	# print("############query feature difference vector##############")
-	# print(temp_query - np.array(DB.data[qidx]))
+	print()
+	print("############query feature difference##############")
+	print(np.linalg.norm(temp_query - np.array(DB.data[qidx])))
+	print("############query feature difference vector##############")
+	print(temp_query - np.array(DB.data[qidx]))
 	# print()
 
 	bvh_name, nearest_frame_idx, FPS = utils.find_your_bvh(qidx)
 	print("bvh name", bvh_name, nearest_frame_idx)
 
-	bvh_folder = './lafan2'
+	bvh_folder = './lafan1'
 	bvh_path = os.path.join(bvh_folder, bvh_name)
 	bvh_file = open(bvh_path, "r")
 
