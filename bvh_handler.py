@@ -400,7 +400,7 @@ def set_query_vector(key_input = None):
 
     # future position setting
     #abs_global_velocity = np.linalg.norm(state.joint_list[0].get_global_velocity())/3
-    abs_global_velocity = 1.6
+    abs_global_velocity = 1.3
     local_3Dposition_future = np.zeros((3, 3))
 
     for i in range(3):
