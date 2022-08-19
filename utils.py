@@ -30,7 +30,7 @@ def exp(rv):
 
 
 def find_your_bvh(q):
-    info_txt = open('db_index_info.txt', 'r')
+    info_txt = open('db_index_info2.txt', 'r')
 
     info = info_txt.readlines()
     info = [i.split() for i in info]

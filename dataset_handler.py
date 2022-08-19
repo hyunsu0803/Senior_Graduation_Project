@@ -271,6 +271,8 @@ def set_feature_vector(feature_vector):
 
     feature_vector.set_future_position(np.array(state.local_futurePosition).reshape(6, ))
     feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
+    # feature_vector.set_future_position(np.zeros_like(np.array(state.local_futurePosition).reshape(6, )))
+    # feature_vector.set_future_direction(np.zeros_like(np.array(state.futureDirection).reshape(6, )))
     feature_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     feature_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
@@ -292,7 +294,7 @@ def db_normalizing(data):
         state.std_array[i] = np.sqrt(np.mean((data[:, i] - state.mean_array[i]) ** 2))
 
     for i in range(len(data)):
-        for j in range(27):
+        for j in range(0 ,27):
             data[i, j] = (data[i, j] - state.mean_array[j]) / state.std_array[j]
 
     print("mean", state.mean_array)
@@ -303,11 +305,11 @@ def db_normalizing(data):
 def main():
     state.curFrame = []
 
-    bvh_dir = './lafan1/'
+    bvh_dir = './lafan2/'
     bvh_names = os.listdir(bvh_dir)
     bvh_names.sort()
 
-    with open('db_index_info.txt', 'w') as db_index_info:
+    with open('db_index_info2.txt', 'w') as db_index_info:
 
         db_index = 0
         data = []
@@ -338,16 +340,13 @@ def main():
                 data.append(feature_vector.get_feature_list())
 
 
-    db_normalizing(np.array(data))
+    data = np.array(data)
+    db_normalizing(data)
 
-    DB = cKDTree(np.array(data))
-    with open('tree_dump.bin', 'wb') as dump_file:
+    DB = cKDTree(data)
+    with open('tree_dump2.bin', 'wb') as dump_file:
         pickle.dump(DB, dump_file)
 
-
-    # with open('db_contents.txt', 'w') as f:
-    #     for i in range(len(data)):
-    #         f.write("#" + str(i) + str(data[i])+'\n')
 
 
 
