@@ -309,9 +309,16 @@ class MyWindow(QOpenGLWidget):
 			bvh_handler.reset_bvh_past_orientation()
 			self.timer.setInterval(1000 / self.FPS)
 
+		# state.coming_soon_10frame, self.FPS = QnA()
+		# reset_bvh_past_postion()
+		# bvh_handler.reset_bvh_past_orientation()
+		# self.timer.setInterval(1000/self.FPS)
+
 	
 		self.matching_num = (self.matching_num + 1) % 10
+		print(self.matching_num)
 		state.curFrame = state.coming_soon_10frames[self.matching_num]
+		# state.curFrame = state.coming_soon_10frames[0]
 	
 		self.update()
 
