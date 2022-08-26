@@ -227,7 +227,7 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
             global_future_direction = utils.normalized(global_future_direction)
             
             local_future_direction = np.linalg.inv(characterLocalFrame[:3, :3]) @ global_future_direction
-            state.futureDirection[i] = utils.normalized(local_future_direction[0::2])
+            state.futureDirection[i] = local_future_direction[0::2]
 
         # exit()
 
