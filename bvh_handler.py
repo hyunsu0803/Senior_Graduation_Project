@@ -27,33 +27,33 @@ class state:
     real_global_orientation = np.array([TposeX, TposeY, TposeZ]).T
 
     # LaFAN1
-    # mean_array = np.array([ 1.41277287e-02,  4.27515134e-01,  3.89398700e-02,  8.42000393e-01,
-    #                         7.17285028e-02,  1.20716830e+00, -8.23741644e-02,  1.84959764e-02,
-    #                         -8.22155663e-02,  1.82737104e-02, -8.15859744e-02,  1.79583760e-02,
-    #                         2.96535476e-01,  4.09111197e-01, -5.73196245e-02, -3.08930586e-01,
-    #                         4.04232245e-01, -6.19720699e-02,  4.21066641e-02,  1.24453725e-03,
-    #                         1.29037991e+00, -3.38191776e-03,  1.24974156e-03,  1.31155360e+00,
-    #                         2.01476888e-02,  1.00846789e-02,  1.24848036e+00])
-    # std_array = np.array([  0.36757083, 0.70517289, 0.74449401, 1.36265022, 1.16910184, 1.9541993,
-    #                         0.75635229, 0.64869377, 0.75268109, 0.65297614, 0.75169539, 0.65419818,
-    #                         0.3985468,  0.48182425, 0.55202565, 0.38357897, 0.47779509, 0.54271098,
-    #                         2.51682495, 1.33964037, 4.30769542, 2.54130598, 1.36998779, 4.33995744,
-                            # 2.15186436, 1.1628139,  3.42563119])
+    mean_array = np.array([ 1.41277287e-02,  4.27515134e-01,  3.89398700e-02,  8.42000393e-01,
+                            7.17285028e-02,  1.20716830e+00, -8.23741644e-02,  1.84959764e-02,
+                            -8.22155663e-02,  1.82737104e-02, -8.15859744e-02,  1.79583760e-02,
+                            2.96535476e-01,  4.09111197e-01, -5.73196245e-02, -3.08930586e-01,
+                            4.04232245e-01, -6.19720699e-02,  4.21066641e-02,  1.24453725e-03,
+                            1.29037991e+00, -3.38191776e-03,  1.24974156e-03,  1.31155360e+00,
+                            2.01476888e-02,  1.00846789e-02,  1.24848036e+00])
+    std_array = np.array([  0.36757083, 0.70517289, 0.74449401, 1.36265022, 1.16910184, 1.9541993,
+                            0.75635229, 0.64869377, 0.75268109, 0.65297614, 0.75169539, 0.65419818,
+                            0.3985468,  0.48182425, 0.55202565, 0.38357897, 0.47779509, 0.54271098,
+                            2.51682495, 1.33964037, 4.30769542, 2.54130598, 1.36998779, 4.33995744,
+                            2.15186436, 1.1628139,  3.42563119])
 
     # LaFAN2
-    mean_array = np.array([ 3.96641086e-02,  3.86646081e-01,  8.07923595e-02,  7.65387857e-01,
-                            1.22890080e-01,  1.12233411e+00, -4.33346525e-02, -2.01902337e-02,
-                            -4.34143420e-02, -2.07237915e-02, -4.43262646e-02, -2.11419204e-02,
-                            2.81307738e-01,  2.31036082e-01,  3.78676228e-02, -2.87099623e-01,
-                            2.29538444e-01,  1.80696202e-02,  9.05595138e-02,  7.63847903e-04,
-                            1.13003899e+00,  1.57329582e-01,  7.02027734e-04,  1.13206893e+00,
-                            1.32993700e-01,  7.92512608e-03,  1.11138424e+00])
+    # mean_array = np.array([ 3.96641086e-02,  3.86646081e-01,  8.07923595e-02,  7.65387857e-01,
+    #                         1.22890080e-01,  1.12233411e+00, -4.33346525e-02, -2.01902337e-02,
+    #                         -4.34143420e-02, -2.07237915e-02, -4.43262646e-02, -2.11419204e-02,
+    #                         2.81307738e-01,  2.31036082e-01,  3.78676228e-02, -2.87099623e-01,
+    #                         2.29538444e-01,  1.80696202e-02,  9.05595138e-02,  7.63847903e-04,
+    #                         1.13003899e+00,  1.57329582e-01,  7.02027734e-04,  1.13206893e+00,
+    #                         1.32993700e-01,  7.92512608e-03,  1.11138424e+00])
 
-    std_array = np.array([0.21776958, 0.45401483, 0.43843937, 0.89688114, 0.69075731, 1.3252949,
-                          0.77729875, 0.62731261, 0.77303758, 0.63253349, 0.77294406, 0.6325707,
-                          0.2052435,  0.08995102, 0.43104437, 0.21388302, 0.0926858,  0.44669098,
-                          1.91980644, 0.6210064,  4.80592145, 1.7238057, 0.62843958, 4.81778621,
-                          1.66849336, 0.79803529, 4.27439904])
+    # std_array = np.array([0.21776958, 0.45401483, 0.43843937, 0.89688114, 0.69075731, 1.3252949,
+    #                       0.77729875, 0.62731261, 0.77303758, 0.63253349, 0.77294406, 0.6325707,
+    #                       0.2052435,  0.08995102, 0.43104437, 0.21388302, 0.0926858,  0.44669098,
+    #                       1.91980644, 0.6210064,  4.80592145, 1.7238057, 0.62843958, 4.81778621,
+    #                       1.66849336, 0.79803529, 4.27439904])
 
 def parsing_bvh(bvh):
 
@@ -151,6 +151,8 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
     temp = np.identity(4)
     if len(joint.get_channel()) != 6:
         temp[:3, 3] = curoffset
+    else: 
+        joint.bvh_matrix[:3, 3] = np.array(MyWindow.state.curFrame[:3]) / Joint.resize
     newMatrix = newMatrix @ temp
 
     # channel rotation
@@ -181,11 +183,27 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
                                [np.sin(zr), np.cos(zr), 0],
                                [0, 0, 1]])
                 bvh_current_orientation = bvh_current_orientation @ Rz
+        joint.bvh_matrix[:3, :3] = bvh_current_orientation
 
         # calculate real global orientation
+        # A-B about global frame : A @ B.T 
         if len(state.bvh_past_orientation) != 0: #Continuous motion playback received via the QnA function
-            bvh_past_to_current_rotation =  bvh_current_orientation @ state.bvh_past_orientation.T   # about global frame
-            state.real_global_orientation = bvh_past_to_current_rotation @ state.real_global_orientation
+            bvh_current_orientation_direction = bvh_current_orientation[:3, 1].copy()
+            bvh_past_orientation_direction = state.bvh_past_orientation[:3, 1].copy()
+
+            th = np.arccos(np.dot(bvh_past_orientation_direction, bvh_current_orientation_direction))
+            crossing = np.cross(bvh_past_orientation_direction, bvh_current_orientation_direction)
+
+            if crossing[1] < 0:
+                th *= -1
+            
+            bvh_past_to_current_yrotation = np.array([[np.cos(th), 0, np.sin(th)],
+                                             [0, 1, 0],
+                                             [-np.sin(th), 0, np.cos(th)]]) # about global frame
+
+            
+
+            state.real_global_orientation = bvh_past_to_current_yrotation @ state.real_global_orientation
             bvh_to_real_rotation = state.real_global_orientation @ bvh_current_orientation.T # about global frame
 
         else:   # if QnA is newly called
@@ -384,7 +402,6 @@ def set_query_vector(key_input = None):
         if joint.get_is_root():
             hip_velocity.append(joint.get_character_local_velocity())
             print("root position", joint.get_character_local_position())
-            
 
         elif joint.get_is_foot():
             two_foot_position.append(joint.get_character_local_position())
@@ -420,50 +437,47 @@ def set_query_vector(key_input = None):
         global_future_direction = state.target_orientation
         local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
 
-    # future position setting
-    #abs_global_velocity = np.linalg.norm(state.joint_list[0].get_global_velocity())/3
-    abs_global_velocity = 1.
-    local_3Dposition_future = np.zeros((3, 3))
 
-    for i in range(3):
-        local_3Dposition_future[i] = local_future_direction * (abs_global_velocity * (i+1))
+    # abs_global_velocity = 0.9
+    # local_3Dposition_future = np.zeros((3, 3))
 
-    local_2Dposition_future = local_3Dposition_future[:, 0::2]
+    # for i in range(3):
+    #     local_3Dposition_future[i] = local_future_direction * (abs_global_velocity * (i+1))
 
-    # future direction setting
-    # local_3Ddirection_future = np.array([local_future_direction_for_position, local_future_direction_for_position, local_future_direction_for_position])
+    # local_2Dposition_future = local_3Dposition_future[:, 0::2]
+    
+    # local_future_direction[1] = 0
+    # local_future_direction = utils.normalized(local_future_direction)
+    # local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
+   
+    
     # local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
-    
-    local_future_direction[1] = 0
-    local_future_direction = utils.normalized(local_future_direction)
-    local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
-    # current_local_direction = np.array([0., 0., 1])
-    # desired_local_direction = local_future_direction
 
-    # th = np.arccos(np.dot(current_local_direction, desired_local_direction))
-    # crossing = np.cross(current_local_direction, desired_local_direction)
-    # if crossing[1] < 0:
-    #     th *= -1
-    
-    # for i in range(1, 4):
-    #     current_to_desired_rotation_local = (np.array([[np.cos(th/5 * i), 0, np.sin(th/5 * i)],
-    #                                                     [0, 1, 0],
-    #                                                     [-np.sin(th/5 * i), 0, np.cos(th/5 * i)]])) 
-    #     local_3Ddirection_future.append(current_to_desired_rotation_local @ current_local_direction)
-    
+    local_3Dposition_future, local_3Ddirection_future = setRealFutureInfo()
+    local_2Dposition_future = local_3Dposition_future[:, 0::2]
     local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
+
+    
 
 
 
     # global position setting
-    global_3Dposition_future = np.zeros((3, 3))
+    # global_3Dposition_future = np.zeros((3, 3))
 
-    for i in range(3):
-        global_3Dposition_future[i] = state.real_global_position/Joint.resize + global_future_direction * (abs_global_velocity * (i+1))
-    global_3Dposition_future[:, 1] = 0
+    # for i in range(3):
+    #     global_3Dposition_future[i] = state.real_global_position/Joint.resize + global_future_direction * (abs_global_velocity * (i+1))
+    # global_3Dposition_future[:, 1] = 0
+    # for i in range(3):
+    #     temp = np.array([0., 0., 0., 1])
+    #     temp[:3] = global_3Dposition_future[i]
+
+    global_3Dposition_future = []
     for i in range(3):
         temp = np.array([0., 0., 0., 1])
-        temp[:3] = global_3Dposition_future[i]
+        temp[:3] = local_3Dposition_future[i]
+        global_3Dposition_future.append((state.joint_list[0].getCharacterLocalFrame() @ temp)[:3])
+    
+    global_3Dposition_future = np.array(global_3Dposition_future)
     
     # global direction setting
     global_3Ddirection_future = []
@@ -508,13 +522,17 @@ def draw_future_info():
     glEnd()
 
     glLineWidth(5.)
-    glBegin(GL_LINE_STRIP)
+    glBegin(GL_LINES)
     glVertex3fv(future_position[0])
     glVertex3fv(future_position[0]+future_direction[0])
+    glEnd()
 
+    glBegin(GL_LINES)
     glVertex3fv(future_position[1])
     glVertex3fv(future_position[1]+future_direction[1])
+    glEnd()
 
+    glBegin(GL_LINES)
     glVertex3fv(future_position[2])
     glVertex3fv(future_position[2]+future_direction[2])
     glEnd()
@@ -545,3 +563,65 @@ def drawLocalFrame(M):
     glVertex3fv(np.array([0., 0., 5.]))
     glEnd()
     glPopMatrix()    
+
+def setRealFutureInfo():
+    future_matrices = [np.identity(4), np.identity(4), np.identity(4)]
+    for j in range (0, 3):
+        frame = np.array(MyWindow.state.future_frames[j])
+        bvh_future_orientation = np.identity(3)
+        for i in range(3, 6):
+            if state.joint_list[0].get_channel()[i].upper() == 'XROTATION':
+                xr = frame[i]
+                xr = np.radians(xr)
+                Rx = np.array([[1., 0., 0.],
+                               [0, np.cos(xr), -np.sin(xr)],
+                               [0, np.sin(xr), np.cos(xr)]])
+                bvh_future_orientation = bvh_future_orientation @ Rx
+            elif state.joint_list[0].get_channel()[i].upper() == 'YROTATION':
+                yr = frame[i]
+                yr = np.radians(yr)
+                Ry = np.array([[np.cos(yr), 0, np.sin(yr)],
+                               [0, 1, 0],
+                               [-np.sin(yr), 0, np.cos(yr)]])
+                bvh_future_orientation = bvh_future_orientation @ Ry
+            elif state.joint_list[0].get_channel()[i].upper() == 'ZROTATION':
+                zr = frame[i]
+                zr = np.radians(zr)
+                Rz = np.array([[np.cos(zr), -np.sin(zr), 0],
+                               [np.sin(zr), np.cos(zr), 0],
+                               [0, 0, 1]])
+                bvh_future_orientation = bvh_future_orientation @ Rz
+        future_matrices[j][:3, :3] = bvh_future_orientation
+        future_matrices[j][:3, 3] = np.array(frame[:3])/Joint.resize
+
+    future_positions = [None, None, None]
+    for i in range(0, 3):
+        future_matrix = future_matrices[i]
+        root_position = [0., 0., 0., 1]
+        root_position[:3] = future_matrix[:3, 3]
+        root_position[1] = 0
+        future_positions[i] = root_position
+    
+    future_directions = [None, None, None]
+    for i in range(0, 3):
+        future_matrix = future_matrices[i]
+        future_direction = future_matrix[:3, 1]
+        future_direction[1] = 0
+        future_direction = utils.normalized(future_direction)
+        future_directions[i] = future_direction
+
+    bvh_curframe_character_local_frame = state.joint_list[0].getBvhCharacterLocalFrame()
+    
+    character_local_future_positions = [None, None, None]
+    for i in range(0, 3):
+        future_position = future_positions[i]
+        character_local_future_position = np.linalg.inv(bvh_curframe_character_local_frame) @ np.array(future_position)
+        character_local_future_positions[i] = character_local_future_position[:3]
+
+    character_local_future_directions = [None, None, None]
+    for i in range(0, 3):
+        future_direction = future_directions[i]
+        character_local_future_direction = bvh_curframe_character_local_frame[:3, :3].T @ np.array(future_direction)
+        character_local_future_directions[i] = character_local_future_direction
+
+    return np.array(character_local_future_positions), np.array(character_local_future_directions)
