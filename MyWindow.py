@@ -317,7 +317,6 @@ class MyWindow(QOpenGLWidget):
 
 	
 		self.matching_num = (self.matching_num + 1) % 10
-		print(self.matching_num)
 		state.curFrame = state.coming_soon_10frames[self.matching_num]
 		# state.curFrame = state.coming_soon_10frames[0]
 	

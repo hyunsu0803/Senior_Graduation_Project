@@ -161,7 +161,7 @@ class Joint:
         return M[:3, 2]
 
     def getBvhCharacterLocalFrame(self):
-        M = self.bvh_matrix
+        M = self.bvh_matrix.copy()
 
         # origin projection 
         newOrigin = M[:3, 3]
