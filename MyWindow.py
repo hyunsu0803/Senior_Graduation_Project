@@ -16,6 +16,7 @@ from motion_matching_test import QnA
 
 class state:
 	curFrame = []
+	future_frames = []
 	# timeStep = 0.2
 	curFrame_index = 0
 	coming_soon_10frames = []
@@ -157,28 +158,28 @@ class MyWindow(QOpenGLWidget):
 
 		elif e.key() == Qt.Key_Up:
 			print("--------up---------")
-			state.coming_soon_10frames, self.FPS = QnA(key_input="UP")
+			state.coming_soon_10frames, self.FPS, state.future_frames = QnA(key_input="UP")
 			bvh_handler.reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
 			state.KEY_MODE = "UP"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Down:
 			print("--------down---------")
-			state.coming_soon_10frames, self.FPS = QnA(key_input="DOWN")
+			state.coming_soon_10frames, self.FPS, state.future_frames= QnA(key_input="DOWN")
 			bvh_handler.reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
 			state.KEY_MODE = "DOWN"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Left:
 			print("--------left---------")
-			state.coming_soon_10frames, self.FPS = QnA(key_input="LEFT")
+			state.coming_soon_10frames, self.FPS, state.future_frames = QnA(key_input="LEFT")
 			bvh_handler.reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
 			state.KEY_MODE = "LEFT"
 			self.matching_num = 0
 		elif e.key() == Qt.Key_Right:
 			print("--------right---------")
-			state.coming_soon_10frames, self.FPS = QnA(key_input="RIGHT")
+			state.coming_soon_10frames, self.FPS, state.future_frames = QnA(key_input="RIGHT")
 			bvh_handler.reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
 			state.KEY_MODE = "RIGHT"
@@ -298,13 +299,13 @@ class MyWindow(QOpenGLWidget):
 	def update_frame(self):
 		
 		if state.curFrame == []:
-			state.coming_soon_10frames, self.FPS = QnA(key_input="init")
+			state.coming_soon_10frames, self.FPS, state.future_frames = QnA(key_input="init")
 			reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
 			self.timer.setInterval(1000 / self.FPS)
 		
 		elif self.matching_num % 10 == 9:
-			state.coming_soon_10frames, self.FPS = QnA()
+			state.coming_soon_10frames, self.FPS, state.future_frames = QnA()
 			reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
 			self.timer.setInterval(1000 / self.FPS)

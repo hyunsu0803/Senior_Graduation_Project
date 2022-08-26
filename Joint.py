@@ -14,7 +14,8 @@ class Joint:
         self.is_root = False  # Indictes whether it's root joint
         self.is_foot = False  # Indicates whether it's foot joint
         self.child_joint = []
-        self.matrix = np.identity(4)
+        self.matrix = np.identity(4) # real position, real orienatation
+        self.bvh_matrix = np.identity(4)
 
         self.global_position = np.array([0., 0., 0.], dtype='float32')  # global position
         self.global_velocity = np.array([0., 0., 0.], dtype = 'float32') # global velocity
@@ -158,3 +159,26 @@ class Joint:
 
         # length 1, projected on the ground
         return M[:3, 2]
+
+    def getBvhCharacterLocalFrame(self):
+        M = self.bvh_matrix
+
+        # origin projection 
+        newOrigin = M[:3, 3]
+        newOrigin[1] = 0
+
+        newDirection = M[:3, 1]
+        newDirection[1] = 0.
+
+        newZaxis=  utils.normalized(newDirection)
+
+        newYaxis = np.array([0., 1., 0.])
+        newXaxis = np.cross(newYaxis, newZaxis)
+
+        newTransformationMatrix = np.identity(4)
+        newTransformationMatrix[:3, 0] = newXaxis
+        newTransformationMatrix[:3, 1] = newYaxis
+        newTransformationMatrix[:3, 2] = newZaxis
+        newTransformationMatrix[:3, 3] = newOrigin
+
+        return newTransformationMatrix
