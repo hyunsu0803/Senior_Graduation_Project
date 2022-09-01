@@ -7,7 +7,7 @@ from bvh_handler import set_query_vector
 
 def QnA(key_input = None):
 
-	tree_file = open('tree_dump1.bin', 'rb')
+	tree_file = open('tree_dump.bin', 'rb')
 
 	DB = pickle.load(tree_file)
 
