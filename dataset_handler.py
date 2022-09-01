@@ -124,7 +124,7 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
     newMatrix = np.identity(4)
 
     # get current joint's offset from parent joint
-    curoffset = joint.get_offset() / Joint.resize
+    curoffset = joint.get_offset()
 
     temp = np.identity(4)
     if len(joint.get_channel()) != 6:
@@ -135,8 +135,6 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
     # ROOT
     if len(joint.get_channel()) == 6:
         ROOTPOSITION = np.array(state.curFrame[:3], dtype='float32')
-        ROOTPOSITION /= Joint.resize
-
         # move root's transformation matrix's origin using translation data
         temp = np.identity(4)
         temp[:3, 3] = ROOTPOSITION
@@ -215,7 +213,6 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
 
             global_root_position = np.array([0., 0., 0., 1.])
             global_root_position[:3] = state.futureFrames[i][:3]
-            global_root_position[:3] /= Joint.resize
 
             characterLocalFrame = joint.getCharacterLocalFrame()
 
@@ -240,9 +237,17 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
     # get root local position and root local velocity
     new_global_position = global_position[:3]
     past_global_position = joint.get_global_position()
-    global_velocity = (new_global_position - past_global_position) * 30
-    character_local_velocity = np.linalg.inv(characterMatrix)[:3, :3] @ global_velocity
+    temp_global_velocity = (new_global_position - past_global_position) * 30
+    global_velocity = np.zeros((4,))
+    global_velocity[:3] = temp_global_velocity
+    character_local_velocity = np.linalg.inv(characterMatrix) @ global_velocity
+    character_local_velocity = character_local_velocity[:3]
     character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]  # local to root joint
+
+    # if printTime == True:
+    #     print("#######")
+    #     print(joint.joint_name, " position: ", character_local_position, "velocity: ", character_local_velocity)
+    
     # if joint.get_is_root():
         #print("character_local_velocity", character_local_velocity)
 

@@ -25,35 +25,51 @@ class state:
     TposeY = [1, 0, 0]
     TposeZ = [0, 0, 1]
     real_global_orientation = np.array([TposeX, TposeY, TposeZ]).T
+    bvh_to_real_yrotation = None
 
     # LaFAN1
-    # mean_array = np.array([ 1.41277287e-02,  4.27515134e-01,  3.89398700e-02,  8.42000393e-01,
-    #                         7.17285028e-02,  1.20716830e+00, -8.23741644e-02,  1.84959764e-02,
-    #                         -8.22155663e-02,  1.82737104e-02, -8.15859744e-02,  1.79583760e-02,
-    #                         2.96535476e-01,  4.09111197e-01, -5.73196245e-02, -3.08930586e-01,
-    #                         4.04232245e-01, -6.19720699e-02,  4.21066641e-02,  1.24453725e-03,
-    #                         1.29037991e+00, -3.38191776e-03,  1.24974156e-03,  1.31155360e+00,
-    #                         2.01476888e-02,  1.00846789e-02,  1.24848036e+00])
-    # std_array = np.array([  0.36757083, 0.70517289, 0.74449401, 1.36265022, 1.16910184, 1.9541993,
-    #                         0.75635229, 0.64869377, 0.75268109, 0.65297614, 0.75169539, 0.65419818,
-    #                         0.3985468,  0.48182425, 0.55202565, 0.38357897, 0.47779509, 0.54271098,
-    #                         2.51682495, 1.33964037, 4.30769542, 2.54130598, 1.36998779, 4.33995744,
-    #                         2.15186436, 1.1628139,  3.42563119])
+    mean_array = np.array([ 6.07492335e-01,  1.83831508e+01,  1.67441441e+00,  3.62060169e+01,
+                            3.08432562e+00,  5.19082369e+01, -8.23741644e-02,  1.84959764e-02,
+                            -8.22155663e-02,  1.82737104e-02, -8.15859744e-02,  1.79583760e-02,
+                            1.27510255e+01,  1.75917816e+01, -2.46474355e+00, -1.32840152e+01,
+                            1.73819857e+01, -2.66479918e+00,  1.81058656e+00,  5.35151017e-02,
+                            5.54863363e+01, -1.45422479e-01,  5.37388807e-02,  5.63968049e+01,
+                            8.66350606e-01,  4.33641191e-01,  5.36846555e+01])
+    std_array = np.array([ 15.8055459,   30.32243441,  32.01324264,  58.59395957,  50.27137926,
+                            84.03057001,  0.75635229,   0.64869377,   0.75268109,   0.65297614,
+                            0.75169539,   0.65419818,  17.13751219,  20.71844285,  23.73710293,
+                            16.49389601,  20.54518905,  23.33657265, 108.22347235,  57.60453545,
+                            185.23090267, 109.27615739,  58.90947577, 186.61817055,  92.53016731,
+                            50.00099766, 147.30214098])
 
     # LaFAN2
-    mean_array = np.array([ 3.96641086e-02,  3.86646081e-01,  8.07923595e-02,  7.65387857e-01,
-                            1.22890080e-01,  1.12233411e+00, -4.33346525e-02, -2.01902337e-02,
-                            -4.34143420e-02, -2.07237915e-02, -4.43262646e-02, -2.11419204e-02,
-                            2.81307738e-01,  2.31036082e-01,  3.78676228e-02, -2.87099623e-01,
-                            2.29538444e-01,  1.80696202e-02,  9.05595138e-02,  7.63847903e-04,
-                            1.13003899e+00,  1.57329582e-01,  7.02027734e-04,  1.13206893e+00,
-                            1.32993700e-01,  7.92512608e-03,  1.11138424e+00])
+    # mean_array = np.array([ 3.96641086e-02,  3.86646081e-01,  8.07923595e-02,  7.65387857e-01,
+    #                         1.22890080e-01,  1.12233411e+00, -4.33346525e-02, -2.01902337e-02,
+    #                         -4.34143420e-02, -2.07237915e-02, -4.43262646e-02, -2.11419204e-02,
+    #                         2.81307738e-01,  2.31036082e-01,  3.78676228e-02, -2.87099623e-01,
+    #                         2.29538444e-01,  1.80696202e-02,  9.05595138e-02,  7.63847903e-04,
+    #                         1.13003899e+00,  1.57329582e-01,  7.02027734e-04,  1.13206893e+00,
+    #                         1.32993700e-01,  7.92512608e-03,  1.11138424e+00])
 
-    std_array = np.array([0.21776958, 0.45401483, 0.43843937, 0.89688114, 0.69075731, 1.3252949,
-                          0.77729875, 0.62731261, 0.77303758, 0.63253349, 0.77294406, 0.6325707,
-                          0.2052435,  0.08995102, 0.43104437, 0.21388302, 0.0926858,  0.44669098,
-                          1.91980644, 0.6210064,  4.80592145, 1.7238057, 0.62843958, 4.81778621,
-                          1.66849336, 0.79803529, 4.27439904])
+    # std_array = np.array([0.21776958, 0.45401483, 0.43843937, 0.89688114, 0.69075731, 1.3252949,
+    #                       0.77729875, 0.62731261, 0.77303758, 0.63253349, 0.77294406, 0.6325707,
+    #                       0.2052435,  0.08995102, 0.43104437, 0.21388302, 0.0926858,  0.44669098,
+    #                       1.91980644, 0.6210064,  4.80592145, 1.7238057, 0.62843958, 4.81778621,
+    #                       1.66849336, 0.79803529, 4.27439904])
+
+    # mean_array = np.array([ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  0.00000000e+00, 
+    #                 0.00000000e+00,   0.00000000e+00,   0.00000000e+00,  0.00000000e+00,
+    #                 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+    #                 1.20962327e+01,  9.93455024e+00,  1.62830874e+00, -1.23452838e+01,
+    #                 9.87015011e+00,  7.76993796e-01,  3.89405907e+00,  3.28454660e-02,
+    #                 4.85916764e+01,  6.76517208e+00,  3.01871928e-02,  4.86789641e+01,
+    #                 5.71872909e+00,  3.40780433e-01,  4.77895223e+01])
+    # std_array = np.array([  0.,           0.,          0.,           0.,           0.,
+    #             0.,           0.,           0.,           0.,           0.,
+    #             0.,          0.,           8.82547055,   3.86789364,  18.53490834,
+    #             9.19697003,   3.98548971,  19.20771287,  82.55167559,  26.70327469,
+    #             206.65461765, 74.12364479,  27.02290274, 207.16480382,  71.74521334,
+    #             34.3155173,  183.79915329])
 
 def parsing_bvh(bvh):
 
@@ -145,14 +161,14 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
     cur_position = [0, 0, 0, 1]
 
     # get current joint's offset from parent joint
-    curoffset = joint.get_offset() / Joint.resize
+    curoffset = joint.get_offset()
 
     # move transformation matrix's origin using offset data
     temp = np.identity(4)
     if len(joint.get_channel()) != 6:
         temp[:3, 3] = curoffset
     else: 
-        joint.bvh_matrix[:3, 3] = np.array(MyWindow.state.curFrame[:3]) / Joint.resize
+        joint.bvh_matrix[:3, 3] = np.array(MyWindow.state.curFrame[:3])
     newMatrix = newMatrix @ temp
 
     # channel rotation
@@ -186,25 +202,9 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
         joint.bvh_matrix[:3, :3] = bvh_current_orientation
 
         # calculate real global orientation
-        # A-B about global frame : A @ B.T 
+        # A-B about global frame : A @ B.T
         if len(state.bvh_past_orientation) != 0: #Continuous motion playback received via the QnA function
-            bvh_current_orientation_direction = bvh_current_orientation[:3, 1].copy()
-            bvh_past_orientation_direction = state.bvh_past_orientation[:3, 1].copy()
-
-            th = np.arccos(np.dot(bvh_past_orientation_direction, bvh_current_orientation_direction))
-            crossing = np.cross(bvh_past_orientation_direction, bvh_current_orientation_direction)
-
-            if crossing[1] < 0:
-                th *= -1
-            
-            bvh_past_to_current_yrotation = np.array([[np.cos(th), 0, np.sin(th)],
-                                             [0, 1, 0],
-                                             [-np.sin(th), 0, np.cos(th)]]) # about global frame
-
-            
-
-            state.real_global_orientation = bvh_past_to_current_yrotation @ state.real_global_orientation
-            bvh_to_real_rotation = state.real_global_orientation @ bvh_current_orientation.T # about global frame
+            state.real_global_orientation = state.bvh_to_real_yrotation @ bvh_current_orientation
 
         else:   # if QnA is newly called
             bvh_current_orientation_direction = bvh_current_orientation[:3, 1].copy()
@@ -221,25 +221,26 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
             if crossing[1] < 0:
                 th *= -1
             
-            bvh_to_real_rotation_yrotation = np.array([[np.cos(th), 0, np.sin(th)],
+            state.bvh_to_real_yrotation = np.array([[np.cos(th), 0, np.sin(th)],
                                              [0, 1, 0],
                                              [-np.sin(th), 0, np.cos(th)]]) # about global frame
 
-            state.real_global_orientation = bvh_to_real_rotation_yrotation @ bvh_current_orientation
+            state.real_global_orientation = state.bvh_to_real_yrotation @ bvh_current_orientation
 
         state.bvh_past_orientation = bvh_current_orientation
 
         # calculate real global position
         if len(state.bvh_past_position) != 0: # Continuous motion playback received via the QnA function
             movement_vector = (np.array(MyWindow.state.curFrame[:3]) - np.array(state.bvh_past_position))
-            state.real_global_position += bvh_to_real_rotation @ movement_vector    
+            state.real_global_position += state.bvh_to_real_yrotation @ movement_vector    
         else:   # if QnA is newly called
             state.real_global_position[1] = MyWindow.state.curFrame[1]
             
         state.bvh_past_position = MyWindow.state.curFrame[:3]
 
         ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
-        ROOTPOSITION /= Joint.resize
+        print("root_position", ROOTPOSITION)
+        print("data position", MyWindow.state.curFrame[:3])
 
         # move root's transformation matrix's origin using translation data
         newMatrix[:3, 3] = ROOTPOSITION
@@ -295,23 +296,26 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
     if joint.get_is_root():
         characterMatrix = joint.getCharacterLocalFrame().copy()
         drawLocalFrame(characterMatrix)
+
         
 
     # get root local position and root local velocity
     new_global_position = global_position[:3]
     past_global_position = joint.get_global_position()
-    global_velocity = (new_global_position - past_global_position) * 30
-    character_local_velocity = np.linalg.inv(characterMatrix)[:3, :3] @ global_velocity
-    character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]  # local to root joint
-
-    
+    temp_global_velocity = (new_global_position - past_global_position) * 30
+    global_velocity = np.zeros(4)
+    global_velocity[:3] = temp_global_velocity
+    character_local_velocity = (np.linalg.inv(characterMatrix) @ global_velocity)[:3]
+    character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]
+    # print("#####")
+    # print(joint.joint_name, " position: ", character_local_position, "velocity: ", character_local_velocity)
 
     # set joint class's value
     joint.set_global_position(new_global_position)
     joint.set_character_local_velocity(character_local_velocity)
-    joint.set_character_local_position(character_local_position[:3])
+    joint.set_character_local_position(character_local_position)
 
-    v = cur_position - parent_position
+    v = cur_position/Joint.resize - parent_position/Joint.resize
     box_length = utils.l2norm(v)
     v = utils.normalized(v)
     rotation_vector = np.cross(np.array([0, 1, 0]), v[:3])
@@ -336,7 +340,7 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
     rotation_matrix[:3, :3] = utils.exp(rotation_vector[:3])
 
     glPushMatrix()
-    glTranslatef(parent_position[0], parent_position[1], parent_position[2])
+    glTranslatef(parent_position[0]/Joint.resize, parent_position[1]/Joint.resize, parent_position[2]/Joint.resize)
     glMultMatrixf(rotation_matrix.T)
 
     glTranslatef(0., box_length / 2, 0.)
@@ -348,12 +352,12 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
 
     # draw end effector
     if joint.get_end_site() is not None:
-        end_offset = joint.get_end_site() / joint.resize
+        end_offset = joint.get_end_site()
         endMatrix = np.identity(4)
         endMatrix[:3, 3] = end_offset
         end_position = parentMatrix @ newMatrix @ endMatrix @ np.array([0., 0., 0., 1.])
 
-        v = end_position - cur_position
+        v = end_position/Joint.resize - cur_position/Joint.resize
         box_length = utils.l2norm(v)
         v = utils.normalized(v)
         rotation_vector = np.cross(np.array([0, 1, 0]), v[:3])
@@ -368,11 +372,12 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
         rotation_matrix[:3, :3] = utils.exp(rotation_vector[:3])
 
         glPushMatrix()
-        glTranslatef(cur_position[0], cur_position[1], cur_position[2])
+        glTranslatef(cur_position[0]/Joint.resize, cur_position[1]/Joint.resize, cur_position[2]/Joint.resize)
         glMultMatrixf(rotation_matrix.T)
         glTranslatef(0., box_length / 2, 0.)
         glScalef(.05, box_length, .05)
         # drawCapsule
+
         quadric = gluNewQuadric()
         gluSphere(quadric, 0.5, 20, 20)
         glPopMatrix()
@@ -394,14 +399,14 @@ def set_query_vector(key_input = None):
     for joint in state.joint_list:
         if joint.get_is_root():
             hip_velocity.append(joint.get_character_local_velocity())
-            print("root position", joint.get_character_local_position())
+            # print("root position", joint.get_character_local_position())
 
         elif joint.get_is_foot():
             two_foot_position.append(joint.get_character_local_position())
-            print("local")
-            print(joint.joint_name, joint.get_character_local_position())
-            print("global")
-            print(joint.joint_name, joint.get_global_position())
+            # print("local")
+            # print(joint.joint_name, joint.get_character_local_position())
+            # print("global")
+            # print(joint.joint_name, joint.get_global_position())
             two_foot_velocity.append(joint.get_character_local_velocity())
 
     
@@ -431,7 +436,7 @@ def set_query_vector(key_input = None):
         local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
 
 
-    # abs_global_velocity = 0.9
+    # abs_global_velocity = 70
     # local_3Dposition_future = np.zeros((3, 3))
 
     # for i in range(3):
@@ -451,14 +456,11 @@ def set_query_vector(key_input = None):
     local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
 
     
-
-
-
     # global position setting
     # global_3Dposition_future = np.zeros((3, 3))
 
     # for i in range(3):
-    #     global_3Dposition_future[i] = state.real_global_position/Joint.resize + global_future_direction * (abs_global_velocity * (i+1))
+    #     global_3Dposition_future[i] = state.real_global_position + global_future_direction * (abs_global_velocity * (i+1))
     # global_3Dposition_future[:, 1] = 0
     # for i in range(3):
     #     temp = np.array([0., 0., 0., 1])
@@ -509,25 +511,25 @@ def draw_future_info():
 
     glPointSize(20.)
     glBegin(GL_POINTS)
-    glVertex3fv(future_position[0])
-    glVertex3fv(future_position[1])
-    glVertex3fv(future_position[2])
+    glVertex3fv(future_position[0]/Joint.resize)
+    glVertex3fv(future_position[1]/Joint.resize)
+    glVertex3fv(future_position[2]/Joint.resize)
     glEnd()
 
     glLineWidth(5.)
     glBegin(GL_LINES)
-    glVertex3fv(future_position[0])
-    glVertex3fv(future_position[0]+future_direction[0])
+    glVertex3fv(future_position[0]/Joint.resize)
+    glVertex3fv(future_position[0]/Joint.resize+future_direction[0])
     glEnd()
 
     glBegin(GL_LINES)
-    glVertex3fv(future_position[1])
-    glVertex3fv(future_position[1]+future_direction[1])
+    glVertex3fv(future_position[1]/Joint.resize)
+    glVertex3fv(future_position[1]/Joint.resize+future_direction[1])
     glEnd()
 
     glBegin(GL_LINES)
-    glVertex3fv(future_position[2])
-    glVertex3fv(future_position[2]+future_direction[2])
+    glVertex3fv(future_position[2]/Joint.resize)
+    glVertex3fv(future_position[2]/Joint.resize+future_direction[2])
     glEnd()
 
 
@@ -542,7 +544,7 @@ def reset_bvh_past_orientation():
 
 def drawLocalFrame(M):
     glPushMatrix()
-    glTranslatef(M[0][3], M[1][3], M[2][3])
+    glTranslatef(M[0][3]/Joint.resize, M[1][3]/Joint.resize, M[2][3]/Joint.resize)
     rotationMatrix = np.identity(4)
     rotationMatrix[:3, :3] = M[:3, :3]
     glMultMatrixf(rotationMatrix.T)
@@ -587,7 +589,7 @@ def setRealFutureInfo():
                                [0, 0, 1]])
                 bvh_future_orientation = bvh_future_orientation @ Rz
         future_matrices[j][:3, :3] = bvh_future_orientation
-        future_matrices[j][:3, 3] = np.array(frame[:3])/Joint.resize
+        future_matrices[j][:3, 3] = np.array(frame[:3])
 
     future_positions = [None, None, None]
     for i in range(0, 3):

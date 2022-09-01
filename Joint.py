@@ -143,15 +143,15 @@ class Joint:
         newZaxis=  utils.normalized(newDirection)
 
         newYaxis = np.array([0., 1., 0.])
-        newXaxis = np.cross(newYaxis, newZaxis)
+        newXaxis = utils.normalized(np.cross(newYaxis, newZaxis))
 
-        newTransformationMatrix = np.identity(4)
-        newTransformationMatrix[:3, 0] = newXaxis
-        newTransformationMatrix[:3, 1] = newYaxis
-        newTransformationMatrix[:3, 2] = newZaxis
-        newTransformationMatrix[:3, 3] = newOrigin
+        CharacterMatrix = np.identity(4)
+        CharacterMatrix[:3, 0] = newXaxis
+        CharacterMatrix[:3, 1] = newYaxis
+        CharacterMatrix[:3, 2] = newZaxis
+        CharacterMatrix[:3, 3] = newOrigin
 
-        return newTransformationMatrix
+        return CharacterMatrix
 
     def getGlobalDirection(self):
         # find character global diredction
