@@ -8,7 +8,7 @@ from OpenGL.GLU import *
 from drawTpose import drawTpose
 import numpy as np
 
-# from Joint import Joint
+from Joint import Joint
 import bvh_handler
 from bvh_handler import drawJoint, reset_bvh_past_postion, draw_future_info
 from motion_matching_test import QnA
@@ -119,8 +119,11 @@ class MyWindow(QOpenGLWidget):
 		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, specularObjectColor)
 
 		if len(state.curFrame) > 0 :
+			glPushMatrix()
+			
 			drawJoint(np.identity(4), bvh_handler.state.joint_list[0])
 			draw_future_info()
+			glPopMatrix()
 
 		glDisable(GL_LIGHTING)
 
@@ -304,21 +307,24 @@ class MyWindow(QOpenGLWidget):
 			bvh_handler.reset_bvh_past_orientation()
 			self.timer.setInterval(1000 / self.FPS)
 		
+		# elif self.matching_num % 10 == 9:
+		# 	state.coming_soon_10frames, self.FPS, state.future_frames = QnA()
+		# 	reset_bvh_past_postion()
+		# 	bvh_handler.reset_bvh_past_orientation()
+		# 	self.timer.setInterval(1000 / self.FPS)
+
 		elif self.matching_num % 10 == 9:
+			print("~~~~~~~~~~~new query~~~~~~~~~~~~~~")
 			state.coming_soon_10frames, self.FPS, state.future_frames = QnA()
 			reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
-			self.timer.setInterval(1000 / self.FPS)
-
-		# state.coming_soon_10frame, self.FPS = QnA()
-		# reset_bvh_past_postion()
-		# bvh_handler.reset_bvh_past_orientation()
-		# self.timer.setInterval(1000/self.FPS)
+			self.timer.setInterval(1000/self.FPS)
 
 	
-		self.matching_num = (self.matching_num + 1) % 10
+		# self.matching_num = (self.matching_num + 1) % 10
+		# state.curFrame = state.coming_soon_10frames[self.matching_num]
+		self.matching_num = (self.matching_num+1) % 10
 		state.curFrame = state.coming_soon_10frames[self.matching_num]
-		# state.curFrame = state.coming_soon_10frames[0]
 	
 		self.update()
 
