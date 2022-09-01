@@ -25,7 +25,7 @@ class state:
     TposeY = [1, 0, 0]
     TposeZ = [0, 0, 1]
     real_global_orientation = np.array([TposeX, TposeY, TposeZ]).T
-    bvh_to_real_yrotation = None
+    bvh_to_real_yrotation = np.identity(3)
 
     # LaFAN1
     mean_array = np.array([ 6.07492335e-01,  1.83831508e+01,  1.67441441e+00,  3.62060169e+01,
@@ -239,8 +239,6 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
         state.bvh_past_position = MyWindow.state.curFrame[:3]
 
         ROOTPOSITION = np.array(state.real_global_position, dtype='float32')
-        print("root_position", ROOTPOSITION)
-        print("data position", MyWindow.state.curFrame[:3])
 
         # move root's transformation matrix's origin using translation data
         newMatrix[:3, 3] = ROOTPOSITION
@@ -300,11 +298,9 @@ def drawJoint(parentMatrix, joint, characterMatrix=None):
         
 
     # get root local position and root local velocity
-    new_global_position = global_position[:3]
+    new_global_position = global_position.copy()
     past_global_position = joint.get_global_position()
-    temp_global_velocity = (new_global_position - past_global_position) * 30
-    global_velocity = np.zeros(4)
-    global_velocity[:3] = temp_global_velocity
+    global_velocity = (new_global_position - past_global_position) * 30
     character_local_velocity = (np.linalg.inv(characterMatrix) @ global_velocity)[:3]
     character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]
     # print("#####")
@@ -403,10 +399,6 @@ def set_query_vector(key_input = None):
 
         elif joint.get_is_foot():
             two_foot_position.append(joint.get_character_local_position())
-            # print("local")
-            # print(joint.joint_name, joint.get_character_local_position())
-            # print("global")
-            # print(joint.joint_name, joint.get_global_position())
             two_foot_velocity.append(joint.get_character_local_velocity())
 
     
@@ -485,17 +477,17 @@ def set_query_vector(key_input = None):
     state.query_vector.set_global_future_position(global_3Dposition_future)
     state.query_vector.set_global_future_direction(global_3Ddirection_future)
 
-    state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
-    state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
-    # state.query_vector.set_future_position(np.zeros_like(np.array(local_2Dposition_future).reshape(6, )))
-    # state.query_vector.set_future_direction(np.zeros_like(np.array(local_2Ddirection_future).reshape(6, )))
+    # state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
+    # state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
+    state.query_vector.set_future_position(np.zeros_like(np.array(local_2Dposition_future).reshape(6, )))
+    state.query_vector.set_future_direction(np.zeros_like(np.array(local_2Ddirection_future).reshape(6, )))
     state.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     state.query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     state.query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
     feature_vector = state.query_vector.get_feature_list().copy()
 
     #normalization
-    for i in range(0, 27):
+    for i in range(12, 27):
         feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
         
     return feature_vector

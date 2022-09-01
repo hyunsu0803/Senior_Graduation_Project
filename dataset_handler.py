@@ -204,7 +204,7 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
 
     # set parent's global position (if it is root joint, parent_position is current_position)
     if joint.get_is_root():
-        # parent_position = global_position
+
         state.local_futurePosition = [None, None, None]
         state.futureDirection = [None, None, None]
 
@@ -235,11 +235,9 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
         characterMatrix = joint.getCharacterLocalFrame()
 
     # get root local position and root local velocity
-    new_global_position = global_position[:3]
+    new_global_position = global_position.copy()
     past_global_position = joint.get_global_position()
-    temp_global_velocity = (new_global_position - past_global_position) * 30
-    global_velocity = np.zeros((4,))
-    global_velocity[:3] = temp_global_velocity
+    global_velocity = (new_global_position - past_global_position) * 30
     character_local_velocity = np.linalg.inv(characterMatrix) @ global_velocity
     character_local_velocity = character_local_velocity[:3]
     character_local_position = (np.linalg.inv(characterMatrix) @ global_position)[:3]  # local to root joint
@@ -252,7 +250,7 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
         #print("character_local_velocity", character_local_velocity)
 
     # set joint class's value
-    joint.set_global_position(global_position[:3])
+    joint.set_global_position(global_position)
     joint.set_character_local_velocity(character_local_velocity)
     joint.set_character_local_position(character_local_position[:3])
 
@@ -274,10 +272,10 @@ def set_feature_vector(feature_vector):
             two_foot_position.append(joint.get_character_local_position())
             two_foot_velocity.append(joint.get_character_local_velocity())
 
-    feature_vector.set_future_position(np.array(state.local_futurePosition).reshape(6, ))
-    feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
-    # feature_vector.set_future_position(np.zeros_like(np.array(state.local_futurePosition).reshape(6, )))
-    # feature_vector.set_future_direction(np.zeros_like(np.array(state.futureDirection).reshape(6, )))
+    # feature_vector.set_future_position(np.array(state.local_futurePosition).reshape(6, ))
+    # feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
+    feature_vector.set_future_position(np.zeros_like(np.array(state.local_futurePosition).reshape(6, )))
+    feature_vector.set_future_direction(np.zeros_like(np.array(state.futureDirection).reshape(6, )))
     feature_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     feature_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
@@ -306,8 +304,24 @@ def db_normalizing(data):
     print("std", state.std_array)
 
 
+# def check():
+
+#     tree_file = open('tree_dump.bin', 'rb')
+#     DB = pickle.load(tree_file)
+#     tree_file.close()
+
+#     data = np.array(DB.data)
+#     data[:, 0:12] = 0
+
+#     DB = cKDTree(data)
+#     print(DB.data[0])
+#     with open('tree_dump.bin', 'wb') as dump_file:
+#         pickle.dump(DB, dump_file)
+
+
 
 def main():
+    
     state.curFrame = []
 
     bvh_dir = './lafan1/'
@@ -334,7 +348,7 @@ def main():
                 
                 state.curFrame = state.frame_list[i]
                 state.futureFrames = []  
-                for j in [int(FPS/3), int(FPS/3*2), int(FPS)]:    
+                for j in [10, 20, 30]:    
                     if i + j < len(state.frame_list):
                         state.futureFrames.append(state.frame_list[i + j])
                 set_joint_feature(state.joint_list[0], np.identity(4), None)

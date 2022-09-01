@@ -12,19 +12,19 @@ def QnA(key_input = None):
 	DB = pickle.load(tree_file)
 
 	if key_input == "init":
-		temp_query = np.ones((27,))
+		query = np.ones((27,))
 # 		temp_query = np.array([ 0.,          0.,          0.,          0.,          0.,          0.,
 #   0.,          0.,          0.,          0.,          0.,          0.,
 #   0.02596101, -0.44674884,  0.82710267, -1.75291079,  0.41621676, -0.24859644,
 #  -0.30339763, -0.03691607, -0.27351549,  2.27067055, -0.26821648,  1.41159756,
 #   2.15798027, -1.15139199,  0.88598802])
-		temp_query = np.array([ 0.,          0.,          0.,          0.,          0.,          0.,
+		query = np.array([ 0.,          0.,          0.,          0.,          0.,          0.,
   					  0.,          0.,          0.,          0.,          0.,          0.,
  					-0.61352249, -0.10848645, -0.32916056, -0.25029716, -0.15555006,  0.54588994,
  					-0.0300607,  0.21631076, -0.21581551, -0.1518274,  -1.6671526,   1.12778864,
  					-0.15093671,  0.04813088,  0.12306743])
 	else:	
-		temp_query = set_query_vector(key_input=key_input)
+		query = set_query_vector(key_input=key_input)
 		# print("real feature", temp_query)
 		# temp_query = np.array([ 0.,          0.,          0.,          0.,          0.,          0.,
   		# 			  0.,          0.,          0.,          0.,          0.,          0.,
@@ -32,18 +32,21 @@ def QnA(key_input = None):
  		# 			-0.0300607,  0.21631076, -0.21581551, -0.1518274,  -1.6671526,   1.12778864,
  		# 			-0.15093671,  0.04813088,  0.12306743])
 
-	ans = DB.query(temp_query)
+	ans = DB.query(query)
 	qidx = ans[1]
-	print("!!!!!!!! Query !!!!!!!!", temp_query)
-	print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx])
+
+	bvh_name, nearest_frame_idx, FPS = find_your_bvh(qidx)
+	print()
+	print("bvh name", bvh_name, nearest_frame_idx)
+
+	print("!!!!!!!! Query !!!!!!!!", query, sep='\n')
+	print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx], sep='\n')
 
 	print("############query feature difference##############")
-	print(np.linalg.norm(temp_query - np.array(DB.data[qidx])))
+	print(np.linalg.norm(query - np.array(DB.data[qidx])))
 	print("############query feature difference vector##############")
-	print(temp_query - np.array(DB.data[qidx]))
+	print(query - np.array(DB.data[qidx]))
 
-	bvh_name, nearest_frame_idx, FPS = utils.find_your_bvh(qidx)
-	print("bvh name", bvh_name, nearest_frame_idx)
 
 	bvh_folder = './lafan1'
 	bvh_path = os.path.join(bvh_folder, bvh_name)
@@ -75,3 +78,22 @@ def QnA(key_input = None):
 	return coming_soon_10frames, FPS , [future_10frame, future_20frame, future_30frame]
 
 
+def find_your_bvh(q):
+    info_txt = open('db_index_info.txt', 'r')
+
+    info = info_txt.readlines()
+    info = [i.split() for i in info]
+    for i in info:
+        i[0] = int(i[0])
+        i[2] = int(i[2])
+
+    best = info[-1]
+    for i in range(len(info) - 1):
+        if info[i][0] <= q and info[i+1][0] > q:
+            best = info[i]
+    
+    bvh_name = best[1]
+    bvh_line = q - best[0] + best[2]
+    FPS = best[-1]
+
+    return bvh_name, bvh_line, int(FPS)

@@ -17,8 +17,8 @@ class Joint:
         self.matrix = np.identity(4) # real position, real orienatation
         self.bvh_matrix = np.identity(4)
 
-        self.global_position = np.array([0., 0., 0.], dtype='float32')  # global position
-        self.global_velocity = np.array([0., 0., 0.], dtype = 'float32') # global velocity
+        self.global_position = np.array([0., 0., 0., 1.], dtype='float32')  # global position
+        self.global_velocity = np.array([0., 0., 0., 0.], dtype = 'float32') # global velocity
 
         self.character_local_position = np.array([0., 0., 0.], dtype='float32')  # local to root joint
         self.character_local_velocity = np.array([0., 0., 0.], dtype='float32')  # local to root joint
