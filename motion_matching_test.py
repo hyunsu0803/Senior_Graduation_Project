@@ -7,7 +7,7 @@ from bvh_handler import set_query_vector
 
 def QnA(key_input = None):
 
-	tree_file = open('tree_dump.bin', 'rb')
+	tree_file = open('tree_dump2.bin', 'rb')
 
 	DB = pickle.load(tree_file)
 
@@ -42,10 +42,10 @@ def QnA(key_input = None):
 	print("############query feature difference vector##############")
 	print(temp_query - np.array(DB.data[qidx]))
 
-	bvh_name, nearest_frame_idx, FPS = utils.find_your_bvh(qidx)
+	bvh_name, nearest_frame_idx, FPS = find_your_bvh(qidx)
 	print("bvh name", bvh_name, nearest_frame_idx)
 
-	bvh_folder = './lafan1'
+	bvh_folder = './lafan2'
 	bvh_path = os.path.join(bvh_folder, bvh_name)
 	bvh_file = open(bvh_path, "r")
 
@@ -55,6 +55,7 @@ def QnA(key_input = None):
 	future_30frame = coming_soon_10frames[nearest_frame_idx + 40]
 
 	coming_soon_10frames = coming_soon_10frames[nearest_frame_idx+1: nearest_frame_idx + 11]
+
 	
 
 	coming_soon_10frames = [i.split() for i in coming_soon_10frames]
@@ -75,3 +76,22 @@ def QnA(key_input = None):
 	return coming_soon_10frames, FPS , [future_10frame, future_20frame, future_30frame]
 
 
+def find_your_bvh(q):
+    info_txt = open('db_index_info2.txt', 'r')
+
+    info = info_txt.readlines()
+    info = [i.split() for i in info]
+    for i in info:
+        i[0] = int(i[0])
+        i[2] = int(i[2])
+
+    best = info[-1]
+    for i in range(len(info) - 1):
+        if info[i][0] <= q and info[i+1][0] > q:
+            best = info[i]
+    
+    bvh_name = best[1]
+    bvh_line = q - best[0] + best[2]
+    FPS = best[-1]
+
+    return bvh_name, bvh_line, int(FPS)

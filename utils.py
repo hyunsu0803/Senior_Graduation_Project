@@ -29,22 +29,4 @@ def exp(rv):
     return R
 
 
-def find_your_bvh(q):
-    info_txt = open('db_index_info.txt', 'r')
 
-    info = info_txt.readlines()
-    info = [i.split() for i in info]
-    for i in info:
-        i[0] = int(i[0])
-        i[2] = int(i[2])
-
-    best = info[-1]
-    for i in range(len(info) - 1):
-        if info[i][0] <= q and info[i+1][0] > q:
-            best = info[i]
-    
-    bvh_name = best[1]
-    bvh_line = q - best[0] + best[2]
-    FPS = best[-1]
-
-    return bvh_name, bvh_line, int(FPS)
