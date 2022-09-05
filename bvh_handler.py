@@ -46,18 +46,19 @@ class state:
 
 
     mean_array = np.array([ 1.70555664e+00,  1.66257814e+01,  3.47407144e+00,  3.29116778e+01,
-                            5.28427340e+00,  4.82603666e+01, -4.33346525e-02, -2.01902337e-02,
-                            -4.34143420e-02, -2.07237915e-02, -4.43262646e-02, -2.11419204e-02,
-                            1.20962327e+01,  9.93455024e+00,  1.62830874e+00, -1.23452838e+01,
-                            9.87015011e+00,  7.76993796e-01,  3.89405907e+00,  3.28454660e-02,
-                            4.85916764e+01,  6.76517208e+00,  3.01871928e-02,  4.86789641e+01,
-                            5.71872909e+00,  3.40780433e-01,  4.77895223e+01])
-    std_array = np.array([  9.36409177,  19.52263755,  18.85289274,  38.56588881,  29.70256428,
-                            56.98768046,   0.77729875,   0.62731261,   0.77303758,   0.63253349,
-                            0.77294406,   0.6325707,     8.82547055,   3.86789364,  18.53490834,
-                            9.19697003,   3.98548971,  19.20771287,  82.55167559,  26.70327469,
-                            206.65461765, 74.12364479,  27.02290274, 207.16480382,  71.74521334,
-                            34.3155173,  183.79915329])
+                        5.28427340e+00,  4.82603666e+01,  8.45171552e-03,  9.77172611e-01,
+                        1.76466217e-02,  9.30636141e-01,  2.55769934e-02,  8.81781975e-01,
+                        1.20962327e+01,  9.93455024e+00,  1.62830874e+00, -1.23452838e+01,
+                        9.87015011e+00,  7.76993796e-01,  3.89405907e+00,  3.28454660e-02,
+                        4.85916764e+01,  6.76517208e+00,  3.01871928e-02,  4.86789641e+01,
+                        5.71872909e+00,  3.40780433e-01,  4.77895223e+01])
+    std_array = np.array([9.36409177e+00, 1.95226376e+01, 1.88528927e+01, 3.85658888e+01,
+                        2.97025643e+01, 5.69876805e+01, 2.06998580e-01, 4.70515040e-02,
+                        3.37766943e-01, 1.39708493e-01, 4.10791676e-01, 2.30340106e-01,
+                        8.82547055e+00, 3.86789364e+00, 1.85349083e+01, 9.19697003e+00,
+                        3.98548971e+00, 1.92077129e+01, 8.25516756e+01, 2.67032747e+01,
+                        2.06654618e+02, 7.41236448e+01, 2.70229027e+01, 2.07164804e+02,
+                        7.17452133e+01, 3.43155173e+01, 1.83799153e+02])
 
 def parsing_bvh(bvh):
 
@@ -465,10 +466,10 @@ def set_query_vector(key_input = None):
     state.query_vector.set_global_future_position(global_3Dposition_future)
     state.query_vector.set_global_future_direction(global_3Ddirection_future)
 
-    # state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
-    # state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
-    state.query_vector.set_future_position(np.zeros_like(np.array(local_2Dposition_future).reshape(6, )))
-    state.query_vector.set_future_direction(np.zeros_like(np.array(local_2Ddirection_future).reshape(6, )))
+    state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
+    state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
+    # state.query_vector.set_future_position(np.zeros_like(np.array(local_2Dposition_future).reshape(6, )))
+    # state.query_vector.set_future_direction(np.zeros_like(np.array(local_2Ddirection_future).reshape(6, )))
     state.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     state.query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     state.query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
@@ -599,9 +600,5 @@ def setRealFutureInfo():
         character_local_future_direction = np.linalg.inv(bvh_curframe_character_local_frame)[:3, :3] @ np.array(future_direction)
         character_local_future_directions[i] = character_local_future_direction
 
-    
-    print("!!!!!!!character local frame:", bvh_curframe_character_local_frame)
-    print("!!!!!!!character local future direction", character_local_future_directions)
-    print("!!!!!!!character local future position:", character_local_future_positions)
 
     return np.array(character_local_future_positions), np.array(character_local_future_directions)
