@@ -416,35 +416,35 @@ def set_query_vector(key_input = None):
         local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
 
 
-    abs_global_velocity = 50
-    local_3Dposition_future = np.zeros((3, 3))
+    # abs_global_velocity = 50
+    # local_3Dposition_future = np.zeros((3, 3))
 
-    for i in range(3):
-        local_3Dposition_future[i] = local_future_direction * (abs_global_velocity * (i+1))
+    # for i in range(3):
+    #     local_3Dposition_future[i] = local_future_direction * (abs_global_velocity * (i+1))
 
-    local_2Dposition_future = local_3Dposition_future[:, 0::2]
+    # local_2Dposition_future = local_3Dposition_future[:, 0::2]
     
-    local_future_direction[1] = 0
-    local_future_direction = utils.normalized(local_future_direction)
-    local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
+    # local_future_direction[1] = 0
+    # local_future_direction = utils.normalized(local_future_direction)
+    # local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
    
     
-    local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
-
-    # local_3Dposition_future, local_3Ddirection_future = setRealFutureInfo()
-    # local_2Dposition_future = local_3Dposition_future[:, 0::2]
     # local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
+
+    local_3Dposition_future, local_3Ddirection_future = setRealFutureInfo()
+    local_2Dposition_future = local_3Dposition_future[:, 0::2]
+    local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
 
     
     # global position setting
-    global_3Dposition_future = np.zeros((3, 3))
+    # global_3Dposition_future = np.zeros((3, 3))
 
-    for i in range(3):
-        global_3Dposition_future[i] = state.real_global_position + global_future_direction * (abs_global_velocity * (i+1))
-    global_3Dposition_future[:, 1] = 0
-    for i in range(3):
-        temp = np.array([0., 0., 0., 1])
-        temp[:3] = global_3Dposition_future[i]
+    # for i in range(3):
+    #     global_3Dposition_future[i] = state.real_global_position + global_future_direction * (abs_global_velocity * (i+1))
+    # global_3Dposition_future[:, 1] = 0
+    # for i in range(3):
+    #     temp = np.array([0., 0., 0., 1])
+    #     temp[:3] = global_3Dposition_future[i]
 
     global_3Dposition_future = []
     for i in range(3):
@@ -475,7 +475,7 @@ def set_query_vector(key_input = None):
     feature_vector = state.query_vector.get_feature_list().copy()
 
     #normalization
-    for i in range(12, 27):
+    for i in range(0, 27):
         feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
         
     return feature_vector
@@ -513,9 +513,6 @@ def draw_future_info():
     glEnd()
 
 
-
-
-
 def reset_bvh_past_postion():
     state.bvh_past_position = np.array([])
 
@@ -546,6 +543,7 @@ def setRealFutureInfo():
     for j in range (0, 3):
         frame = np.array(MyWindow.state.future_frames[j])
         bvh_future_orientation = np.identity(3)
+
         for i in range(3, 6):
             if state.joint_list[0].get_channel()[i].upper() == 'XROTATION':
                 xr = frame[i]

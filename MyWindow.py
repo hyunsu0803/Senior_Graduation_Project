@@ -189,6 +189,7 @@ class MyWindow(QOpenGLWidget):
 			self.matching_num = 0
 
 		state.curFrame = state.coming_soon_10frames[self.matching_num]
+		print("curFrame change")
 		self.matching_num = (self.matching_num + 1) % 10
 		
 		self.timer.setInterval(1000 / self.FPS)
@@ -325,6 +326,7 @@ class MyWindow(QOpenGLWidget):
 		# state.curFrame = state.coming_soon_10frames[self.matching_num]
 		self.matching_num = (self.matching_num+1) % 10
 		state.curFrame = state.coming_soon_10frames[self.matching_num]
+		print("curFrame change")
 	
 		self.update()
 

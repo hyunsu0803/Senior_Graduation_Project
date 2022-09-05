@@ -7,7 +7,7 @@ from bvh_handler import set_query_vector
 
 def QnA(key_input = None):
 
-	tree_file = open('tree_dump.bin', 'rb')
+	tree_file = open('tree_dump2.bin', 'rb')
 
 	DB = pickle.load(tree_file)
 
@@ -47,7 +47,7 @@ def QnA(key_input = None):
 	print("############query feature difference vector##############")
 	print(query - np.array(DB.data[qidx]))
 
-	bvh_folder = './lafan1'
+	bvh_folder = './lafan2'
 	bvh_path = os.path.join(bvh_folder, bvh_name)
 	bvh_file = open(bvh_path, "r")
 
@@ -79,7 +79,7 @@ def QnA(key_input = None):
 
 
 def find_your_bvh(q):
-    info_txt = open('db_index_info.txt', 'r')
+    info_txt = open('db_index_info2.txt', 'r')
 
     info = info_txt.readlines()
     info = [i.split() for i in info]
