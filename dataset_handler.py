@@ -220,19 +220,13 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
             state.local_futurePosition[i] = np.linalg.inv(characterLocalFrame)@ global_root_position           
             state.local_futurePosition[i] = state.local_futurePosition[i][0::2] #3X2
 
-            global_future_direction= (R.from_euler('zyx', state.futureFrames[i][3:6], degrees=True).as_matrix())[:3, 1]
+            global_future_direction= (R.from_euler('ZYX', state.futureFrames[i][3:6], degrees=True).as_matrix())[:3, 1]
             global_future_direction[1] = 0.
             global_future_direction = utils.normalized(global_future_direction)
             
             local_future_direction = np.linalg.inv(characterLocalFrame[:3, :3]) @ global_future_direction
             state.futureDirection[i] = local_future_direction[0::2]
 
-            if printTime == True:
-                print("!!!!!!!!!!character local frame:", characterLocalFrame)
-                print("!!!!!!!!!!local future position:", state.local_futurePosition)
-                print("!!!!!!!!!!local future direction:", state.futureDirection)
-
-        # exit()
 
     # Check if it's Root joint, otherwise update Joint class's data
     # velocity, rotation velocity update
@@ -280,8 +274,6 @@ def set_feature_vector(feature_vector):
 
     feature_vector.set_future_position(np.array(state.local_futurePosition).reshape(6, ))
     feature_vector.set_future_direction(np.array(state.futureDirection).reshape(6, ))
-    # feature_vector.set_future_position(np.zeros_like(np.array(state.local_futurePosition).reshape(6, )))
-    # feature_vector.set_future_direction(np.zeros_like(np.array(state.futureDirection).reshape(6, )))
     feature_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
     feature_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
     feature_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
@@ -308,22 +300,6 @@ def db_normalizing(data):
 
     print("mean", state.mean_array)
     print("std", state.std_array)
-
-
-# def check():
-
-#     tree_file = open('tree_dump.bin', 'rb')
-#     DB = pickle.load(tree_file)
-#     tree_file.close()
-
-#     data = np.array(DB.data)
-#     data[:, 0:12] = 0
-
-#     DB = cKDTree(data)
-#     print(DB.data[0])
-#     with open('tree_dump.bin', 'wb') as dump_file:
-#         pickle.dump(DB, dump_file)
-
 
 
 def main():
