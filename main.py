@@ -7,7 +7,7 @@ curFrame = []
 def main():
     app = QApplication(sys.argv)
     window = MyWindow()
-    window.setWindowTitle("my BVH viewer")
+    window.setWindowTitle("My-Awesome-Project")
     window.setFixedSize(900, 900)
     window.show()
     sys.exit(app.exec_())

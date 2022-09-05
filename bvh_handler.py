@@ -599,6 +599,9 @@ def setRealFutureInfo():
         character_local_future_direction = np.linalg.inv(bvh_curframe_character_local_frame)[:3, :3] @ np.array(future_direction)
         character_local_future_directions[i] = character_local_future_direction
 
-    print("here~~~~~~~~", character_local_future_directions)
+    
+    print("!!!!!!!character local frame:", bvh_curframe_character_local_frame)
+    print("!!!!!!!character local future direction", character_local_future_directions)
+    print("!!!!!!!character local future position:", character_local_future_positions)
 
     return np.array(character_local_future_positions), np.array(character_local_future_directions)
