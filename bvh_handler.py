@@ -28,37 +28,38 @@ class state:
     bvh_to_real_yrotation = np.identity(3)
 
     # LaFAN1
-    # mean_array = np.array([ 6.07492335e-01,  1.83831508e+01,  1.67441441e+00,  3.62060169e+01,
-    #                         3.08432562e+00,  5.19082369e+01, -8.23741644e-02,  1.84959764e-02,
-    #                         -8.22155663e-02,  1.82737104e-02, -8.15859744e-02,  1.79583760e-02,
-    #                         1.27510255e+01,  1.75917816e+01, -2.46474355e+00, -1.32840152e+01,
-    #                         1.73819857e+01, -2.66479918e+00,  1.81058656e+00,  5.35151017e-02,
-    #                         5.54863363e+01, -1.45422479e-01,  5.37388807e-02,  5.63968049e+01,
-    #                         8.66350606e-01,  4.33641191e-01,  5.36846555e+01])
-    # std_array = np.array([ 15.8055459,   30.32243441,  32.01324264,  58.59395957,  50.27137926,
-    #                         84.03057001,  0.75635229,   0.64869377,   0.75268109,   0.65297614,
-    #                         0.75169539,   0.65419818,  17.13751219,  20.71844285,  23.73710293,
-    #                         16.49389601,  20.54518905,  23.33657265, 108.22347235,  57.60453545,
-    #                         185.23090267, 109.27615739,  58.90947577, 186.61817055,  92.53016731,
-    #                         50.00099766, 147.30214098])
+    mean_array =  np.array([ 6.07492335e-01,  1.83831508e+01,  1.67441441e+00,  3.62060169e+01,
+                        3.08432562e+00,  5.19082369e+01,  1.27288395e-02,  9.28758360e-01,
+                        2.05411614e-02,  8.14135642e-01,  2.61480465e-02,  7.07203011e-01,
+                        1.27510255e+01,  1.75917816e+01, -2.46474355e+00, -1.32840152e+01,
+                        1.73819857e+01, -2.66479918e+00,  1.81058656e+00,  5.35151017e-02,
+                        5.54863363e+01, -1.45422479e-01,  5.37388807e-02,  5.63968049e+01,
+                        8.66350606e-01,  4.33641191e-01,  5.36846555e+01])
+    std_array = np.array([1.58055459e+01, 3.03224344e+01, 3.20132426e+01, 5.85939596e+01,
+                        5.02713793e+01, 8.40305700e+01, 3.29957160e-01, 1.68446306e-01,
+                        4.72506881e-01, 3.36895332e-01, 5.38893312e-01, 4.56918131e-01,
+                        1.71375122e+01, 2.07184428e+01, 2.37371029e+01, 1.64938960e+01,
+                        2.05451891e+01, 2.33365727e+01, 1.08223472e+02, 5.76045354e+01,
+                        1.85230903e+02, 1.09276157e+02, 5.89094758e+01, 1.86618171e+02,
+                        9.25301673e+01, 5.00009977e+01, 1.47302141e+02])
 
     # LaFAN2
 
 
-    mean_array = np.array([ 1.70555664e+00,  1.66257814e+01,  3.47407144e+00,  3.29116778e+01,
-                        5.28427340e+00,  4.82603666e+01,  8.45171552e-03,  9.77172611e-01,
-                        1.76466217e-02,  9.30636141e-01,  2.55769934e-02,  8.81781975e-01,
-                        1.20962327e+01,  9.93455024e+00,  1.62830874e+00, -1.23452838e+01,
-                        9.87015011e+00,  7.76993796e-01,  3.89405907e+00,  3.28454660e-02,
-                        4.85916764e+01,  6.76517208e+00,  3.01871928e-02,  4.86789641e+01,
-                        5.71872909e+00,  3.40780433e-01,  4.77895223e+01])
-    std_array = np.array([9.36409177e+00, 1.95226376e+01, 1.88528927e+01, 3.85658888e+01,
-                        2.97025643e+01, 5.69876805e+01, 2.06998580e-01, 4.70515040e-02,
-                        3.37766943e-01, 1.39708493e-01, 4.10791676e-01, 2.30340106e-01,
-                        8.82547055e+00, 3.86789364e+00, 1.85349083e+01, 9.19697003e+00,
-                        3.98548971e+00, 1.92077129e+01, 8.25516756e+01, 2.67032747e+01,
-                        2.06654618e+02, 7.41236448e+01, 2.70229027e+01, 2.07164804e+02,
-                        7.17452133e+01, 3.43155173e+01, 1.83799153e+02])
+    # mean_array = np.array([ 1.70555664e+00,  1.66257814e+01,  3.47407144e+00,  3.29116778e+01,
+    #                     5.28427340e+00,  4.82603666e+01,  8.45171552e-03,  9.77172611e-01,
+    #                     1.76466217e-02,  9.30636141e-01,  2.55769934e-02,  8.81781975e-01,
+    #                     1.20962327e+01,  9.93455024e+00,  1.62830874e+00, -1.23452838e+01,
+    #                     9.87015011e+00,  7.76993796e-01,  3.89405907e+00,  3.28454660e-02,
+    #                     4.85916764e+01,  6.76517208e+00,  3.01871928e-02,  4.86789641e+01,
+    #                     5.71872909e+00,  3.40780433e-01,  4.77895223e+01])
+    # std_array = np.array([9.36409177e+00, 1.95226376e+01, 1.88528927e+01, 3.85658888e+01,
+    #                     2.97025643e+01, 5.69876805e+01, 2.06998580e-01, 4.70515040e-02,
+    #                     3.37766943e-01, 1.39708493e-01, 4.10791676e-01, 2.30340106e-01,
+    #                     8.82547055e+00, 3.86789364e+00, 1.85349083e+01, 9.19697003e+00,
+    #                     3.98548971e+00, 1.92077129e+01, 8.25516756e+01, 2.67032747e+01,
+    #                     2.06654618e+02, 7.41236448e+01, 2.70229027e+01, 2.07164804e+02,
+    #                     7.17452133e+01, 3.43155173e+01, 1.83799153e+02])
 
 def parsing_bvh(bvh):
 
@@ -417,43 +418,44 @@ def set_query_vector(key_input = None):
         local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
 
 
-    # abs_global_velocity = 50
-    # local_3Dposition_future = np.zeros((3, 3))
-
-    # for i in range(3):
-    #     local_3Dposition_future[i] = local_future_direction * (abs_global_velocity * (i+1))
-
-    # local_2Dposition_future = local_3Dposition_future[:, 0::2]
     
-    # local_future_direction[1] = 0
-    # local_future_direction = utils.normalized(local_future_direction)
-    # local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
+    abs_global_velocity = 45
+    local_3Dposition_future = np.zeros((3, 3))
+
+    for i in range(3):
+        local_3Dposition_future[i] = local_future_direction * (abs_global_velocity * (i+1))
+
+    local_2Dposition_future = local_3Dposition_future[:, 0::2]
+    
+    local_future_direction[1] = 0
+    local_future_direction = utils.normalized(local_future_direction)
+    local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
    
     
-    # local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
-
-    local_3Dposition_future, local_3Ddirection_future = setRealFutureInfo()
-    local_2Dposition_future = local_3Dposition_future[:, 0::2]
     local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
+
+    # local_3Dposition_future, local_3Ddirection_future = setRealFutureInfo()
+    # local_2Dposition_future = local_3Dposition_future[:, 0::2]
+    # local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
 
     
     # global position setting
-    # global_3Dposition_future = np.zeros((3, 3))
+    global_3Dposition_future = np.zeros((3, 3))
 
-    # for i in range(3):
-    #     global_3Dposition_future[i] = state.real_global_position + global_future_direction * (abs_global_velocity * (i+1))
-    # global_3Dposition_future[:, 1] = 0
-    # for i in range(3):
-    #     temp = np.array([0., 0., 0., 1])
-    #     temp[:3] = global_3Dposition_future[i]
-
-    global_3Dposition_future = []
+    for i in range(3):
+        global_3Dposition_future[i] = state.real_global_position + global_future_direction * (abs_global_velocity * (i+1))
+    global_3Dposition_future[:, 1] = 0
     for i in range(3):
         temp = np.array([0., 0., 0., 1])
-        temp[:3] = local_3Dposition_future[i]
-        global_3Dposition_future.append((state.joint_list[0].getCharacterLocalFrame() @ temp)[:3])
+        temp[:3] = global_3Dposition_future[i]
+
+    # global_3Dposition_future = []
+    # for i in range(3):
+    #     temp = np.array([0., 0., 0., 1])
+    #     temp[:3] = local_3Dposition_future[i]
+    #     global_3Dposition_future.append((state.joint_list[0].getCharacterLocalFrame() @ temp)[:3])
     
-    global_3Dposition_future = np.array(global_3Dposition_future)
+    # global_3Dposition_future = np.array(global_3Dposition_future)
     
     # global direction setting
     global_3Ddirection_future = []

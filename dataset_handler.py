@@ -307,11 +307,11 @@ def main():
     
     state.curFrame = []
 
-    bvh_dir = './lafan2/'
+    bvh_dir = './lafan1/'
     bvh_names = os.listdir(bvh_dir)
     bvh_names.sort()
 
-    with open('db_index_info2.txt', 'w') as db_index_info:
+    with open('db_index_info.txt', 'w') as db_index_info:
 
         db_index = 0
         data = []
@@ -350,7 +350,7 @@ def main():
     db_normalizing(data)
 
     DB = cKDTree(data)
-    with open('tree_dump2.bin', 'wb') as dump_file:
+    with open('tree_dump.bin', 'wb') as dump_file:
         pickle.dump(DB, dump_file)
 
 
