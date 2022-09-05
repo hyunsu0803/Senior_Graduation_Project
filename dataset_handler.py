@@ -10,6 +10,7 @@ from scipy.spatial import cKDTree
 import pickle
 import utils
 
+printTime = False
 
 
 class state:
@@ -226,6 +227,11 @@ def set_joint_feature(joint, parentMatrix, characterMatrix=None):
             local_future_direction = np.linalg.inv(characterLocalFrame[:3, :3]) @ global_future_direction
             state.futureDirection[i] = local_future_direction[0::2]
 
+            if printTime == True:
+                print("!!!!!!!!!!character local frame:", characterLocalFrame)
+                print("!!!!!!!!!!local future position:", state.local_futurePosition)
+                print("!!!!!!!!!!local future direction:", state.futureDirection)
+
         # exit()
 
     # Check if it's Root joint, otherwise update Joint class's data
@@ -321,6 +327,7 @@ def db_normalizing(data):
 
 
 def main():
+    global printTime
     
     state.curFrame = []
 
@@ -351,7 +358,11 @@ def main():
                 for j in [10, 20, 30]:    
                     if i + j < len(state.frame_list):
                         state.futureFrames.append(state.frame_list[i + j])
+                if i == 5411:
+                    printTime = True
+
                 set_joint_feature(state.joint_list[0], np.identity(4), None)
+                printTime = False
                 feature_vector = Feature()
                 set_feature_vector(feature_vector)
                 state.feature_list.append(feature_vector)
