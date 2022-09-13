@@ -325,7 +325,7 @@ def main():
             info = ' '.join([str(db_index), bvh_name, str(state.line_index), str(FPS)+'\n'])
             db_index_info.write(info)
 
-            db_index += num_of_frames - FPS 
+            db_index += num_of_frames - FPS - 1
 
             for i in range(0, len(state.frame_list) - FPS -1):
                 

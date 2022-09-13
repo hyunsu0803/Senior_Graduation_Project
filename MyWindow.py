@@ -37,7 +37,7 @@ class MyWindow(QOpenGLWidget):
 		# timer
 		self.timer = QTimer(self)
 		self.timer.timeout.connect(self.update_frame)
-		self.timer.setInterval(1000 / self.FPS)
+		self.timer.setInterval(1000 / self.FPS * 2)
 		self.timer.start()
 
 		# initialize value
@@ -306,7 +306,7 @@ class MyWindow(QOpenGLWidget):
 			state.coming_soon_10frames, self.FPS, state.future_frames = QnA(key_input="init")
 			reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
-			self.timer.setInterval(1000 / self.FPS)
+			self.timer.setInterval(1000 / self.FPS * 2)
 		
 		# elif self.matching_num % 10 == 9:
 		# 	state.coming_soon_10frames, self.FPS, state.future_frames = QnA()
@@ -319,7 +319,7 @@ class MyWindow(QOpenGLWidget):
 			state.coming_soon_10frames, self.FPS, state.future_frames = QnA()
 			reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
-			self.timer.setInterval(1000/self.FPS)
+			self.timer.setInterval(1000/self.FPS * 2)
 
 	
 		# self.matching_num = (self.matching_num + 1) % 10
