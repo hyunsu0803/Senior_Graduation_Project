@@ -34,8 +34,8 @@ def QnA(key_input = None):
 
 		# query = np.zeros((27,))
 	else:	
-		made_query = set_query_vector(key_input=key_input)
-		query = past_real_query
+		query = set_query_vector(key_input=key_input)
+		# query = past_real_query
 		# print("real feature", temp_query)
 # 		query = np.array([ -0.06923568, -0.56889941, -0.16428767, -0.41164858, -0.09704712, -0.44940397,
 #   1.3418738,   0.0710877,   1.3495199,   0.06315013,  1.34948171,  0.11251585,
@@ -50,16 +50,16 @@ def QnA(key_input = None):
 	print()
 	print("bvh name", bvh_name, nearest_frame_idx)
 
-	print("!!!!!!!! Query !!!!!!!!", made_query, sep='\n')
+	print("!!!!!!!! Query !!!!!!!!", query, sep='\n')
 	print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx], sep='\n')
 	
-	print("!!!!!!! + 10 index feature !!!!!!!", past_real_query, sep = '\n')
-	past_real_query = DB.data[qidx+10]
+	# print("!!!!!!! + 10 index feature !!!!!!!", past_real_query, sep = '\n')
+	# past_real_query = DB.data[qidx+10]
 
 	print("############query feature difference##############")
-	print(np.linalg.norm(made_query - np.array(DB.data[qidx])))
+	print(np.linalg.norm(query - np.array(DB.data[qidx])))
 	print("############query feature difference vector##############")
-	print(made_query - np.array(DB.data[qidx]))
+	print(query - np.array(DB.data[qidx]))
 
 	# print("############query feature difference vector##############")
 	# print(query - made_query)
