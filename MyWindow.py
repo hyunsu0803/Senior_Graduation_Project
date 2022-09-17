@@ -5,10 +5,9 @@ from PyQt5.QtWidgets import QOpenGLWidget, QLabel
 from OpenGL.GL import *
 from OpenGL.GLU import *
 # from PyQt5. QtWidgets import QApplication
-from drawTpose import drawTpose
 import numpy as np
 
-from Joint import Joint
+from Character import Character
 import bvh_handler
 from bvh_handler import drawJoint, reset_bvh_past_postion, draw_future_info
 from motion_matching_test import QnA
@@ -17,7 +16,6 @@ from motion_matching_test import QnA
 class state:
 	curFrame = []
 	future_frames = []
-	# timeStep = 0.2
 	curFrame_index = 0
 	coming_soon_10frames = []
 	KEY_MODE = None
@@ -50,19 +48,11 @@ class MyWindow(QOpenGLWidget):
 		self.oldx = 0
 		self.oldy = 0
 		self.A = np.radians(30)
-		self.E = np.radians(36)		# 45....?
-
-		# modes
-		self.animation = True
-
-		self.frame_num = -1
+		self.E = np.radians(36)		
 
 		# draw T pose
-		drawTpose()
+		self.character = Character()
 		
-
-
-
 	def initializeGL(self):
 		glEnable(GL_DEPTH_TEST)
 		glEnable(GL_NORMALIZE)
@@ -120,7 +110,6 @@ class MyWindow(QOpenGLWidget):
 
 		if len(state.curFrame) > 0 :
 			glPushMatrix()
-			
 			drawJoint(np.identity(4), bvh_handler.state.joint_list[0])
 			draw_future_info()
 			glPopMatrix()
@@ -307,12 +296,6 @@ class MyWindow(QOpenGLWidget):
 			reset_bvh_past_postion()
 			bvh_handler.reset_bvh_past_orientation()
 			self.timer.setInterval(1000 / self.FPS * 2)
-		
-		# elif self.matching_num % 10 == 9:
-		# 	state.coming_soon_10frames, self.FPS, state.future_frames = QnA()
-		# 	reset_bvh_past_postion()
-		# 	bvh_handler.reset_bvh_past_orientation()
-		# 	self.timer.setInterval(1000 / self.FPS)
 
 		elif self.matching_num % 10 == 9:
 			print("~~~~~~~~~~~new query~~~~~~~~~~~~~~")
@@ -321,9 +304,6 @@ class MyWindow(QOpenGLWidget):
 			bvh_handler.reset_bvh_past_orientation()
 			self.timer.setInterval(1000/self.FPS * 2)
 
-	
-		# self.matching_num = (self.matching_num + 1) % 10
-		# state.curFrame = state.coming_soon_10frames[self.matching_num]
 		self.matching_num = (self.matching_num+1) % 10
 		state.curFrame = state.coming_soon_10frames[self.matching_num]
 		print("curFrame change")
