@@ -112,23 +112,6 @@ class Joint:
     def get_character_local_rotation(self):
         return self.character_local_rotation.copy()
 
-    # def get_root_local_rotvel(self):
-    #     return self.character_local_rotvel
-
-    # def printJoint(self):
-    #     print("#################################################")
-    #     print("joint name: ", self.joint_name)
-    #     print("joint index: ", self.index)
-    #     print("joint channel", self.channel)
-    #     print("joint offset", self.offset)
-    #     print("joint resize", self.resize)
-    #     print("joint child joint", self.child_joint)
-    #     print("joint transformation matrix:", self.get_transform_matrix())
-    #     print("joint global position", self.global_position)
-    #     print("joint root local position ", self.character_local_position)
-    #     print("joint root local velocity", self.character_local_velocity)
-    #     print("joint root local rotation: ", self.character_local_rotation)
-
 
     def getCharacterLocalFrame(self):
         M = self.get_transform_matrix().copy()

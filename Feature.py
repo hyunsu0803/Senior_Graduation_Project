@@ -57,26 +57,6 @@ class Feature:
     def get_global_future_direction(self):
         return self.global_future_direction
 
-    # def get_feature_string(self):
-    #     data = ""
-
-    #     for i in range(0, 6):
-    #         data += str(self.future_position[i]) + " "
-
-    #     for i in range(0, 6):
-    #         data += str(self.future_direction[i]) + " "
-
-    #     for i in range(0, 6):
-    #         data += str(self.foot_position[i]) + " "
-
-    #     for i in range(0, 6):
-    #         data += str(self.foot_velocity[i]) + " "
-
-    #     for i in range(0, 3):
-    #         data += str(self.hip_velocity[i]) + " "
-
-    #     return data
-
     def get_feature_list(self):
         data1 = np.concatenate( (self.future_position, self.future_direction) )
         data2 = np.concatenate( (self.foot_position, self.foot_velocity) ) 
