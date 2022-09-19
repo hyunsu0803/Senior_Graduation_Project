@@ -24,7 +24,7 @@ class MotionMatching:
         self.bvh_past_orientation = np.array([])
         self.bvh_past_position = np.array([])
 
-        self.target_global_orientation = np.array([1., 0., 0.])
+        self.target_global_direction = np.array([1., 0., 0.])
         self.abs_global_velocity = 45
         self.query_vector = Feature()
 
@@ -62,7 +62,7 @@ class MotionMatching:
         self.real_global_orientation = np.array([TposeX, TposeY, TposeZ]).T
         self.real_global_position = np.array([0., 0., 0.])
         self.query_vector = Feature()
-        self.target_global_orientation = np.array([1., 0., 0.])
+        self.target_global_direction = np.array([1., 0., 0.])
     
     def calculate_character_motion(self):
         self.calculate_joint_motion(np.identity(4), self.character.getCharacterRootJoint())
@@ -105,7 +105,6 @@ class MotionMatching:
 
         if joint.get_is_root():
             characterMatrix = self.character.getCharacterLocalFrame().copy()
-            # drawLocalFrame(characterMatrix)
    
         # get root local position and root local velocity
         new_global_position = global_position.copy()
@@ -230,76 +229,17 @@ class MotionMatching:
         local_future_direction = None
         global_future_direction = None
 
-        if key_input == None:
-            global_future_direction = self.target_global_orientation
-            local_future_direction = character_local_frame[:3, :3].T @ global_future_direction
-        elif key_input == "LEFT":
-            self.target_global_orientation = np.array([1., 0., 0.])
-            global_future_direction = self.target_global_orientation
-            local_future_direction = character_local_frame[:3, :3].T @ global_future_direction
-        elif key_input == "RIGHT":
-            self.target_global_orientation = np.array([-1., 0., 0.])
-            global_future_direction = self.target_global_orientation
-            local_future_direction = character_local_frame[:3, :3].T @ global_future_direction
-        elif key_input == "UP":
-            self.target_global_orientation = np.array([0., 0., 1.])
-            global_future_direction = self.target_global_orientation
-            local_future_direction = character_local_frame[:3, :3].T @ global_future_direction
-        elif key_input == "DOWN":
-            self.target_global_orientation = np.array([0., 0., -1.])
-            global_future_direction = self.target_global_orientation
-            local_future_direction = character_local_frame[:3, :3].T @ global_future_direction
+        self.set_target_global_direction(key_input)
+        global_future_direction = self.target_global_direction
+        local_future_direction = character_local_frame[:3, :3].T @ global_future_direction
 
-        
-        abs_global_velocity = self.abs_global_velocity
-        local_3Dposition_future = np.zeros((3, 3))
-
-        for i in range(3):
-            local_3Dposition_future[i] = local_future_direction * (abs_global_velocity * (i+1))
-
-        local_2Dposition_future = local_3Dposition_future[:, 0::2]
-        
-        local_future_direction[1] = 0
-        local_future_direction = utils.normalized(local_future_direction)
-        local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
-    
-        
-        local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
-
-        # local_3Dposition_future, local_3Ddirection_future = setRealFutureInfo()
-        # local_2Dposition_future = local_3Dposition_future[:, 0::2]
-        # local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
-
-        
-        # global position setting
-        global_3Dposition_future = np.zeros((3, 3))
-
-        for i in range(3):
-            global_3Dposition_future[i] = self.real_global_position + global_future_direction * (abs_global_velocity * (i+1))
-        global_3Dposition_future[:, 1] = 0
-        for i in range(3):
-            temp = np.array([0., 0., 0., 1])
-            temp[:3] = global_3Dposition_future[i]
-
-        global_3Dposition_future = []
-        for i in range(3):
-            temp = np.array([0., 0., 0., 1])
-            temp[:3] = local_3Dposition_future[i]
-            global_3Dposition_future.append((character_local_frame @ temp)[:3])
-        
-        global_3Dposition_future = np.array(global_3Dposition_future)
-        
-        # global direction setting
-        global_3Ddirection_future = []
-        for i in range(3):
-            global_3Ddirection_future.append(character_local_frame[:3, :3] @ local_3Ddirection_future[i])
-
-        global_3Ddirection_future = np.array(global_3Ddirection_future)
-
+        local_2Dposition_future = self.calculate_local_2Dposition_future(local_future_direction)
+        local_2Ddirection_future = self.calculate_local_2Ddirection_future(local_future_direction)
+        global_3Dposition_future = self.calculate_global_3Dposition_future(local_2Dposition_future)
+        global_3Ddirection_future = self.calculate_global_3Ddirection_future(local_2Ddirection_future)
 
         self.query_vector.set_global_future_position(global_3Dposition_future)
         self.query_vector.set_global_future_direction(global_3Ddirection_future)
-
         self.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
         self.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
         self.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
@@ -309,7 +249,61 @@ class MotionMatching:
         flatten_query_vector =self.query_vector.get_noramlize_feature_vector(self.mean_array, self.std_array)
             
         return flatten_query_vector
+
+    def set_target_global_direction(self, key_input):
+        if key_input == "LEFT":
+            self.target_global_direction = np.array([1., 0., 0.])
+        elif key_input == "RIGHT":
+            self.target_global_direction = np.array([-1., 0., 0.])
+        elif key_input == "UP":
+            self.target_global_direction = np.array([0., 0., 1.])
+        elif key_input == "DOWN":
+            self.target_global_direction = np.array([0., 0., -1.])
+
+    def calculate_local_2Dposition_future(self, local_future_direction):
+        local_3Dposition_future = np.zeros((3, 3))
+
+        for i in range(3):
+            local_3Dposition_future[i] = local_future_direction * (self.abs_global_velocity * (i+1))
+
+        local_2Dposition_future = local_3Dposition_future[:, 0::2]
+
+        return local_2Dposition_future
+
+    def calculate_local_2Ddirection_future(self, local_future_direction):
+        local_future_direction[1] = 0
+        local_future_direction = utils.normalized(local_future_direction)
+        local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
+
         
+        local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
+        
+        return local_2Ddirection_future
+
+    def calculate_global_3Dposition_future(self, local_2Dposition_future):
+        global_3Dposition_future = []
+        for i in range(3):
+            temp = np.array([0., 0., 0., 1])
+            temp[0] = local_2Dposition_future[i][0]
+            temp[2] = local_2Dposition_future[i][1]
+            global_3Dposition_future.append((self.character.getCharacterLocalFrame() @ temp)[:3])
+        
+        global_3Dposition_future = np.array(global_3Dposition_future)
+
+        return global_3Dposition_future
+
+    def calculate_global_3Ddirection_future(self, local_2Ddirection_future):
+        global_3Ddirection_future = []
+        for i in range(3):
+            local_3Ddirection_future = np.zeros((3,))
+            local_3Ddirection_future[0] = local_2Ddirection_future[i][0]
+            local_3Ddirection_future[2] = local_2Ddirection_future[i][1]
+            global_3Ddirection_future.append(self.character.getCharacterLocalFrame()[:3, :3] @ local_3Ddirection_future)
+
+        global_3Ddirection_future = np.array(global_3Ddirection_future)
+
+        return global_3Ddirection_future
+
     # only used in class
     def find_matching_bvh(self, query):
         info_txt = open('db_index_info.txt', 'r')

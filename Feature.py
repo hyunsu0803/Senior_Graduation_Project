@@ -1,18 +1,17 @@
-# ==This class is for defining a feature vector==
 import numpy as np
 from OpenGL.GL import *
 
 
 class Feature:
     def __init__(self):
-        self.future_position = None  # 6 dim, 60Hz에서 미래의 20, 40, 60 프레임
-        self.future_direction = None  # 6 dim, 60Hz에서 미래의 20, 40, 60 프레임
-        self.foot_position = None  # 6 dim
-        self.foot_velocity = None  # 6 dim
-        self.hip_velocity = None  # 3 dim
+        self.future_position = np.zeros((6,))  # 6 dim, 60Hz에서 미래의 20, 40, 60 프레임
+        self.future_direction = np.zeros((6,))  # 6 dim, 60Hz에서 미래의 20, 40, 60 프레임
+        self.foot_position = np.zeros((6,))
+        self.foot_velocity = np.zeros((6))  # 6 dim
+        self.hip_velocity = np.zeros((3,))  # 3 dim
         # for draw arrow and point
-        self.global_future_position = np.zeros(9)  # 9 dim 
-        self.global_future_direction = np.zeros(9) # 9 dim
+        self.global_future_position = np.zeros((9,))  # 9 dim 
+        self.global_future_direction = np.zeros((9,)) # 9 dim
 
 
     def set_future_position(self, value):
