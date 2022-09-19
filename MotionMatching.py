@@ -69,8 +69,7 @@ class MotionMatching:
         temp = np.identity(4)
         if len(joint.get_channel()) != 6:
             temp[:3, 3] = curoffset
-        else: 
-            joint.bvh_matrix[:3, 3] = np.array(self.curFrame[:3])
+        
         parent_local_transformation_matrix = parent_local_transformation_matrix @ temp
 
         # channel rotation
@@ -173,7 +172,7 @@ class MotionMatching:
         ans = DB.query(query)
         qidx = ans[1]
 
-        bvh_name, nearest_frame_idx, FPS = self.find_matching_bvh(qidx)
+        bvh_name, nearest_frame_idx= self.find_matching_bvh(qidx)
         print()
         print("bvh name", bvh_name, nearest_frame_idx)
 
@@ -190,29 +189,15 @@ class MotionMatching:
         bvh_file = open(bvh_path, "r")
 
         coming_soon_10frames = bvh_file.readlines()
-        future_10frame = coming_soon_10frames[nearest_frame_idx + 20]
-        future_20frame = coming_soon_10frames[nearest_frame_idx + 30]
-        future_30frame = coming_soon_10frames[nearest_frame_idx + 40]
-
-
         coming_soon_10frames = coming_soon_10frames[nearest_frame_idx+1: nearest_frame_idx + 11]
-
         coming_soon_10frames = [i.split() for i in coming_soon_10frames]
-        future_10frame = future_10frame.split()
-        future_20frame = future_20frame.split()
-        future_30frame = future_30frame.split()
 
         for i in range(len(coming_soon_10frames)):
             for j in range(len(coming_soon_10frames[i])):
                 coming_soon_10frames[i][j] = float(coming_soon_10frames[i][j])
 
-        for i in range(len(future_10frame)):
-            future_10frame[i] = float(future_10frame[i])
-            future_20frame[i] = float(future_20frame[i])
-            future_30frame[i] = float(future_30frame[i])
 
-
-        return coming_soon_10frames, FPS , [future_10frame, future_20frame, future_30frame]
+        return coming_soon_10frames
 
 
     def set_query_vector(self, key_input = None):
@@ -308,8 +293,6 @@ class MotionMatching:
 
         self.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
         self.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
-        # state.query_vector.set_future_position(np.zeros_like(np.array(local_2Dposition_future).reshape(6, )))
-        # state.query_vector.set_future_direction(np.zeros_like(np.array(local_2Ddirection_future).reshape(6, )))
         self.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
         self.query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
         self.query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
@@ -335,9 +318,8 @@ class MotionMatching:
         
         bvh_name = best[1]
         bvh_line = query - best[0] + best[2]
-        FPS = best[-1]
 
-        return bvh_name, bvh_line, int(FPS)
+        return bvh_name, bvh_line
 
     def draw_future_info(self):
         self.query_vector.draw_future_info(self.character.resize)
@@ -354,34 +336,32 @@ class MotionMatching:
 
     def change_curFrame(self, key_input = None):
 
-        FPS = 0
-
         if self.curFrame == []:
-            self.coming_soon_10frames, FPS, temp = self.get_matching_10frames(key_input="init")
+            self.coming_soon_10frames = self.get_matching_10frames(key_input="init")
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
 			# self.timer.setInterval(1000 / self.FPS * 2)
 
         elif key_input == "UP":
-            self.coming_soon_10frames, FPS, temp = self.get_matching_10frames(key_input="UP")
+            self.coming_soon_10frames = self.get_matching_10frames(key_input="UP")
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
             self.matching_num = -1
             
         elif key_input == "DOWN":
-            self.coming_soon_10frames, FPS, temp = self.get_matching_10frames(key_input="DOWN")
+            self.coming_soon_10frames = self.get_matching_10frames(key_input="DOWN")
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
             self.matching_num = -1
 
         elif key_input == "LEFT":
-            self.coming_soon_10frames, FPS, temp = self.get_matching_10frames(key_input="LEFT")
+            self.coming_soon_10frames = self.get_matching_10frames(key_input="LEFT")
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
             self.matching_num = -1
 
         elif key_input == "RIGHT":
-            self.coming_soon_10frames, FPS, temp = self.get_matching_10frames(key_input="RIGHT")
+            self.coming_soon_10frames = self.get_matching_10frames(key_input="RIGHT")
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
             self.matching_num = -1
@@ -389,16 +369,14 @@ class MotionMatching:
 
         elif self.matching_num % 10 == 9:
             print("~~~~~~~~~~~new query~~~~~~~~~~~~~~")
-            self.coming_soon_10frames, FPS, temp = self.get_matching_10frames()
+            self.coming_soon_10frames = self.get_matching_10frames()
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
-			# self.timer.setInterval(1000/self.FPS * 2)
 
         self.matching_num = (self.matching_num+1) % 10
         self.curFrame = self.coming_soon_10frames[self.matching_num]
         print("curFrame change")
 
-        return FPS
 
     def reset_bvh_past_position(self):
         self.bvh_past_position = np.array([])

@@ -7,7 +7,6 @@ from OpenGL.GLU import *
 # from PyQt5. QtWidgets import QApplication
 import numpy as np
 
-from Character import Character
 from MotionMatching import MotionMatching
 
 
@@ -48,10 +47,8 @@ class MyWindow(QOpenGLWidget):
 		self.A = np.radians(30)
 		self.E = np.radians(36)		
 
-		# draw T pose
 		self.motion_matching_system = MotionMatching()
-		self.character = Character()
-		
+
 	def initializeGL(self):
 		glEnable(GL_DEPTH_TEST)
 		glEnable(GL_NORMALIZE)
@@ -266,12 +263,9 @@ class MyWindow(QOpenGLWidget):
 
 		state.KEY_MODE = None
 		
-
-
 	# ===update frame===
 	def update_frame(self):
 		self.motion_matching_system.change_curFrame()
-		self.timer.setInterval(1000 / self.FPS)
 		self.update()
 
 		#QApplication.processEvents()
