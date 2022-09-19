@@ -13,6 +13,7 @@ class MotionMatching:
         self.curFrame = []
         self.coming_soon_10frames = []
         self.matching_num = -1
+        
 
         TposeX = [0, 1, 0]
         TposeY = [1, 0, 0]
@@ -354,6 +355,7 @@ class MotionMatching:
     def change_curFrame(self, key_input = None):
 
         FPS = 0
+
         if self.curFrame == []:
             self.coming_soon_10frames, FPS, temp = self.get_matching_10frames(key_input="init")
             self.reset_bvh_past_position()
@@ -387,7 +389,7 @@ class MotionMatching:
 
         elif self.matching_num % 10 == 9:
             print("~~~~~~~~~~~new query~~~~~~~~~~~~~~")
-            self.coming_soon_10frames, FPS, self.get_matching_10frames()
+            self.coming_soon_10frames, FPS, temp = self.get_matching_10frames()
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
 			# self.timer.setInterval(1000/self.FPS * 2)
