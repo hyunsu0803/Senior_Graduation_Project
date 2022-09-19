@@ -37,7 +37,6 @@ class MotionMatching:
                         1.36000753e+01,  3.77870203e+00,  8.16262709e-02,  9.95738551e-01,
                         -5.71020553e-02,  2.73323919e+01, -1.12751758e+01,  9.64274966e+01,
                         5.65231538e+00,  3.75823975e-01,  1.62885360e+01])
-        self.init_query = np.zeros((27,))
 
         # LaFAN1
         self.mean_array =  np.array([ 6.07492335e-01,  1.83831508e+01,  1.67441441e+00,  3.62060169e+01,
@@ -55,6 +54,16 @@ class MotionMatching:
                         1.85230903e+02, 1.09276157e+02, 5.89094758e+01, 1.86618171e+02,
                         9.25301673e+01, 5.00009977e+01, 1.47302141e+02])
 
+    def reset_motion_matching(self):
+        self.curFrame = []
+        TposeX = [0, 1, 0]
+        TposeY = [1, 0, 0]
+        TposeZ = [0, 0, 1]
+        self.real_global_orientation = np.array([TposeX, TposeY, TposeZ]).T
+        self.real_global_position = np.array([0., 0., 0.])
+        self.query_vector = Feature()
+        self.target_global_orientation = np.array([1., 0., 0.])
+    
     def calculate_character_motion(self):
         self.calculate_joint_motion(np.identity(4), self.character.getCharacterRootJoint())
 
