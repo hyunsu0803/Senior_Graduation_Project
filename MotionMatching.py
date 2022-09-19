@@ -1,3 +1,4 @@
+from re import sub
 import numpy as np
 from Character import Character
 from scipy.spatial.transform import Rotation as R
@@ -5,6 +6,7 @@ import utils
 import pickle
 import os
 from Feature import Feature
+import copy
 
 
 class MotionMatching:
@@ -187,10 +189,10 @@ class MotionMatching:
         print("!!!!!!!! Query !!!!!!!!", query, sep='\n')
         print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx], sep='\n')
 
-        print("############query feature difference##############")
-        print(np.linalg.norm(query - np.array(DB.data[qidx])))
-        print("############query feature difference vector##############")
-        print(query - np.array(DB.data[qidx]))
+        # print("############query feature difference##############")
+        # print(np.linalg.norm(query - np.array(DB.data[qidx])))
+        # print("############query feature difference vector##############")
+        # print(query - np.array(DB.data[qidx]))
 
         bvh_folder = './lafan1'
         bvh_path = os.path.join(bvh_folder, bvh_name)
@@ -204,7 +206,7 @@ class MotionMatching:
             for j in range(len(coming_soon_10frames[i])):
                 coming_soon_10frames[i][j] = float(coming_soon_10frames[i][j])
 
-
+        
         return coming_soon_10frames
 
 
@@ -224,10 +226,6 @@ class MotionMatching:
         for i in range(0, 2):
             two_foot_position.append(character_foot_joint_list[i].get_character_local_position())
             two_foot_velocity.append(character_foot_joint_list[i].get_character_local_velocity())
-
-        # future direction setting
-        local_future_direction = None
-        global_future_direction = None
 
         self.set_target_global_direction(key_input)
         global_future_direction = self.target_global_direction
@@ -293,6 +291,7 @@ class MotionMatching:
         return global_3Dposition_future
 
     def calculate_global_3Ddirection_future(self, local_2Ddirection_future):
+
         global_3Ddirection_future = []
         for i in range(3):
             local_3Ddirection_future = np.zeros((3,))
@@ -303,6 +302,17 @@ class MotionMatching:
         global_3Ddirection_future = np.array(global_3Ddirection_future)
 
         return global_3Ddirection_future
+
+    def calculate_10st_frame_from_start_frame(self):
+        sub_motion_matching = copy.deepcopy(self)
+        sub_motion_matching.calculate_character_motion()
+
+        for i in range(9):
+            sub_motion_matching.change_curFrame()
+
+            sub_motion_matching.calculate_character_motion()
+
+        return sub_motion_matching.set_query_vector()
 
     # only used in class
     def find_matching_bvh(self, query):
@@ -338,7 +348,6 @@ class MotionMatching:
             return False
 
     def change_curFrame(self, key_input = None):
-
         if self.curFrame == []:
             self.coming_soon_10frames = self.get_matching_10frames(key_input="init")
             self.reset_bvh_past_position()
@@ -369,7 +378,6 @@ class MotionMatching:
             self.reset_bvh_past_orientation()
             self.matching_num = -1
         
-
         elif self.matching_num % 10 == 9:
             print("~~~~~~~~~~~new query~~~~~~~~~~~~~~")
             self.coming_soon_10frames = self.get_matching_10frames()
@@ -378,7 +386,9 @@ class MotionMatching:
 
         self.matching_num = (self.matching_num+1) % 10
         self.curFrame = self.coming_soon_10frames[self.matching_num]
-        print("curFrame change")
+        
+        if self.matching_num == 0:
+            self.calculate_10st_frame_from_start_frame()
 
 
     def reset_bvh_past_position(self):
@@ -386,6 +396,7 @@ class MotionMatching:
 
     def reset_bvh_past_orientation(self):
         self.bvh_past_orientation = np.array([])
+
 
 
 
