@@ -8,9 +8,7 @@ from OpenGL.GLU import *
 import numpy as np
 
 from Character import Character
-import bvh_handler
-from bvh_handler import drawJoint, reset_bvh_past_postion, draw_future_info
-from motion_matching_test import QnA
+from MotionMatching import MotionMatching
 
 
 class state:
@@ -51,6 +49,7 @@ class MyWindow(QOpenGLWidget):
 		self.E = np.radians(36)		
 
 		# draw T pose
+		self.motion_matching_system = MotionMatching()
 		self.character = Character()
 		
 	def initializeGL(self):
@@ -108,10 +107,10 @@ class MyWindow(QOpenGLWidget):
 		glMaterialfv(GL_FRONT, GL_SPECULAR, specularObjectColor)
 		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, specularObjectColor)
 
-		if len(state.curFrame) > 0 :
+		if self.motion_matching_system.is_character_drawable():
 			glPushMatrix()
-			drawJoint(np.identity(4), bvh_handler.state.joint_list[0])
-			draw_future_info()
+			self.motion_matching_system.calculate_and_draw_character()
+			self.motion_matching_system.draw_future_info()
 			glPopMatrix()
 
 		glDisable(GL_LIGHTING)
@@ -150,38 +149,19 @@ class MyWindow(QOpenGLWidget):
 
 		elif e.key() == Qt.Key_Up:
 			print("--------up---------")
-			state.coming_soon_10frames, self.FPS, state.future_frames = QnA(key_input="UP")
-			bvh_handler.reset_bvh_past_postion()
-			bvh_handler.reset_bvh_past_orientation()
-			state.KEY_MODE = "UP"
-			self.matching_num = 0
+			self.FPS = self.motion_matching_system.change_curFrame("UP")
+
 		elif e.key() == Qt.Key_Down:
 			print("--------down---------")
-			state.coming_soon_10frames, self.FPS, state.future_frames= QnA(key_input="DOWN")
-			bvh_handler.reset_bvh_past_postion()
-			bvh_handler.reset_bvh_past_orientation()
-			state.KEY_MODE = "DOWN"
-			self.matching_num = 0
+			self.FPS = self.motion_matching_system.change_curFrame("DOWN")
+
 		elif e.key() == Qt.Key_Left:
 			print("--------left---------")
-			state.coming_soon_10frames, self.FPS, state.future_frames = QnA(key_input="LEFT")
-			bvh_handler.reset_bvh_past_postion()
-			bvh_handler.reset_bvh_past_orientation()
-			state.KEY_MODE = "LEFT"
-			self.matching_num = 0
+			self.FPS = self.motion_matching_system.change_curFrame("LEFT")
+			
 		elif e.key() == Qt.Key_Right:
 			print("--------right---------")
-			state.coming_soon_10frames, self.FPS, state.future_frames = QnA(key_input="RIGHT")
-			bvh_handler.reset_bvh_past_postion()
-			bvh_handler.reset_bvh_past_orientation()
-			state.KEY_MODE = "RIGHT"
-			self.matching_num = 0
-
-		state.curFrame = state.coming_soon_10frames[self.matching_num]
-		print("curFrame change")
-		self.matching_num = (self.matching_num + 1) % 10
-		
-		self.timer.setInterval(1000 / self.FPS)
+			self.FPS = self.motion_matching_system.change_curFrame("RIGHT")
 
 		self.update()
 
@@ -290,24 +270,8 @@ class MyWindow(QOpenGLWidget):
 
 	# ===update frame===
 	def update_frame(self):
-		
-		if state.curFrame == []:
-			state.coming_soon_10frames, self.FPS, state.future_frames = QnA(key_input="init")
-			reset_bvh_past_postion()
-			bvh_handler.reset_bvh_past_orientation()
-			self.timer.setInterval(1000 / self.FPS * 2)
-
-		elif self.matching_num % 10 == 9:
-			print("~~~~~~~~~~~new query~~~~~~~~~~~~~~")
-			state.coming_soon_10frames, self.FPS, state.future_frames = QnA()
-			reset_bvh_past_postion()
-			bvh_handler.reset_bvh_past_orientation()
-			self.timer.setInterval(1000/self.FPS * 2)
-
-		self.matching_num = (self.matching_num+1) % 10
-		state.curFrame = state.coming_soon_10frames[self.matching_num]
-		print("curFrame change")
-	
+		self.FPS = self.motion_matching_system.change_curFrame()
+		# self.timer.setInterval(1000 / self.FPS * 2)
 		self.update()
 
 		#QApplication.processEvents()

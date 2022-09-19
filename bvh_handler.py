@@ -1,14 +1,14 @@
-from telnetlib import theNULL
-from threading import local
-import numpy as np
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from scipy.spatial.transform import Rotation as R
+# from telnetlib import theNULL
+# from threading import local
+# import numpy as np
+# from OpenGL.GL import *
+# from OpenGL.GLU import *
+# from scipy.spatial.transform import Rotation as R
 
-from Joint import Joint
-from Feature import Feature
-import utils
-import MyWindow
+# from Joint import Joint
+# from Feature import Feature
+# import utils
+# import MyWindow
 
 
 # class state:
@@ -278,232 +278,232 @@ import MyWindow
 
 
 
-def set_query_vector(key_input = None):
+# def set_query_vector(key_input = None):
 
-    two_foot_position = []
-    two_foot_velocity = []
-    hip_velocity = []
+#     two_foot_position = []
+#     two_foot_velocity = []
+#     hip_velocity = []
 
-    for joint in state.joint_list:
-        if joint.get_is_root():
-            hip_velocity.append(joint.get_character_local_velocity())
-            # print("root position", joint.get_character_local_position())
+#     for joint in state.joint_list:
+#         if joint.get_is_root():
+#             hip_velocity.append(joint.get_character_local_velocity())
+#             # print("root position", joint.get_character_local_position())
 
-        elif joint.get_is_foot():
+#         elif joint.get_is_foot():
         
-            two_foot_position.append(joint.get_character_local_position())
-            two_foot_velocity.append(joint.get_character_local_velocity())
+#             two_foot_position.append(joint.get_character_local_position())
+#             two_foot_velocity.append(joint.get_character_local_velocity())
 
     
 
-    # future direction setting
-    local_future_direction = None
-    global_future_direction = None
+#     # future direction setting
+#     local_future_direction = None
+#     global_future_direction = None
 
-    if key_input == None:
-        global_future_direction = state.target_orientation
-        local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
-    elif key_input == "LEFT":
-        state.target_orientation = np.array([1., 0., 0.])
-        global_future_direction = state.target_orientation
-        local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
-    elif key_input == "RIGHT":
-        state.target_orientation = np.array([-1., 0., 0.])
-        global_future_direction = state.target_orientation
-        local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
-    elif key_input == "UP":
-        state.target_orientation = np.array([0., 0., 1.])
-        global_future_direction = state.target_orientation
-        local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
-    elif key_input == "DOWN":
-        state.target_orientation = np.array([0., 0., -1.])
-        global_future_direction = state.target_orientation
-        local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
+#     if key_input == None:
+#         global_future_direction = state.target_orientation
+#         local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
+#     elif key_input == "LEFT":
+#         state.target_orientation = np.array([1., 0., 0.])
+#         global_future_direction = state.target_orientation
+#         local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
+#     elif key_input == "RIGHT":
+#         state.target_orientation = np.array([-1., 0., 0.])
+#         global_future_direction = state.target_orientation
+#         local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
+#     elif key_input == "UP":
+#         state.target_orientation = np.array([0., 0., 1.])
+#         global_future_direction = state.target_orientation
+#         local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
+#     elif key_input == "DOWN":
+#         state.target_orientation = np.array([0., 0., -1.])
+#         global_future_direction = state.target_orientation
+#         local_future_direction = state.joint_list[0].getCharacterLocalFrame()[:3, :3].T @ global_future_direction
 
 
     
-    # abs_global_velocity = 45
-    # local_3Dposition_future = np.zeros((3, 3))
+#     # abs_global_velocity = 45
+#     # local_3Dposition_future = np.zeros((3, 3))
 
-    # for i in range(3):
-    #     local_3Dposition_future[i] = local_future_direction * (abs_global_velocity * (i+1))
+#     # for i in range(3):
+#     #     local_3Dposition_future[i] = local_future_direction * (abs_global_velocity * (i+1))
 
-    # local_2Dposition_future = local_3Dposition_future[:, 0::2]
+#     # local_2Dposition_future = local_3Dposition_future[:, 0::2]
     
-    # local_future_direction[1] = 0
-    # local_future_direction = utils.normalized(local_future_direction)
-    # local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
+#     # local_future_direction[1] = 0
+#     # local_future_direction = utils.normalized(local_future_direction)
+#     # local_3Ddirection_future = np.array([local_future_direction, local_future_direction, local_future_direction])
    
     
-    # local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
+#     # local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
 
-    local_3Dposition_future, local_3Ddirection_future = setRealFutureInfo()
-    local_2Dposition_future = local_3Dposition_future[:, 0::2]
-    local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
+#     local_3Dposition_future, local_3Ddirection_future = setRealFutureInfo()
+#     local_2Dposition_future = local_3Dposition_future[:, 0::2]
+#     local_2Ddirection_future = local_3Ddirection_future[:, 0::2]
 
     
-    # global position setting
-    # global_3Dposition_future = np.zeros((3, 3))
+#     # global position setting
+#     # global_3Dposition_future = np.zeros((3, 3))
 
-    # for i in range(3):
-    #     global_3Dposition_future[i] = state.real_global_position + global_future_direction * (abs_global_velocity * (i+1))
-    # global_3Dposition_future[:, 1] = 0
-    # for i in range(3):
-    #     temp = np.array([0., 0., 0., 1])
-    #     temp[:3] = global_3Dposition_future[i]
+#     # for i in range(3):
+#     #     global_3Dposition_future[i] = state.real_global_position + global_future_direction * (abs_global_velocity * (i+1))
+#     # global_3Dposition_future[:, 1] = 0
+#     # for i in range(3):
+#     #     temp = np.array([0., 0., 0., 1])
+#     #     temp[:3] = global_3Dposition_future[i]
 
-    global_3Dposition_future = []
-    for i in range(3):
-        temp = np.array([0., 0., 0., 1])
-        temp[:3] = local_3Dposition_future[i]
-        global_3Dposition_future.append((state.joint_list[0].getCharacterLocalFrame() @ temp)[:3])
+#     global_3Dposition_future = []
+#     for i in range(3):
+#         temp = np.array([0., 0., 0., 1])
+#         temp[:3] = local_3Dposition_future[i]
+#         global_3Dposition_future.append((state.joint_list[0].getCharacterLocalFrame() @ temp)[:3])
     
-    global_3Dposition_future = np.array(global_3Dposition_future)
+#     global_3Dposition_future = np.array(global_3Dposition_future)
     
-    # global direction setting
-    global_3Ddirection_future = []
-    for i in range(3):
-        global_3Ddirection_future.append(state.joint_list[0].getCharacterLocalFrame()[:3, :3] @ local_3Ddirection_future[i])
+#     # global direction setting
+#     global_3Ddirection_future = []
+#     for i in range(3):
+#         global_3Ddirection_future.append(state.joint_list[0].getCharacterLocalFrame()[:3, :3] @ local_3Ddirection_future[i])
 
-    global_3Ddirection_future = np.array(global_3Ddirection_future)
+#     global_3Ddirection_future = np.array(global_3Ddirection_future)
 
 
-    state.query_vector.set_global_future_position(global_3Dposition_future)
-    state.query_vector.set_global_future_direction(global_3Ddirection_future)
+#     state.query_vector.set_global_future_position(global_3Dposition_future)
+#     state.query_vector.set_global_future_direction(global_3Ddirection_future)
 
-    state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
-    state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
-    # state.query_vector.set_future_position(np.zeros_like(np.array(local_2Dposition_future).reshape(6, )))
-    # state.query_vector.set_future_direction(np.zeros_like(np.array(local_2Ddirection_future).reshape(6, )))
-    state.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
-    state.query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
-    state.query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
-    feature_vector = state.query_vector.get_feature_list().copy()
+#     state.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
+#     state.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
+#     # state.query_vector.set_future_position(np.zeros_like(np.array(local_2Dposition_future).reshape(6, )))
+#     # state.query_vector.set_future_direction(np.zeros_like(np.array(local_2Ddirection_future).reshape(6, )))
+#     state.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
+#     state.query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
+#     state.query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
+#     feature_vector = state.query_vector.get_feature_list().copy()
 
-    #normalization
-    for i in range(0, 27):
-        feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
+#     #normalization
+#     for i in range(0, 27):
+#         feature_vector[i] = (feature_vector[i] - state.mean_array[i]) / state.std_array[i]
         
-    return feature_vector
+#     return feature_vector
 
  
-def draw_future_info():
-    # global 3d info
-    future_position = state.query_vector.get_global_future_position().reshape(3, 3)
-    future_direction = state.query_vector.get_global_future_direction().reshape(3, 3)
+# def draw_future_info():
+#     # global 3d info
+#     future_position = state.query_vector.get_global_future_position().reshape(3, 3)
+#     future_direction = state.query_vector.get_global_future_direction().reshape(3, 3)
 
-    future_position[:, 1] = 0.
-    future_direction[:, 1] = 0.
+#     future_position[:, 1] = 0.
+#     future_direction[:, 1] = 0.
 
-    glPointSize(20.)
-    glBegin(GL_POINTS)
-    glVertex3fv(future_position[0]/Joint.resize)
-    glVertex3fv(future_position[1]/Joint.resize)
-    glVertex3fv(future_position[2]/Joint.resize)
-    glEnd()
+#     glPointSize(20.)
+#     glBegin(GL_POINTS)
+#     glVertex3fv(future_position[0]/Joint.resize)
+#     glVertex3fv(future_position[1]/Joint.resize)
+#     glVertex3fv(future_position[2]/Joint.resize)
+#     glEnd()
 
-    glLineWidth(5.)
-    glBegin(GL_LINES)
-    glVertex3fv(future_position[0]/Joint.resize)
-    glVertex3fv(future_position[0]/Joint.resize+future_direction[0])
-    glEnd()
+#     glLineWidth(5.)
+#     glBegin(GL_LINES)
+#     glVertex3fv(future_position[0]/Joint.resize)
+#     glVertex3fv(future_position[0]/Joint.resize+future_direction[0])
+#     glEnd()
 
-    glBegin(GL_LINES)
-    glVertex3fv(future_position[1]/Joint.resize)
-    glVertex3fv(future_position[1]/Joint.resize+future_direction[1])
-    glEnd()
+#     glBegin(GL_LINES)
+#     glVertex3fv(future_position[1]/Joint.resize)
+#     glVertex3fv(future_position[1]/Joint.resize+future_direction[1])
+#     glEnd()
 
-    glBegin(GL_LINES)
-    glVertex3fv(future_position[2]/Joint.resize)
-    glVertex3fv(future_position[2]/Joint.resize+future_direction[2])
-    glEnd()
+#     glBegin(GL_LINES)
+#     glVertex3fv(future_position[2]/Joint.resize)
+#     glVertex3fv(future_position[2]/Joint.resize+future_direction[2])
+#     glEnd()
 
 
-def reset_bvh_past_postion():
-    state.bvh_past_position = np.array([])
+# def reset_bvh_past_postion():
+#     state.bvh_past_position = np.array([])
 
-def reset_bvh_past_orientation():
-    state.bvh_past_orientation = np.array([])
+# def reset_bvh_past_orientation():
+#     state.bvh_past_orientation = np.array([])
 
-def drawLocalFrame(M):
-    glPushMatrix()
-    glTranslatef(M[0][3]/Joint.resize, M[1][3]/Joint.resize, M[2][3]/Joint.resize)
-    rotationMatrix = np.identity(4)
-    rotationMatrix[:3, :3] = M[:3, :3]
-    glMultMatrixf(rotationMatrix.T)
-    glBegin(GL_LINE_STRIP)
-    glColor3ub(255, 0, 0)
-    glVertex3fv(np.array([0., 0., 0.]))
-    glVertex3fv(np.array([1., 0., 0.]))
-    glColor3ub(0, 255, 0)
-    glVertex3fv(np.array([0., 0., 0.]))
-    glVertex3fv(np.array([0., 3., 0.]))
-    glColor3ub(0, 0, 255)
-    glVertex3fv(np.array([0., 0., 0]))
-    glVertex3fv(np.array([0., 0., 5.]))
-    glEnd()
-    glPopMatrix()    
+# def drawLocalFrame(M):
+#     glPushMatrix()
+#     glTranslatef(M[0][3]/Joint.resize, M[1][3]/Joint.resize, M[2][3]/Joint.resize)
+#     rotationMatrix = np.identity(4)
+#     rotationMatrix[:3, :3] = M[:3, :3]
+#     glMultMatrixf(rotationMatrix.T)
+#     glBegin(GL_LINE_STRIP)
+#     glColor3ub(255, 0, 0)
+#     glVertex3fv(np.array([0., 0., 0.]))
+#     glVertex3fv(np.array([1., 0., 0.]))
+#     glColor3ub(0, 255, 0)
+#     glVertex3fv(np.array([0., 0., 0.]))
+#     glVertex3fv(np.array([0., 3., 0.]))
+#     glColor3ub(0, 0, 255)
+#     glVertex3fv(np.array([0., 0., 0]))
+#     glVertex3fv(np.array([0., 0., 5.]))
+#     glEnd()
+#     glPopMatrix()    
 
-def setRealFutureInfo():
-    future_matrices = [np.identity(4), np.identity(4), np.identity(4)]
-    for j in range (0, 3):
-        frame = np.array(MyWindow.state.future_frames[j])
-        bvh_future_orientation = np.identity(3)
+# def setRealFutureInfo():
+#     future_matrices = [np.identity(4), np.identity(4), np.identity(4)]
+#     for j in range (0, 3):
+#         frame = np.array(MyWindow.state.future_frames[j])
+#         bvh_future_orientation = np.identity(3)
 
-        for i in range(3, 6):
-            if state.joint_list[0].get_channel()[i].upper() == 'XROTATION':
-                xr = frame[i]
-                xr = np.radians(xr)
-                Rx = np.array([[1., 0., 0.],
-                               [0, np.cos(xr), -np.sin(xr)],
-                               [0, np.sin(xr), np.cos(xr)]])
-                bvh_future_orientation = bvh_future_orientation @ Rx
-            elif state.joint_list[0].get_channel()[i].upper() == 'YROTATION':
-                yr = frame[i]
-                yr = np.radians(yr)
-                Ry = np.array([[np.cos(yr), 0, np.sin(yr)],
-                               [0, 1, 0],
-                               [-np.sin(yr), 0, np.cos(yr)]])
-                bvh_future_orientation = bvh_future_orientation @ Ry
-            elif state.joint_list[0].get_channel()[i].upper() == 'ZROTATION':
-                zr = frame[i]
-                zr = np.radians(zr)
-                Rz = np.array([[np.cos(zr), -np.sin(zr), 0],
-                               [np.sin(zr), np.cos(zr), 0],
-                               [0, 0, 1]])
-                bvh_future_orientation = bvh_future_orientation @ Rz
-        future_matrices[j][:3, :3] = bvh_future_orientation
-        future_matrices[j][:3, 3] = np.array(frame[:3])
+#         for i in range(3, 6):
+#             if state.joint_list[0].get_channel()[i].upper() == 'XROTATION':
+#                 xr = frame[i]
+#                 xr = np.radians(xr)
+#                 Rx = np.array([[1., 0., 0.],
+#                                [0, np.cos(xr), -np.sin(xr)],
+#                                [0, np.sin(xr), np.cos(xr)]])
+#                 bvh_future_orientation = bvh_future_orientation @ Rx
+#             elif state.joint_list[0].get_channel()[i].upper() == 'YROTATION':
+#                 yr = frame[i]
+#                 yr = np.radians(yr)
+#                 Ry = np.array([[np.cos(yr), 0, np.sin(yr)],
+#                                [0, 1, 0],
+#                                [-np.sin(yr), 0, np.cos(yr)]])
+#                 bvh_future_orientation = bvh_future_orientation @ Ry
+#             elif state.joint_list[0].get_channel()[i].upper() == 'ZROTATION':
+#                 zr = frame[i]
+#                 zr = np.radians(zr)
+#                 Rz = np.array([[np.cos(zr), -np.sin(zr), 0],
+#                                [np.sin(zr), np.cos(zr), 0],
+#                                [0, 0, 1]])
+#                 bvh_future_orientation = bvh_future_orientation @ Rz
+#         future_matrices[j][:3, :3] = bvh_future_orientation
+#         future_matrices[j][:3, 3] = np.array(frame[:3])
 
-    future_positions = [None, None, None]
-    for i in range(0, 3):
-        future_matrix = future_matrices[i]
-        root_position = [0., 0., 0., 1]
-        root_position[:3] = future_matrix[:3, 3]
-        root_position[1] = 0
-        future_positions[i] = root_position
+#     future_positions = [None, None, None]
+#     for i in range(0, 3):
+#         future_matrix = future_matrices[i]
+#         root_position = [0., 0., 0., 1]
+#         root_position[:3] = future_matrix[:3, 3]
+#         root_position[1] = 0
+#         future_positions[i] = root_position
     
-    future_directions = [None, None, None]
-    for i in range(0, 3):
-        future_matrix = future_matrices[i]
-        future_direction = future_matrix[:3, 1]  
-        future_direction[1] = 0
-        future_direction = utils.normalized(future_direction)
-        future_directions[i] = future_direction
+#     future_directions = [None, None, None]
+#     for i in range(0, 3):
+#         future_matrix = future_matrices[i]
+#         future_direction = future_matrix[:3, 1]  
+#         future_direction[1] = 0
+#         future_direction = utils.normalized(future_direction)
+#         future_directions[i] = future_direction
 
-    bvh_curframe_character_local_frame = state.joint_list[0].getBvhCharacterLocalFrame()
+#     bvh_curframe_character_local_frame = state.joint_list[0].getBvhCharacterLocalFrame()
     
-    character_local_future_positions = [None, None, None]
-    for i in range(0, 3):
-        future_position = future_positions[i]
-        character_local_future_position = np.linalg.inv(bvh_curframe_character_local_frame) @ np.array(future_position)
-        character_local_future_positions[i] = character_local_future_position[:3]
+#     character_local_future_positions = [None, None, None]
+#     for i in range(0, 3):
+#         future_position = future_positions[i]
+#         character_local_future_position = np.linalg.inv(bvh_curframe_character_local_frame) @ np.array(future_position)
+#         character_local_future_positions[i] = character_local_future_position[:3]
 
-    character_local_future_directions = [None, None, None]
-    for i in range(0, 3):
-        future_direction = future_directions[i]
-        character_local_future_direction = np.linalg.inv(bvh_curframe_character_local_frame)[:3, :3] @ np.array(future_direction)
-        character_local_future_directions[i] = character_local_future_direction
+#     character_local_future_directions = [None, None, None]
+#     for i in range(0, 3):
+#         future_direction = future_directions[i]
+#         character_local_future_direction = np.linalg.inv(bvh_curframe_character_local_frame)[:3, :3] @ np.array(future_direction)
+#         character_local_future_directions[i] = character_local_future_direction
 
 
-    return np.array(character_local_future_positions), np.array(character_local_future_directions)
+#     return np.array(character_local_future_positions), np.array(character_local_future_directions)

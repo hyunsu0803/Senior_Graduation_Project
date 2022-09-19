@@ -1,6 +1,4 @@
 import numpy as np
-import utils
-
 
 class Joint:
     resize = 1
@@ -113,55 +111,27 @@ class Joint:
         return self.character_local_rotation.copy()
 
 
-    def getCharacterLocalFrame(self):
-        M = self.get_transform_matrix().copy()
+    
 
-        # origin projection 
-        newOrigin = M[:3, 3]
-        newOrigin[1] = 0
+    # def getBvhCharacterLocalFrame(self):
+    #     M = self.bvh_matrix.copy()
 
-        newDirection = M[:3, 1]
-        newDirection[1] = 0.
+    #     # origin projection 
+    #     newOrigin = M[:3, 3]
+    #     newOrigin[1] = 0
 
-        newZaxis=  utils.normalized(newDirection)
+    #     newDirection = M[:3, 1]
+    #     newDirection[1] = 0.
 
-        newYaxis = np.array([0., 1., 0.])
-        newXaxis = utils.normalized(np.cross(newYaxis, newZaxis))
+    #     newZaxis=  utils.normalized(newDirection)
 
-        CharacterMatrix = np.identity(4)
-        CharacterMatrix[:3, 0] = newXaxis
-        CharacterMatrix[:3, 1] = newYaxis
-        CharacterMatrix[:3, 2] = newZaxis
-        CharacterMatrix[:3, 3] = newOrigin
+    #     newYaxis = np.array([0., 1., 0.])
+    #     newXaxis = np.cross(newYaxis, newZaxis)
 
-        return CharacterMatrix
+    #     newTransformationMatrix = np.identity(4)
+    #     newTransformationMatrix[:3, 0] = newXaxis
+    #     newTransformationMatrix[:3, 1] = newYaxis
+    #     newTransformationMatrix[:3, 2] = newZaxis
+    #     newTransformationMatrix[:3, 3] = newOrigin
 
-    def getGlobalDirection(self):
-        # find character global diredction
-        M = self.getCharacterLocalFrame().copy()
-
-        # length 1, projected on the ground
-        return M[:3, 2]
-
-    def getBvhCharacterLocalFrame(self):
-        M = self.bvh_matrix.copy()
-
-        # origin projection 
-        newOrigin = M[:3, 3]
-        newOrigin[1] = 0
-
-        newDirection = M[:3, 1]
-        newDirection[1] = 0.
-
-        newZaxis=  utils.normalized(newDirection)
-
-        newYaxis = np.array([0., 1., 0.])
-        newXaxis = np.cross(newYaxis, newZaxis)
-
-        newTransformationMatrix = np.identity(4)
-        newTransformationMatrix[:3, 0] = newXaxis
-        newTransformationMatrix[:3, 1] = newYaxis
-        newTransformationMatrix[:3, 2] = newZaxis
-        newTransformationMatrix[:3, 3] = newOrigin
-
-        return newTransformationMatrix
+    #     return newTransformationMatrix

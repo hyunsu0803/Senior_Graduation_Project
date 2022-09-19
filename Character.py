@@ -12,7 +12,7 @@ class Character:
         self.resize = 1
         self.setTpose()
 
-        
+    # only used in class
     def setTpose(self):
         paths = './lafan1/fallAndGetUp1_subject1.bvh'
 
@@ -26,6 +26,62 @@ class Character:
                     self.buildCharacter(bvh, line[1])  # build ROOT and other joints
                     self.resize = int(self.resize)
 
+    def drawCharacter(self):
+        self.drawJoint(np.identity(4), self.joint_list[0])
+
+
+    def getCharacterRootJoint(self):
+        root_joint = None
+        for joint in self.joint_list:
+            if joint.get_is_root():
+                root_joint = joint
+                break
+        
+        return root_joint
+
+    def getCharacterTwoFootJoint(self):
+        two_foot_joint_list = []
+        for joint in self.joint_list:
+            if joint.get_is_foot():
+                two_foot_joint_list.append(joint)
+
+        return two_foot_joint_list
+
+
+    def getCharacterLocalFrame(self):
+        rootJoint = self.getCharacterRootJoint()
+
+        M = rootJoint.get_transform_matrix().copy()
+
+        # origin projection 
+        newOrigin = M[:3, 3]
+        newOrigin[1] = 0
+
+        newDirection = M[:3, 1]
+        newDirection[1] = 0.
+
+        newZaxis=  utils.normalized(newDirection)
+
+        newYaxis = np.array([0., 1., 0.])
+        newXaxis = utils.normalized(np.cross(newYaxis, newZaxis))
+
+        CharacterMatrix = np.identity(4)
+        CharacterMatrix[:3, 0] = newXaxis
+        CharacterMatrix[:3, 1] = newYaxis
+        CharacterMatrix[:3, 2] = newZaxis
+        CharacterMatrix[:3, 3] = newOrigin
+
+        return CharacterMatrix
+
+    def getGlobalDirection(self):
+        # find character global diredction
+        M = self.getCharacterLocalFrame().copy()
+
+        # length 1, projected on the ground
+        return M[:3, 2]
+
+
+    # used only inside class
     def buildCharacter(self, bvh, joint_name):
 
         line = bvh.readline().split()  # remove '{'
@@ -53,7 +109,7 @@ class Character:
         while True:
             line = bvh.readline().split()
             if line[0] == 'JOINT':
-                newJoint.append_child_joint(self.buildJoint(bvh, line[1]))
+                newJoint.append_child_joint(self.buildCharacter(bvh, line[1]))
 
             elif line[0] == 'End' and line[1] == 'Site':
                 line = bvh.readline().split()  # remove '{'
@@ -70,9 +126,9 @@ class Character:
             elif line[0] == '}':
                 return newJoint
 
-    def drawCharacter(self):
-        self.drawJoint(np.identity(4), self.joint_list[0])
+    
 
+    # used only inside class
     def drawJoint(self, parentMatrix, joint):
         
         transform_matrix = joint.get_transform_matrix()
