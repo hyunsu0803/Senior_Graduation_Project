@@ -33,7 +33,7 @@ class MyWindow(QOpenGLWidget):
 		# timer
 		self.timer = QTimer(self)
 		self.timer.timeout.connect(self.update_frame)
-		self.timer.setInterval(1000 / self.FPS * 2)
+		self.timer.setInterval(1000 / self.FPS)
 		self.timer.start()
 
 		# initialize value
@@ -270,8 +270,8 @@ class MyWindow(QOpenGLWidget):
 
 	# ===update frame===
 	def update_frame(self):
-		self.FPS = self.motion_matching_system.change_curFrame()
-		# self.timer.setInterval(1000 / self.FPS * 2)
+		self.motion_matching_system.change_curFrame()
+		self.timer.setInterval(1000 / self.FPS)
 		self.update()
 
 		#QApplication.processEvents()
