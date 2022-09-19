@@ -78,7 +78,6 @@ class MyWindow(QOpenGLWidget):
 
 		self.drawGrid()
 		self.drawFrame()
-		self.draw_keyinput()
 
 		glEnable(GL_LIGHTING)  # try to uncomment: no lighting
 		glEnable(GL_LIGHT0)
@@ -146,19 +145,22 @@ class MyWindow(QOpenGLWidget):
 
 		elif e.key() == Qt.Key_Up:
 			print("--------up---------")
-			self.FPS = self.motion_matching_system.change_curFrame("UP")
+			self.motion_matching_system.change_curFrame("UP")
 
 		elif e.key() == Qt.Key_Down:
 			print("--------down---------")
-			self.FPS = self.motion_matching_system.change_curFrame("DOWN")
+			self.motion_matching_system.change_curFrame("DOWN")
 
 		elif e.key() == Qt.Key_Left:
 			print("--------left---------")
-			self.FPS = self.motion_matching_system.change_curFrame("LEFT")
+			self.motion_matching_system.change_curFrame("LEFT")
 			
 		elif e.key() == Qt.Key_Right:
 			print("--------right---------")
-			self.FPS = self.motion_matching_system.change_curFrame("RIGHT")
+			self.motion_matching_system.change_curFrame("RIGHT")
+
+		elif e.key() == Qt.Key_R:
+			self.motion_matching_system.reset_motion_matching()
 
 		self.update()
 
@@ -231,37 +233,6 @@ class MyWindow(QOpenGLWidget):
 	def zoom(self, yoffset):
 		self.w -= self.w * yoffset / 5
 
-	def draw_keyinput(self):
-		if state.KEY_MODE == "UP":
-			glLineWidth(100.0)
-			glColor3ub(255,255, 0)
-			glBegin(GL_LINES)
-			glVertex3fv(np.array([0., .1, 0.]))
-			glVertex3fv(np.array([0., .1, 3.]))
-			glEnd()
-		elif state.KEY_MODE == "DOWN":
-			glLineWidth(100.0)
-			glColor3ub(255,255, 0)
-			glBegin(GL_LINES)
-			glVertex3fv(np.array([0., .1, 0.]))
-			glVertex3fv(np.array([0., .1, -3.]))
-			glEnd()
-		elif state.KEY_MODE == "RIGHT":
-			glLineWidth(100.0)
-			glColor3ub(255,255, 0)
-			glBegin(GL_LINES)
-			glVertex3fv(np.array([-3., .1, 0.]))
-			glVertex3fv(np.array([0., .1, 0.]))
-			glEnd()
-		elif state.KEY_MODE == "LEFT":
-			glLineWidth(100.0)
-			glColor3ub(255,255, 0)
-			glBegin(GL_LINES)
-			glVertex3fv(np.array([3., .1, 0.]))
-			glVertex3fv(np.array([0., .1, 0.]))
-			glEnd()
-
-		state.KEY_MODE = None
 		
 	# ===update frame===
 	def update_frame(self):
