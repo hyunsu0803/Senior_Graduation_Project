@@ -21,6 +21,7 @@ class MyEnv(gym.Env):
         self.motion_matching_system = MotionMatching()
         
         self.global_goal_position = np.array([0, 0])
+        self.draw_init_query()
         self.set_global_goal_position()
         self.set_state()
 
@@ -37,12 +38,19 @@ class MyEnv(gym.Env):
         local_goal_position = np.linalg.inv(character_local_frame) @ global_goal_position
 
         new_state = local_goal_position[0::2]
-        self.state = new_state
+        self.state = np.array(new_state)
 
     def reset(self):
         self.motion_matching_system.reset_motion_matching()
+        self.draw_init_query()
         self.set_global_goal_position()
         self.set_state()
+
+        return self.state
+
+    def draw_init_query(self):
+        self.motion_matching_system.change_curFrame("init")
+        self.motion_matching_system = self.motion_matching_system.calculate_10st_frame_from_start_frame()
         
 
     def step(self, action):
@@ -73,21 +81,7 @@ class MyEnv(gym.Env):
         future_local_direction = np.array([np.sin(action), 0, np.cos(action)])
         return future_local_direction
     
-
-    # def calculate_future_info_for_query(self, action):
-    #     future_local_direction = np.array([np.sin(action), np.cos(action)], dtype='float32')
-    #     future_local_directions = np.array([future_local_direction, future_local_direction, future_local_direction])
-
-    #     future_local_position = future_local_direction * self.motion_matching_system.abs_global_velocity
-    #     future_local_positions = np.array([future_local_position,
-    #                                         future_local_position*2,
-    #                                         future_local_position*3])
-                                        
-    #     query_future = np.concatenate( (future_local_positions, future_local_directions) )
-    #     return query_future
-
-
-    def determine_goal_reached(self, character_local_goal_position):
+    def determine_goal_reached(self):
         
         goal_distance = np.linalg.norm(self.state)
 
@@ -105,6 +99,8 @@ def main():
 
     config = ppo.DEFAULT_CONFIG.copy()
     config["env"] = "my_env"
+    config['horizon'] = 600
+    config['num_workers'] = 0
 
     tune.run(ppo.PPOTrainer, 
 			config=config,

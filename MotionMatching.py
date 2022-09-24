@@ -31,7 +31,8 @@ class MotionMatching:
         self.query_vector = Feature()
 
 
-        self.DB = "tree_dump.bin"
+        # self.DB = "tree_dump.bin"
+        self.DB = "/Users/jangbogyeong/my-awesome-project/tree_dump.bin"
         self.init_query = np.array([ 2.96960973e-01,  9.96564847e+00, -4.50558696e+00,  3.36485732e+01,
                         -7.10655357e+00,  6.16891943e+01,  5.23026731e-02,  9.98631278e-01,
                         5.05232841e-02,  9.98722883e-01, -3.49997476e-03,  9.99993875e-01,
@@ -183,18 +184,19 @@ class MotionMatching:
         qidx = ans[1]
 
         bvh_name, nearest_frame_idx= self.find_matching_bvh(qidx)
-        print()
-        print("bvh name", bvh_name, nearest_frame_idx)
+        # print()
+        # print("bvh name", bvh_name, nearest_frame_idx)
 
-        print("!!!!!!!! Query !!!!!!!!", query, sep='\n')
-        print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx], sep='\n')
+        # print("!!!!!!!! Query !!!!!!!!", query, sep='\n')
+        # print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx], sep='\n')
 
         # print("############query feature difference##############")
         # print(np.linalg.norm(query - np.array(DB.data[qidx])))
         # print("############query feature difference vector##############")
         # print(query - np.array(DB.data[qidx]))
 
-        bvh_folder = './lafan1'
+        # bvh_folder = './lafan1'
+        bvh_folder = "/Users/jangbogyeong/my-awesome-project/lafan1"
         bvh_path = os.path.join(bvh_folder, bvh_name)
         bvh_file = open(bvh_path, "r")
 
@@ -258,7 +260,7 @@ class MotionMatching:
         elif key_input == "DOWN":
             self.target_global_direction = np.array([0., 0., -1.])
         elif key_input == "TASK":
-            self.target_global_direction = self.character.getCharacterLocalFrame[:3, :3] @ target_direction
+            self.target_global_direction = self.character.getCharacterLocalFrame()[:3, :3] @ target_direction
 
     def calculate_local_2Dposition_future(self, local_future_direction):
         local_3Dposition_future = np.zeros((3, 3))
@@ -318,7 +320,8 @@ class MotionMatching:
 
     # only used in class
     def find_matching_bvh(self, query):
-        info_txt = open('db_index_info.txt', 'r')
+        # info_txt = open('db_index_info.txt', 'r')
+        info_txt = open("/Users/jangbogyeong/my-awesome-project/db_index_info.txt", 'r')
 
         info = info_txt.readlines()
         info = [i.split() for i in info]
