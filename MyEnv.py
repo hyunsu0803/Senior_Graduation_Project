@@ -78,7 +78,7 @@ class MyEnv(gym.Env):
         return (self.state, reward, done, {"prob":1.0})
     
     def calculate_future_direction(self, action):
-        future_local_direction = np.array([np.sin(action), 0, np.cos(action)])
+        future_local_direction = np.array([np.sin(action[0]), 0, np.cos(action[0])], dtype = np.float64)
         return future_local_direction
     
     def determine_goal_reached(self):
@@ -100,11 +100,10 @@ def main():
     config = ppo.DEFAULT_CONFIG.copy()
     config["env"] = "my_env"
     config['horizon'] = 600
-    config['num_workers'] = 0
 
     tune.run(ppo.PPOTrainer, 
 			config=config,
-			stop={"training_iteration": 30},
+			stop={"training_iteration": 50},
     		checkpoint_at_end=True,
 			)
 
