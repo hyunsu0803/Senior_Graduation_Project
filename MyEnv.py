@@ -29,28 +29,27 @@ class MyEnv(gym.Env):
         goal_xpos = random.randrange(-15*40, 15*40)
         goal_zpos = random.randrange(-15*40, 15*40)
 
-        global_goal_position = np.array([goal_xpos, 0, goal_zpos, 1])
-        self.global_goal_position = global_goal_position[:3]
+        self.global_goal_position = np.array([goal_xpos, goal_zpos])
 
     def set_state(self):
-        character_local_frame = MotionMatching.character.getCharacterLocalFrame()
-        global_goal_position = [self.global_goal_position[0], 0, self.global_goal_position, 1]
-        local_goal_position = np.inv(character_local_frame) @ global_goal_position
+        character_local_frame = self.motion_matching_system.getCharacterLocalFrame()
+        global_goal_position = np.array([self.global_goal_position[0], 0, self.global_goal_position[1], 1])
+        local_goal_position = np.linalg.inv(character_local_frame) @ global_goal_position
 
         new_state = local_goal_position[0::2]
         self.state = new_state
 
     def reset(self):
         self.motion_matching_system.reset_motion_matching()
-        self.set_goal_position()
+        self.set_global_goal_position()
         self.set_state()
         
 
     def step(self, action):
-        local_directions = self.calculate_local_directions_from_action(action)
-        local_positions = self.calculate_local_positions_from_actoion(action)
+        
+        character_local_future_direction = self.calculate_future_direction(action)
 
-        self.motion_matching_system.change_curFrame()
+        self.motion_matching_system.change_curFrame("TASK", character_local_future_direction)
         self.motion_matching_system = self.motion_matching_system.calculate_10st_frame_from_start_frame()
 
         self.set_state()
@@ -69,6 +68,24 @@ class MyEnv(gym.Env):
 
 
         return (self.state, reward, done, {"prob":1.0})
+    
+    def calculate_future_direction(self, action):
+        future_local_direction = np.array([np.sin(action), 0, np.cos(action)])
+        return future_local_direction
+    
+
+    # def calculate_future_info_for_query(self, action):
+    #     future_local_direction = np.array([np.sin(action), np.cos(action)], dtype='float32')
+    #     future_local_directions = np.array([future_local_direction, future_local_direction, future_local_direction])
+
+    #     future_local_position = future_local_direction * self.motion_matching_system.abs_global_velocity
+    #     future_local_positions = np.array([future_local_position,
+    #                                         future_local_position*2,
+    #                                         future_local_position*3])
+                                        
+    #     query_future = np.concatenate( (future_local_positions, future_local_directions) )
+    #     return query_future
+
 
     def determine_goal_reached(self, character_local_goal_position):
         
@@ -91,7 +108,7 @@ def main():
 
     tune.run(ppo.PPOTrainer, 
 			config=config,
-			stop={"training_iteration": 100},
+			stop={"training_iteration": 30},
     		checkpoint_at_end=True,
 			)
 
