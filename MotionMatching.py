@@ -258,7 +258,7 @@ class MotionMatching:
         elif key_input == "DOWN":
             self.target_global_direction = np.array([0., 0., -1.])
         elif key_input == "TASK":
-            self.target_global_direction = self.character.getCharacterLocalFrame @ target_direction
+            self.target_global_direction = self.character.getCharacterLocalFrame[:3, :3] @ target_direction
 
     def calculate_local_2Dposition_future(self, local_future_direction):
         local_3Dposition_future = np.zeros((3, 3))
@@ -396,6 +396,9 @@ class MotionMatching:
         
         if self.matching_num == 0:
             self.calculate_10st_frame_from_start_frame()
+
+    def getCharacterLocalFrame(self):
+        return self.character.getCharacterLocalFrame()
 
 
     def reset_bvh_past_position(self):
