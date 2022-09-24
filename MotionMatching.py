@@ -165,7 +165,7 @@ class MotionMatching:
             
         self.bvh_past_position = self.curFrame[:3]
 
-    def get_matching_10frames(self, key_input = None):
+    def get_matching_10frames(self, key_input = None, target_direction = None):
         tree_file = open(self.DB, 'rb')
 
         DB = pickle.load(tree_file)
@@ -176,7 +176,7 @@ class MotionMatching:
 
             # query = np.zeros((27,))
         else:
-            query = self.set_query_vector(key_input=key_input)
+            query = self.set_query_vector(key_input = key_input, target_direction = target_direction)
             
 
         ans = DB.query(query)
@@ -210,7 +210,7 @@ class MotionMatching:
         return coming_soon_10frames
 
 
-    def set_query_vector(self, key_input = None):
+    def set_query_vector(self, key_input = None, target_direction= None):
 
         two_foot_position = []
         two_foot_velocity = []
@@ -227,15 +227,15 @@ class MotionMatching:
             two_foot_position.append(character_foot_joint_list[i].get_character_local_position())
             two_foot_velocity.append(character_foot_joint_list[i].get_character_local_velocity())
 
-        self.set_target_global_direction(key_input)
+        
+        self.set_target_global_direction(key_input, target_direction = target_direction)
         global_future_direction = self.target_global_direction
         local_future_direction = character_local_frame[:3, :3].T @ global_future_direction
-
         local_2Dposition_future = self.calculate_local_2Dposition_future(local_future_direction)
         local_2Ddirection_future = self.calculate_local_2Ddirection_future(local_future_direction)
         global_3Dposition_future = self.calculate_global_3Dposition_future(local_2Dposition_future)
         global_3Ddirection_future = self.calculate_global_3Ddirection_future(local_2Ddirection_future)
-
+    
         self.query_vector.set_global_future_position(global_3Dposition_future)
         self.query_vector.set_global_future_direction(global_3Ddirection_future)
         self.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
@@ -248,7 +248,7 @@ class MotionMatching:
             
         return flatten_query_vector
 
-    def set_target_global_direction(self, key_input):
+    def set_target_global_direction(self, key_input, target_direction = None):
         if key_input == "LEFT":
             self.target_global_direction = np.array([1., 0., 0.])
         elif key_input == "RIGHT":
@@ -257,6 +257,8 @@ class MotionMatching:
             self.target_global_direction = np.array([0., 0., 1.])
         elif key_input == "DOWN":
             self.target_global_direction = np.array([0., 0., -1.])
+        elif key_input == "TASK":
+            self.target_global_direction = self.character.getCharacterLocalFrame @ target_direction
 
     def calculate_local_2Dposition_future(self, local_future_direction):
         local_3Dposition_future = np.zeros((3, 3))
@@ -312,7 +314,7 @@ class MotionMatching:
 
             sub_motion_matching.calculate_character_motion()
 
-        return sub_motion_matching.set_query_vector()
+        return sub_motion_matching
 
     # only used in class
     def find_matching_bvh(self, query):
@@ -347,7 +349,7 @@ class MotionMatching:
         else:
             return False
 
-    def change_curFrame(self, key_input = None):
+    def change_curFrame(self, key_input = None, target_direction = None):
         if self.curFrame == []:
             self.coming_soon_10frames = self.get_matching_10frames(key_input="init")
             self.reset_bvh_past_position()
@@ -377,6 +379,11 @@ class MotionMatching:
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
             self.matching_num = -1
+
+        elif key_input == "TASK":
+            self.coming_soon_10frames = self.get_matching_10frames(key_input = "TASK", target_direction = target_direction)
+            self.reset_bvh_past_position()
+            self.reset_bvh_past_orientation()
         
         elif self.matching_num % 10 == 9:
             print("~~~~~~~~~~~new query~~~~~~~~~~~~~~")
