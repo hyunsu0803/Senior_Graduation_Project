@@ -14,8 +14,8 @@ class Character:
 
     # only used in class
     def setTpose(self):
-        # paths = './lafan1/fallAndGetUp1_subject1.bvh'
-        paths = '/Users/jangbogyeong/my-awesome-project/lafan1/aiming1_subject1.bvh'
+        paths = './lafan1/fallAndGetUp1_subject1.bvh'
+        # paths = '/Users/jangbogyeong/my-awesome-project/lafan1/aiming1_subject1.bvh'
 
         with open(paths, 'r') as bvh:
             line = bvh.readline().split()
