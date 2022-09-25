@@ -27,8 +27,8 @@ class MyEnv(gym.Env):
 
     def set_global_goal_position(self):
 
-        goal_xpos = random.randrange(-15*40, 15*40)
-        goal_zpos = random.randrange(-15*40, 15*40)
+        goal_xpos = random.randrange(-15*10, 15*10)
+        goal_zpos = random.randrange(-15*10, 15*10)
 
         self.global_goal_position = np.array([goal_xpos, goal_zpos])
 
@@ -72,7 +72,7 @@ class MyEnv(gym.Env):
             done = True
 
         else:
-            reward = np.exp(-4 * (goal_distance ** 2))
+            reward = np.exp(-1 * np.sqrt(goal_distance))
 
 
         return (self.state, reward, done, {"prob":1.0})
@@ -99,7 +99,8 @@ def main():
 
     config = ppo.DEFAULT_CONFIG.copy()
     config["env"] = "my_env"
-    config['horizon'] = 600
+    config['horizon'] = 300
+    
 
     tune.run(ppo.PPOTrainer, 
 			config=config,
