@@ -6,7 +6,7 @@ from ray.tune.registry import register_env
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 import random
-from MotionMatching import MotionMatching
+from MotionMatching_training import MotionMatching_training
 
 
 class MyEnv(gym.Env):
@@ -18,7 +18,7 @@ class MyEnv(gym.Env):
         action_dimension = 1
         self.action_space = gym.spaces.Box(low = -1 * np.pi, high = np.pi, shape = (action_dimension,), dtype = np.float32)
 
-        self.motion_matching_system = MotionMatching()
+        self.motion_matching_system = MotionMatching_training()
         
         self.global_goal_position = np.array([0, 0])
         self.draw_init_query()
@@ -27,8 +27,8 @@ class MyEnv(gym.Env):
 
     def set_global_goal_position(self):
 
-        goal_xpos = random.randrange(-15*10, 15*10)
-        goal_zpos = random.randrange(-15*10, 15*10)
+        goal_xpos = random.randrange(-50, 50)
+        goal_zpos = random.randrange(-50, 50)
 
         self.global_goal_position = np.array([goal_xpos, goal_zpos])
 
@@ -40,6 +40,7 @@ class MyEnv(gym.Env):
         new_state = local_goal_position[0::2]
         self.state = np.array(new_state)
 
+
     def reset(self):
         self.motion_matching_system.reset_motion_matching()
         self.draw_init_query()
@@ -49,15 +50,15 @@ class MyEnv(gym.Env):
         return self.state
 
     def draw_init_query(self):
-        self.motion_matching_system.change_curFrame("init")
+        self.motion_matching_system.change_curFrame()
         self.motion_matching_system = self.motion_matching_system.calculate_10st_frame_from_start_frame()
         
 
     def step(self, action):
         
         character_local_future_direction = self.calculate_future_direction(action)
-
-        self.motion_matching_system.change_curFrame("TASK", character_local_future_direction)
+        self.motion_matching_system.change_curFrame(target_direction = character_local_future_direction)
+        
         self.motion_matching_system = self.motion_matching_system.calculate_10st_frame_from_start_frame()
 
         self.set_state()
@@ -70,9 +71,11 @@ class MyEnv(gym.Env):
             reward = 1
             self.reset()
             done = True
+            print("complete!!!!!")
 
         else:
             reward = np.exp(-1 * np.sqrt(goal_distance))
+            
 
 
         return (self.state, reward, done, {"prob":1.0})

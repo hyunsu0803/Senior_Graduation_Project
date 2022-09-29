@@ -7,15 +7,9 @@ from OpenGL.GLU import *
 # from PyQt5. QtWidgets import QApplication
 import numpy as np
 
-from MotionMatching import MotionMatching
-
-
-class state:
-	curFrame = []
-	future_frames = []
-	curFrame_index = 0
-	coming_soon_10frames = []
-	KEY_MODE = None
+from MotionMatching_keyboard import MotionMatching_keyboard
+from MotionMatching_task import MotionMatching_task
+from MotionMatching_training import MotionMatching_training
 
 
 class MyWindow(QOpenGLWidget):
@@ -37,7 +31,7 @@ class MyWindow(QOpenGLWidget):
 
 		# initialize value
 		self.at = np.array([0., 0., 0.])
-		self.w = np.array([0., 20., -20.])
+		self.w = np.array([0., 20., -30.])
 		self.perspective = True
 		self.click = False
 		self.left = True
@@ -45,9 +39,15 @@ class MyWindow(QOpenGLWidget):
 		self.oldx = 0
 		self.oldy = 0
 		self.A = np.radians(30)
-		self.E = np.radians(36)		
+		self.E = np.radians(36)
 
-		self.motion_matching_system = MotionMatching()
+		# self.MODE = "KEYBOARD"
+		self.MODE = "TASK"
+
+		if self.MODE == "KEYBOARD":
+			self.motion_matching_system = MotionMatching_keyboard()
+		elif self.MODE == "TASK":
+			self.motion_matching_system = MotionMatching_task()
 
 	def initializeGL(self):
 		glEnable(GL_DEPTH_TEST)
@@ -79,37 +79,18 @@ class MyWindow(QOpenGLWidget):
 		self.drawGrid()
 		self.drawFrame()
 
-		glEnable(GL_LIGHTING)  # try to uncomment: no lighting
-		glEnable(GL_LIGHT0)
-
-		glEnable(GL_NORMALIZE)	# try to uncomment: lighting will be incorrect if you scale the object
-
-		# light0 position
-		glPushMatrix()
-		lightPos = (3., 4., 5., 1.)  # try to change 4th element to 0. or 1.
-		glLightfv(GL_LIGHT0, GL_POSITION, lightPos)
-		glPopMatrix()
-
-		# light0 intensity for each color channel
-		lightColor = (1., 1., 1., 1.)
-		ambientLightColor = (.5, .5, .5, 1.)
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor)
-		glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor)
-		glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLightColor)
-
-		# material reflectance for each color channel
-		specularObjectColor = (1., 1., 1., 1.)
-		glMaterialfv(GL_FRONT, GL_SHININESS, 10)
-		glMaterialfv(GL_FRONT, GL_SPECULAR, specularObjectColor)
-		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, specularObjectColor)
-
 		if self.motion_matching_system.is_character_drawable():
 			glPushMatrix()
 			self.motion_matching_system.calculate_and_draw_character()
 			self.motion_matching_system.draw_future_info()
 			glPopMatrix()
 
-		glDisable(GL_LIGHTING)
+		if self.motion_matching_system.is_character_drawable():
+			if self.MODE == "TASK":
+				glPushMatrix()
+				self.motion_matching_system.draw_goal_position()
+				glPopMatrix()
+
 
 	# ===draw grid and frame===
 	def drawFrame(self):
@@ -143,24 +124,25 @@ class MyWindow(QOpenGLWidget):
 		elif e.key() == Qt.Key_V:
 			self.perspective = not self.perspective
 
-		elif e.key() == Qt.Key_Up:
-			print("--------up---------")
-			self.motion_matching_system.change_curFrame("UP")
+		if self.MODE == "KEYBOARD":
+			if e.key() == Qt.Key_Up:
+				print("--------up---------")
+				self.motion_matching_system.change_curFrame("UP")
 
-		elif e.key() == Qt.Key_Down:
-			print("--------down---------")
-			self.motion_matching_system.change_curFrame("DOWN")
+			elif e.key() == Qt.Key_Down:
+				print("--------down---------")
+				self.motion_matching_system.change_curFrame("DOWN")
 
-		elif e.key() == Qt.Key_Left:
-			print("--------left---------")
-			self.motion_matching_system.change_curFrame("LEFT")
-			
-		elif e.key() == Qt.Key_Right:
-			print("--------right---------")
-			self.motion_matching_system.change_curFrame("RIGHT")
+			elif e.key() == Qt.Key_Left:
+				print("--------left---------")
+				self.motion_matching_system.change_curFrame("LEFT")
+				
+			elif e.key() == Qt.Key_Right:
+				print("--------right---------")
+				self.motion_matching_system.change_curFrame("RIGHT")
 
-		elif e.key() == Qt.Key_R:
-			self.motion_matching_system.reset_motion_matching()
+			elif e.key() == Qt.Key_R:
+				self.motion_matching_system.reset_motion_matching()
 
 		self.update()
 
@@ -233,8 +215,6 @@ class MyWindow(QOpenGLWidget):
 	def zoom(self, yoffset):
 		self.w -= self.w * yoffset / 5
 
-		
-	# ===update frame===
 	def update_frame(self):
 		self.motion_matching_system.change_curFrame()
 		self.update()
