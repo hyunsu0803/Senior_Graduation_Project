@@ -14,8 +14,8 @@ class Character:
 
     # only used in class
     def setTpose(self):
-        paths = './lafan1/fallAndGetUp1_subject1.bvh'
-        # paths = '/Users/jangbogyeong/my-awesome-project/lafan1/aiming1_subject1.bvh'
+        # paths = './lafan1/fallAndGetUp1_subject1.bvh'
+        paths = '/Users/jangbogyeong/my-awesome-project/lafan1/aiming1_subject1.bvh'
 
         with open(paths, 'r') as bvh:
             line = bvh.readline().split()
@@ -169,6 +169,7 @@ class Character:
         rotation_matrix[:3, :3] = utils.exp(rotation_vector[:3])
 
         glPushMatrix()
+        glColor3ub(255, 255, 255)
         glTranslatef(parent_position[0]/self.resize, parent_position[1]/self.resize, parent_position[2]/self.resize)
         glMultMatrixf(rotation_matrix.T)
 
