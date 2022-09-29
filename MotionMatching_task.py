@@ -118,7 +118,7 @@ class MotionMatching_task(MotionMatching):
             self.env.step(target_angle)
             self.make_equal_two_motion_matching_system(self.env.motion_matching_system)
             target_direction = self.env.calculate_future_direction(target_angle)
-            self.coming_soon_10frames == self.get_matching_10frames(target_direction)
+            self.coming_soon_10frames = self.get_matching_10frames(target_direction)
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
 
@@ -128,8 +128,8 @@ class MotionMatching_task(MotionMatching):
 
     def draw_goal_position(self):
         goal_position_2D = self.env.global_goal_position
-        goal_position_3D = np.array([goal_position_2D[0], 0, goal_position_2D[1]])
-        glPointSize(3.0)
+        goal_position_3D = np.array([goal_position_2D[0]/self.character.resize, 0, goal_position_2D[1]/self.character.resize])
+        glPointSize(20.0)
         glBegin(GL_POINTS)
 
         glVertex3fv(goal_position_3D)

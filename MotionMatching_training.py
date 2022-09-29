@@ -89,7 +89,7 @@ class MotionMatching_training(MotionMatching):
             self.reset_bvh_past_orientation()
             
         elif self.matching_num % 10 == 9:
-            self.coming_soon_10frames == self.get_matching_10frames(target_direction)
+            self.coming_soon_10frames = self.get_matching_10frames(target_direction)
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
 

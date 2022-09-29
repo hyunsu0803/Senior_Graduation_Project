@@ -16,7 +16,7 @@ class MyEnv(gym.Env):
         self.observation_space = gym.spaces.Box(low = -1 * np.inf, high = np.inf, shape = (observation_dimension,), dtype = np.float64)
 
         action_dimension = 1
-        self.action_space = gym.spaces.Box(low = -1 * np.pi, high = np.pi, shape = (action_dimension,), dtype = np.float32)
+        self.action_space = gym.spaces.Box(low = -1 * np.pi/2, high = np.pi/2, shape = (action_dimension,), dtype = np.float32)
 
         self.motion_matching_system = MotionMatching_training()
         
@@ -27,8 +27,10 @@ class MyEnv(gym.Env):
 
     def set_global_goal_position(self):
 
-        goal_xpos = random.randrange(-50, 50)
-        goal_zpos = random.randrange(-50, 50)
+        goal_xpos = random.randrange(-400, 400)
+        goal_zpos = random.randrange(-400, 400)
+        goal_xpos = 400
+        goal_zpos = -100
 
         self.global_goal_position = np.array([goal_xpos, goal_zpos])
 

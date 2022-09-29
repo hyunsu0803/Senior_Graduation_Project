@@ -26,12 +26,12 @@ class MyWindow(QOpenGLWidget):
 		# timer
 		self.timer = QTimer(self)
 		self.timer.timeout.connect(self.update_frame)
-		self.timer.setInterval(1000 / self.FPS)
+		self.timer.setInterval(1000*2 / self.FPS)
 		self.timer.start()
 
 		# initialize value
 		self.at = np.array([0., 0., 0.])
-		self.w = np.array([0., 20., -30.])
+		self.w = np.array([0., 25., -25.])
 		self.perspective = True
 		self.click = False
 		self.left = True
