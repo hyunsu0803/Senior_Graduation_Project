@@ -12,7 +12,8 @@ class Joint:
         self.is_root = False 
         self.is_foot = False 
         self.child_joint = []
-        self.transformation_matrix = np.identity(4) 
+        self.transformation_matrix = np.identity(4)
+        self.past_parent_local_matrix = np.identity(4) 
 
         self.global_position = np.array([0., 0., 0., 1.], dtype='float32') 
         self.global_velocity = np.array([0., 0., 0., 0.], dtype = 'float32')

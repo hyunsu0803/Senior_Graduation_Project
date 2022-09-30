@@ -14,6 +14,7 @@ class MotionMatching:
         self.curFrame = []
         self.coming_soon_10frames = []
         self.matching_num = -1
+        self.initing = True
         
 
         TposeX = [0, 1, 0]
@@ -175,102 +176,6 @@ class MotionMatching:
             self.real_global_position[1] = self.curFrame[1]
             
         self.bvh_past_position = self.curFrame[:3]
-
-    # def get_matching_10frames(self, key_input = None, target_direction = None):
-    #     tree_file = open(self.DB, 'rb')
-
-    #     DB = pickle.load(tree_file)
-    #     query = np.zeros((27,))
-
-    #     if key_input == "init":
-    #         query = self.init_query
-
-    #         # query = np.zeros((27,))
-    #     else:
-    #         query = self.set_query_vector(key_input = key_input, target_direction = target_direction)
-            
-
-    #     ans = DB.query(query)
-    #     qidx = ans[1]
-
-    #     bvh_name, nearest_frame_idx= self.find_matching_bvh(qidx)
-    #     # print()
-    #     # print("bvh name", bvh_name, nearest_frame_idx)
-
-    #     # print("!!!!!!!! Query !!!!!!!!", query, sep='\n')
-    #     # print("!!!!!!!! DB feature !!!!!!!!", DB.data[qidx], sep='\n')
-
-    #     # print("############query feature difference##############")
-    #     # print(np.linalg.norm(query - np.array(DB.data[qidx])))
-    #     # print("############query feature difference vector##############")
-    #     # print(query - np.array(DB.data[qidx]))
-
-    #     bvh_folder = './lafan1'
-    #     # bvh_folder = "/Users/jangbogyeong/my-awesome-project/lafan1"
-    #     bvh_path = os.path.join(bvh_folder, bvh_name)
-    #     bvh_file = open(bvh_path, "r")
-
-    #     coming_soon_10frames = bvh_file.readlines()
-    #     coming_soon_10frames = coming_soon_10frames[nearest_frame_idx+1: nearest_frame_idx + 11]
-    #     coming_soon_10frames = [i.split() for i in coming_soon_10frames]
-
-    #     for i in range(len(coming_soon_10frames)):
-    #         for j in range(len(coming_soon_10frames[i])):
-    #             coming_soon_10frames[i][j] = float(coming_soon_10frames[i][j])
-
-        
-    #     return coming_soon_10frames
-
-
-    # def set_query_vector(self, key_input = None, target_direction= None):
-
-    #     two_foot_position = []
-    #     two_foot_velocity = []
-    #     hip_velocity = []
-
-    #     character = self.character
-    #     character_local_frame = character.getCharacterLocalFrame()
-
-    #     character_root_joint = character.getCharacterRootJoint()
-    #     character_foot_joint_list = character.getCharacterTwoFootJoint()
-
-    #     hip_velocity.append(character_root_joint.get_character_local_velocity())
-    #     for i in range(0, 2):
-    #         two_foot_position.append(character_foot_joint_list[i].get_character_local_position())
-    #         two_foot_velocity.append(character_foot_joint_list[i].get_character_local_velocity())
-
-        
-    #     self.set_target_global_direction(key_input, target_direction = target_direction)
-    #     global_future_direction = self.target_global_direction
-    #     local_future_direction = character_local_frame[:3, :3].T @ global_future_direction
-    #     local_2Dposition_future = self.calculate_local_2Dposition_future(local_future_direction)
-    #     local_2Ddirection_future = self.calculate_local_2Ddirection_future(local_future_direction)
-    #     global_3Dposition_future = self.calculate_global_3Dposition_future(local_2Dposition_future)
-    #     global_3Ddirection_future = self.calculate_global_3Ddirection_future(local_2Ddirection_future)
-    
-    #     self.query_vector.set_global_future_position(global_3Dposition_future)
-    #     self.query_vector.set_global_future_direction(global_3Ddirection_future)
-    #     self.query_vector.set_future_position(np.array(local_2Dposition_future).reshape(6, ))
-    #     self.query_vector.set_future_direction(np.array(local_2Ddirection_future).reshape(6, ))
-    #     self.query_vector.set_foot_position(np.array(two_foot_position).reshape(6, ))
-    #     self.query_vector.set_foot_velocity(np.array(two_foot_velocity).reshape(6, ))
-    #     self.query_vector.set_hip_velocity(np.array(hip_velocity).reshape(3, ))
-
-    #     flatten_query_vector =self.query_vector.get_noramlize_feature_vector(self.mean_array, self.std_array)
-            
-    #     return flatten_query_vector
-
-    # def set_target_global_direction(self, key_input, target_direction = None):
-    #     if key_input == "LEFT":
-    #         self.target_global_direction = np.array([1., 0., 0.])
-    #     elif key_input == "RIGHT":
-    #         self.target_global_direction = np.array([-1., 0., 0.])
-    #     elif key_input == "UP":
-    #         self.target_global_direction = np.array([0., 0., 1.])
-    #     elif key_input == "DOWN":
-    #         self.target_global_direction = np.array([0., 0., -1.])
-    #     elif key_input == "TASK":
-    #         self.target_global_direction = self.character.getCharacterLocalFrame()[:3, :3] @ target_direction
 
     def calculate_local_2Dposition_future(self, local_future_direction):
         local_3Dposition_future = np.zeros((3, 3))

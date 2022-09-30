@@ -21,7 +21,7 @@ class MotionMatching_task(MotionMatching):
 
         register_env("my_env", lambda config: MyEnv(config))
         self.agent = ppo.PPOTrainer(config=config, env = "my_env")
-        self.agent.restore("/Users/jangbogyeong/Desktop/PPO_2022-09-26_07-42-04/PPO_my_env_b6cf3_00000_0_2022-09-26_07-42-04/checkpoint_000150")
+        self.agent.restore("/Users/jangbogyeong/my-awesome-project/PPO_2022-09-26_07-42-04/PPO_my_env_b6cf3_00000_0_2022-09-26_07-42-04/checkpoint_000150")
         
         self.env = MyEnv()
 
