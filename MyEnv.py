@@ -24,13 +24,13 @@ class MyEnv(gym.Env):
         self.draw_init_query()
         self.set_global_goal_position()
         self.set_state()
+        self.have_to_reset = False
 
     def set_global_goal_position(self):
 
         goal_xpos = random.randrange(-400, 400)
         goal_zpos = random.randrange(-400, 400)
-        goal_xpos = 400
-        goal_zpos = -100
+
 
         self.global_goal_position = np.array([goal_xpos, goal_zpos])
 
@@ -46,8 +46,9 @@ class MyEnv(gym.Env):
     def reset(self):
         self.motion_matching_system.reset_motion_matching()
         self.draw_init_query()
-        self.set_global_goal_position()
+        
         self.set_state()
+        self.have_to_reset = False
 
         return self.state
 
@@ -58,25 +59,32 @@ class MyEnv(gym.Env):
 
     def step(self, action):
         
-        character_local_future_direction = self.calculate_future_direction(action)
-        self.motion_matching_system.change_curFrame(target_direction = character_local_future_direction)
-        
-        self.motion_matching_system = self.motion_matching_system.calculate_10st_frame_from_start_frame()
-
-        self.set_state()
-        is_reached, goal_distance = self.determine_goal_reached()
-
-        reward = 0
-        done = False
-
-        if is_reached:
-            reward = 1
+        if self.have_to_reset == True:
+            self.set_global_goal_position()
             self.reset()
             done = True
-            print("complete!!!!!")
+            reward = 1
 
         else:
-            reward = np.exp(-1 * np.sqrt(goal_distance))
+            character_local_future_direction = self.calculate_future_direction(action)
+            self.motion_matching_system.change_curFrame(target_direction = character_local_future_direction)
+            
+            self.motion_matching_system = self.motion_matching_system.calculate_10st_frame_from_start_frame()
+
+            self.set_state()
+            is_reached, goal_distance = self.determine_goal_reached()
+
+            reward = 0
+            done = False
+
+            if is_reached:
+                self.have_to_reset = True
+                reward = 1
+                self.motion_matching_system.reset_motion_matching()
+                
+
+            else:
+                reward = np.exp(-1 * np.sqrt(goal_distance))
             
 
 
@@ -90,7 +98,7 @@ class MyEnv(gym.Env):
         
         goal_distance = np.linalg.norm(self.state)
 
-        if goal_distance < 0.5:
+        if goal_distance < 30:
             return True, goal_distance
 
         else:

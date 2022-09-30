@@ -44,7 +44,6 @@ class Joint:
         self.index = index
         if self.index == 0:
             self.is_root = True
-            print(self.joint_name)
 
     def set_character_local_position(self, vector):
         self.character_local_position = vector
