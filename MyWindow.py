@@ -26,12 +26,12 @@ class MyWindow(QOpenGLWidget):
 		# timer
 		self.timer = QTimer(self)
 		self.timer.timeout.connect(self.update_frame)
-		self.timer.setInterval(1000*2 / self.FPS)
+		self.timer.setInterval(1000 / self.FPS)
 		self.timer.start()
 
 		# initialize value
 		self.at = np.array([0., 0., 0.])
-		self.w = np.array([0., 25., -25.])
+		self.w = np.array([0., 25., -20.])
 		self.perspective = True
 		self.click = False
 		self.left = True
@@ -63,7 +63,7 @@ class MyWindow(QOpenGLWidget):
 		glMatrixMode(GL_PROJECTION)
 		glLoadIdentity()
 		if self.perspective:
-			gluPerspective(45, 1, .1, 40)
+			gluPerspective(60, 1, .1, 50)
 
 		else:
 			glOrtho(-10, 10, -10, 10, -10, 20)
@@ -109,11 +109,11 @@ class MyWindow(QOpenGLWidget):
 	def drawGrid(self):
 		glBegin(GL_LINES)
 		glColor3ub(60, 60, 60)
-		for i in np.linspace(-20, 20, 50):
-			glVertex3fv(np.array([-20, 0, i]))
-			glVertex3fv(np.array([20, 0, i]))
-			glVertex3fv(np.array([i, 0, -20]))
-			glVertex3fv(np.array([i, 0, 20]))
+		for i in np.linspace(-30, 30, 50):
+			glVertex3fv(np.array([-30, 0, i]))
+			glVertex3fv(np.array([30, 0, i]))
+			glVertex3fv(np.array([i, 0, -30]))
+			glVertex3fv(np.array([i, 0, 30]))
 		glEnd()
 
 	# ===event handler===
