@@ -28,6 +28,7 @@ class Character:
                     self.resize = int(self.resize)
 
     def drawCharacter(self):
+        print(len(self.joint_list))
         self.drawJoint(np.identity(4), self.joint_list[0])
 
 

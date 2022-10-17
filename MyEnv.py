@@ -28,8 +28,8 @@ class MyEnv(gym.Env):
 
     def set_global_goal_position(self):
 
-        goal_xpos = random.randrange(-400, 400)
-        goal_zpos = random.randrange(-400, 400)
+        goal_xpos = random.randrange(-600, 600)
+        goal_zpos = random.randrange(-600, 600)
 
 
         self.global_goal_position = np.array([goal_xpos, goal_zpos])
@@ -44,9 +44,7 @@ class MyEnv(gym.Env):
 
 
     def reset(self):
-        self.motion_matching_system.reset_motion_matching()
-        self.draw_init_query()
-        
+        # self.motion_matching_system.reset_motion_matching()
         self.set_state()
         self.have_to_reset = False
 
@@ -80,7 +78,7 @@ class MyEnv(gym.Env):
             if is_reached:
                 self.have_to_reset = True
                 reward = 1
-                self.motion_matching_system.reset_motion_matching()
+                # self.motion_matching_system.reset_motion_matching()
                 
 
             else:
