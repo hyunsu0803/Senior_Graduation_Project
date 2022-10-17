@@ -31,7 +31,7 @@ class MyWindow(QOpenGLWidget):
 
 		# initialize value
 		self.at = np.array([0., 0., 0.])
-		self.w = np.array([0., 25., -20.])
+		self.w = np.array([0., 25., -25.])
 		self.perspective = True
 		self.click = False
 		self.left = True

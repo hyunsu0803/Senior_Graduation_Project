@@ -27,7 +27,7 @@ class MotionMatching:
         self.bvh_past_position = np.array([])
 
         self.target_global_direction = np.array([1., 0., 0.])
-        self.abs_global_velocity = 35
+        self.abs_global_velocity = 45
         self.query_vector = Feature()
 
 
@@ -313,6 +313,6 @@ class MotionMatching:
         self.bvh_past_orientation = np.array([])
 
 
-
+    
 
         

@@ -88,19 +88,19 @@ class MotionMatching_training(MotionMatching):
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
             
-        elif self.matching_num % 10 == 9:
+        elif self.matching_num % 5 == 4:
             self.coming_soon_10frames = self.get_matching_10frames(target_direction)
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
 
-        self.matching_num = (self.matching_num+1) % 10
+        self.matching_num = (self.matching_num+1) % 5
         self.curFrame = self.coming_soon_10frames[self.matching_num]
 
     def calculate_10st_frame_from_start_frame(self):
         sub_motion_matching = copy.deepcopy(self)
         sub_motion_matching.calculate_character_motion()
 
-        for i in range(9):
+        for i in range(4):
             sub_motion_matching.change_curFrame()
 
             sub_motion_matching.calculate_character_motion()

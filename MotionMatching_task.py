@@ -101,20 +101,20 @@ class MotionMatching_task(MotionMatching):
             self.coming_soon_10frames = self.get_matching_10frames()
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
-            self.matching_num = (self.matching_num+1) % 10
+            self.matching_num = (self.matching_num+1) % 5
             self.curFrame = self.coming_soon_10frames[self.matching_num]
-        elif self.matching_num % 10 == 9:
+        elif self.matching_num % 10 == 4:
             self.make_equal_two_motion_matching_system(self.env.motion_matching_system)
             target_angle = self.agent.compute_single_action(self.env.state)
             self.env.step(target_angle)
             target_direction = self.env.calculate_future_direction(target_angle)
             self.coming_soon_10frames = self.get_matching_10frames(target_direction)
-            self.matching_num = (self.matching_num+1) % 10
+            self.matching_num = (self.matching_num+1) % 5
             self.curFrame = self.coming_soon_10frames[self.matching_num]
             self.reset_bvh_past_position()
             self.reset_bvh_past_orientation()
         else: 
-            self.matching_num = (self.matching_num+1) % 10
+            self.matching_num = (self.matching_num+1) % 5
             self.curFrame = self.coming_soon_10frames[self.matching_num]
             
 
@@ -122,9 +122,9 @@ class MotionMatching_task(MotionMatching):
         goal_position_2D = self.env.global_goal_position
         goal_position_3D = np.array([goal_position_2D[0]/self.character.resize, 0, goal_position_2D[1]/self.character.resize])
         glColor3ub(255, 255, 0)
-        glBegin(GL_LINES)
+        glBegin(GL_POINTS)
         glVertex3fv(goal_position_3D)
-        glVertex3fv(goal_position_3D + np.array([0., 5., 0]))
+        # glVertex3fv(goal_position_3D + np.array([0., 5., 0]))
         glEnd()
         
         
